@@ -2,10 +2,13 @@
 nbproject/private/
 build/
 nbbuild/
+nbproject/
 dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
+manifest.mf
+build.xml
 
 # Class Files #
 *.class
