@@ -4,18 +4,56 @@
  */
 package gui;
 
+import com.javadocking.DockingManager;
+import com.javadocking.dock.FloatDock;
+import com.javadocking.dock.Position;
+import com.javadocking.dock.SplitDock;
+import com.javadocking.dock.TabDock;
+import com.javadocking.dockable.DefaultDockable;
+import com.javadocking.dockable.Dockable;
+import com.javadocking.dockable.DockingMode;
+import com.javadocking.model.FloatDockModel;
+import graphview.GraphScene;
+import graphview.ShapeNodeView;
+import graphview.ViewAspect;
+import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import javax.swing.*;
+
 /**
  *
  * @author Kirill
  */
 public class MainFrame extends javax.swing.JFrame {
 
+    GraphScene scene=new GraphScene();
+    DockablePanel mainPanel;
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
+        initUI();
+        
+        ViewAspect as=new ShapeNodeView(10,10,200,300);
+        as.color=Color.yellow;
+        scene.add(as);
     }
+    
+    public void initUI()
+    {
+        mainPanel=new DockablePanel(this);
+        add(mainPanel);
+        
+        mainPanel.setSize(getWidth(), getHeight());
+        
+        
+        DrawPanel panel=new DrawPanel(scene);
+        Dockable dockable1 = new DefaultDockable("Scene", panel, "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
+        dockable1=mainPanel.addActions(dockable1);
+        mainPanel.rightDoc.addDockable(dockable1, new Position(0));
+    };
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -26,7 +64,19 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jMenu1.setText("File");
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Edit");
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -36,7 +86,7 @@ public class MainFrame extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 480, Short.MAX_VALUE)
+            .addGap(0, 459, Short.MAX_VALUE)
         );
 
         pack();
@@ -77,5 +127,8 @@ public class MainFrame extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
     // End of variables declaration//GEN-END:variables
 }
