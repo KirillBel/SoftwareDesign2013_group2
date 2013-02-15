@@ -5,7 +5,6 @@
 package Graph;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 /**
  *
@@ -13,35 +12,33 @@ import java.util.LinkedList;
  */
 public class GraphData {
     
-    private int countElement;
-    private int lastID;
+    private int countNodes;
+    private int countEdges;
     private ArrayList<GraphNode> nodesArray;
     private ArrayList<GraphEdge> edgesArray;
     
     public GraphData()
     {
-        this.lastID=-1;
-        this.countElement=0;
+        this.countNodes=0;
+        this.countEdges=0;
         this.edgesArray.clear();
         this.nodesArray.clear();
     }
     
     public void createNode()
     {
-        lastID++;
-        countElement++;
-        GraphNode node=new GraphNode(lastID);
-        nodesArray.add(lastID, node);        
+        countNodes++;
+        GraphNode node=new GraphNode(nodesArray.size());
+        nodesArray.add(node.getID(), node);        
     }
     
-    public void createEdge(int from, int to, Direction dir)
+    public void createEdge(int from, int to, GraphEdge.Direction dir)
     {
-        lastID++;
-        countElement++;
-        GraphEdge edge=new GraphEdge(lastID, from, to, dir);
-        edgesArray.add(lastID, edge); 
-        nodesArray.get(from).addEdge(lastID);
-        nodesArray.get(to).addEdge(lastID);
+        countEdges++;
+        GraphEdge edge=new GraphEdge(nodesArray.size(), from, to, dir);
+        edgesArray.add(edge.getID(), edge); 
+        nodesArray.get(from).addEdge(edge.getID());
+        nodesArray.get(to).addEdge(edge.getID());
         
     }
 }

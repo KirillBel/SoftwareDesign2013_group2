@@ -10,11 +10,11 @@ package Graph;
  */
 public class GraphEdge {
     
-    //private static enum Direction {FOWARD, BACKWARD, BILATERAL};
+    public static enum Direction {IN, OUT, BIDIR};
     private int edgeID;
     private int fromID;
     private int toID;
-    private Direction direct;    
+    public Direction direct;    
                 
     public GraphEdge(int ID, int from, int to, Direction dir)
     {
@@ -24,4 +24,8 @@ public class GraphEdge {
         this.direct=dir;
     }   
     
+    public int getID()
+    {
+        return this.edgeID;
+    }
 }

@@ -13,21 +13,22 @@ import java.util.ArrayList;
 public class GraphNode {
     
     private int nodeID;
-    private int countEdge;
     private ArrayList<Integer> nodeEdgesIDArray;
    
     public GraphNode(int ID)
     {
         this.nodeID=ID;
-        this.countEdge=-1;
         nodeEdgesIDArray.clear();
     }
     
     public void addEdge(int edgeID)
     {
-        countEdge++;
-        nodeEdgesIDArray.add(edgeID);
-        
+        nodeEdgesIDArray.add(edgeID);        
+    }
+    
+    public int getID()
+    {
+        return this.nodeID;
     }
     
 }
