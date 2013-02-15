@@ -18,7 +18,7 @@ public class GraphEdge {
                 
     public GraphEdge(int ID, int from, int to, Direction dir)
     {
-        this.toID=ID;
+        this.edgeID=ID;
         this.fromID=from;
         this.toID=to;
         this.direct=dir;
