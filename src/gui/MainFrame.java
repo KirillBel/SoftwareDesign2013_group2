@@ -20,6 +20,7 @@ import java.awt.*;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.*;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 /**
  *
@@ -27,32 +28,35 @@ import javax.swing.*;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    GraphScene scene=new GraphScene();
-    DockablePanel mainPanel;
+    
+    MainPanel mainPanel;
+    
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
         initUI();
-        
-        ViewAspect as=new ShapeNodeView(10,10,200,300);
-        as.color=Color.yellow;
-        scene.add(as);
     }
     
     public void initUI()
     {
-        mainPanel=new DockablePanel(this);
+        mainPanel=new MainPanel(this);
         add(mainPanel);
         
-        mainPanel.setSize(getWidth(), getHeight());
+        JPanel mainPanel1=mainPanel;//new JPanel();
+        mainPanel1.setBackground(Color.yellow);
         
-        
-        DrawPanel panel=new DrawPanel(scene);
-        Dockable dockable1 = new DefaultDockable("Scene", panel, "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
-        dockable1=mainPanel.addActions(dockable1);
-        mainPanel.rightDoc.addDockable(dockable1, new Position(0));
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(mainPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(mainPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
     };
 
     /**
@@ -66,12 +70,72 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
+        jMenu4 = new javax.swing.JMenu();
+        jMenuItemNimbusSkin = new javax.swing.JMenuItem();
+        jMenuItemMetalSkin = new javax.swing.JMenuItem();
+        jMenuItemMotifSkin = new javax.swing.JMenuItem();
+        jMenuItemWindowsSkin = new javax.swing.JMenuItem();
+        jMenuItemWindowsClas = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
+
+        jMenu3.setText("View");
+
+        jMenu4.setText("Skins");
+
+        jMenuItemNimbusSkin.setText("Nimbus");
+        jMenuItemNimbusSkin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemNimbusSkinActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItemNimbusSkin);
+
+        jMenuItemMetalSkin.setText("Metal");
+        jMenuItemMetalSkin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemMetalSkinActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItemMetalSkin);
+
+        jMenuItemMotifSkin.setText("CDE/Motif");
+        jMenuItemMotifSkin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemMotifSkinActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItemMotifSkin);
+
+        jMenuItemWindowsSkin.setText("Windows");
+        jMenuItemWindowsSkin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemWindowsSkinActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItemWindowsSkin);
+
+        jMenuItemWindowsClas.setText("Windows Classic");
+        jMenuItemWindowsClas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemWindowsClasActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItemWindowsClas);
+
+        jMenu3.add(jMenu4);
+
+        jMenuBar1.add(jMenu3);
 
         jMenu2.setText("Edit");
         jMenuBar1.add(jMenu2);
@@ -92,18 +156,40 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        //mainPanel.setSize(getWidth()-20, getHeight()-65);
+    }//GEN-LAST:event_formComponentResized
+
+    private void jMenuItemNimbusSkinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNimbusSkinActionPerformed
+        setSkin("Nimbus");
+        SwingUtilities.updateComponentTreeUI(this);
+    }//GEN-LAST:event_jMenuItemNimbusSkinActionPerformed
+
+    private void jMenuItemMetalSkinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMetalSkinActionPerformed
+        setSkin("Metal");
+        SwingUtilities.updateComponentTreeUI(this);
+    }//GEN-LAST:event_jMenuItemMetalSkinActionPerformed
+
+    private void jMenuItemMotifSkinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMotifSkinActionPerformed
+        setSkin("CDE/Motif");
+        SwingUtilities.updateComponentTreeUI(this);
+    }//GEN-LAST:event_jMenuItemMotifSkinActionPerformed
+
+    private void jMenuItemWindowsSkinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemWindowsSkinActionPerformed
+        setSkin("Windows");
+        SwingUtilities.updateComponentTreeUI(this);
+    }//GEN-LAST:event_jMenuItemWindowsSkinActionPerformed
+
+    private void jMenuItemWindowsClasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemWindowsClasActionPerformed
+        setSkin("Windows Classic");
+        SwingUtilities.updateComponentTreeUI(this);
+    }//GEN-LAST:event_jMenuItemWindowsClasActionPerformed
+
+    public static void setSkin(String str)
+    {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if (str.equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -117,7 +203,13 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
+    };
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+
+        setSkin("Windows");
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -129,6 +221,13 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItemMetalSkin;
+    private javax.swing.JMenuItem jMenuItemMotifSkin;
+    private javax.swing.JMenuItem jMenuItemNimbusSkin;
+    private javax.swing.JMenuItem jMenuItemWindowsClas;
+    private javax.swing.JMenuItem jMenuItemWindowsSkin;
     // End of variables declaration//GEN-END:variables
 }

@@ -7,12 +7,16 @@ package gui;
 import com.javadocking.DockingManager;
 import com.javadocking.dock.*;
 import com.javadocking.dock.docker.BorderDocker;
+import com.javadocking.dock.factory.CompositeToolBarDockFactory;
 import com.javadocking.dock.factory.DockFactory;
+import com.javadocking.dock.factory.LeafDockFactory;
 import com.javadocking.dock.factory.SingleDockFactory;
 import com.javadocking.dock.factory.ToolBarDockFactory;
+import com.javadocking.util.ToolBarButton;
 
 import com.javadocking.dockable.*;
 import com.javadocking.dockable.action.DefaultDockableStateActionFactory;
+import com.javadocking.drag.DragListener;
 import com.javadocking.model.FloatDockModel;
 import com.javadocking.visualizer.DockingMinimizer;
 import com.javadocking.visualizer.FloatExternalizer;
@@ -37,34 +41,19 @@ public class DockablePanel extends JPanel {
         // Give the dock model to the docking manager.
         DockingManager.setDockModel(dockModel);
 
-        // Create the content components.
-        JTextArea textPanel1 = new JTextArea();
-        JTextArea textPanel2 = new JTextArea();
-
-        // Create the dockables around the content components.
-        Dockable dockable1 = new DefaultDockable("Window1", textPanel1, "Window 1", null, DockingMode.ALL - DockingMode.FLOAT);
-        Dockable dockable2 = new DefaultDockable("Window2", textPanel2, "Window 2", null, DockingMode.ALL - DockingMode.FLOAT);
-
-        dockable1 = addActions(dockable1);
-	dockable2 = addActions(dockable2);
-        
-        add(rootDock);
-
-        //DockFactory leafChildDockFactory = new SingleDockFactory();
-        //rootDock.setChildDockFactory(leafChildDockFactory);
-        //rootDock.getCompositeChildDockFactory().setChildDockFactory(leafChildDockFactory);
-                
-        
-        leftDock.addDockable(dockable1, new Position(Position.LEFT));
-	rightDoc.addDockable(dockable2, new Position(Position.RIGHT)); 
-        
-        rootDock.addChildDock(leftDock, new Position(Position.LEFT));
+        rootDock.addChildDock(leftDoc, new Position(Position.LEFT));
         rootDock.addChildDock(rightDoc, new Position(Position.RIGHT));
         rootDock.setDividerLocation(200);
+
+        BorderDock toolBarBorderDock = new BorderDock(new CompositeToolBarDockFactory(), rootDock);
+		toolBarBorderDock.setMode(BorderDock.MODE_TOOL_BAR);
+       
+        toolBarBorderDock.setDock(compositeToolBarDockTop, Position.TOP);
+        toolBarBorderDock.setDock(compositeToolBarDockLeft, Position.LEFT);
         
         BorderDock borderDock = new BorderDock(new ToolBarDockFactory());
         borderDock.setMode(BorderDock.MODE_MINIMIZE_BAR);
-        borderDock.setCenterComponent(rootDock);
+        borderDock.setCenterComponent(toolBarBorderDock);
         BorderDocker borderDocker = new BorderDocker();
         borderDocker.setBorderDock(borderDock);
         DockingMinimizer minimizer = new DockingMinimizer(borderDocker);
@@ -82,30 +71,24 @@ public class DockablePanel extends JPanel {
         // Add the 3 root docks to the dock model.
         
         // Add the border dock of the minimizer to this panel.
-		this.add(maximizePanel, BorderLayout.CENTER);
-		
-		// Minimize dockables.
-		//minimizer.visualizeDockable(dockable5);
-		//minimizer.visualizeDockable(dockable6);
-		//minimizer.visualizeDockable(dockable7);
-		//minimizer.visualizeDockable(dockable8);
-                
-        dockModel.addRootDock("dock", rootDock, frame);
-
+	this.add(maximizePanel, BorderLayout.CENTER);
+        dockModel.addRootDock("dock", toolBarBorderDock, frame);
+        initUI();
     }
     
-    public Dockable addActions(Dockable dockable)
+    public void initUI()
     {
-
+    }
+    
+    protected Dockable addActions(Dockable dockable)
+    {
             Dockable wrapper = new StateActionDockable(dockable, new DefaultDockableStateActionFactory(), new int[0]);
             wrapper = new StateActionDockable(wrapper, new DefaultDockableStateActionFactory(), DockableState.statesAll());
             return wrapper;
-
     }
     
-    public Dockable decorateDockable(Dockable dockable)
+    protected Dockable decorateDockable(Dockable dockable)
     {
-
             // Add an icon and a description for the tooltip.
             if (dockable instanceof DefaultDockable)
             {
@@ -129,8 +112,33 @@ public class DockablePanel extends JPanel {
             return dockable;
 
     }
+    
+    protected Dockable createButtonDockable(String id, String title, Icon icon, String message)
+    {
+            // Create the action.
+            MessageAction action = new MessageAction(this, title, icon, message);
 
-    private class MessageAction extends AbstractAction
+            // Create the button.
+            ToolBarButton button = new ToolBarButton(action);
+
+            // Create the dockable with the button as component.
+            ButtonDockable buttonDockable = new ButtonDockable(id, button);
+
+            // Add a dragger to the individual dockable.
+            createDockableDragger(buttonDockable);
+
+            return buttonDockable;
+    }
+    
+    protected void createDockableDragger(Dockable dockable)
+    {
+            // Create the dragger for the dockable.
+            DragListener dragListener = DockingManager.getDockableDragListenerFactory().createDragListener(dockable);
+            dockable.getContent().addMouseListener(dragListener);
+            dockable.getContent().addMouseMotionListener(dragListener);
+    }
+
+    protected class MessageAction extends AbstractAction
     {
 
             private Component parentComponent;
@@ -153,7 +161,11 @@ public class DockablePanel extends JPanel {
 
     }
     
-    TabDock leftDock = new TabDock();
+    TabDock leftDoc = new TabDock();
     TabDock rightDoc = new TabDock();
     SplitDock rootDock = new SplitDock();
+    CompositeLineDock compositeToolBarDockTop = new CompositeLineDock(CompositeLineDock.ORIENTATION_HORIZONTAL, false,
+                    new ToolBarDockFactory(), DockingMode.HORIZONTAL_TOOLBAR, DockingMode.VERTICAL_TOOLBAR);
+    CompositeLineDock compositeToolBarDockLeft = new CompositeLineDock(CompositeLineDock.ORIENTATION_VERTICAL, false,
+                    new ToolBarDockFactory(), DockingMode.HORIZONTAL_TOOLBAR, DockingMode.VERTICAL_TOOLBAR);
 }
