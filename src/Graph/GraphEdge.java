@@ -28,4 +28,31 @@ public class GraphEdge {
     {
         return this.edgeID;
     }
+    
+    public Direction getDirection()
+    {
+        return this.direct;
+    }
+    
+    public int getFromID()
+    {
+        return this.fromID;
+    }
+    
+    public int getToID()
+    {
+        return this.toID;
+    }
+    
+    public boolean equals(GraphEdge edge)
+    {
+        if(this.edgeID==edge.getID() && this.fromID==edge.getFromID() && this.toID==edge.toID && this.direct==edge.getDirection())
+        {
+            return  true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

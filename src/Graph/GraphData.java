@@ -21,8 +21,8 @@ public class GraphData {
     {
         this.countNodes=0;
         this.countEdges=0;
-        edgesArray=null;
-        nodesArray=null;
+        edgesArray=new ArrayList();
+        nodesArray=new ArrayList();
         this.edgesArray.clear();
         this.nodesArray.clear();
     }
@@ -31,6 +31,13 @@ public class GraphData {
     {       
         countNodes++;
         GraphNode node=new GraphNode(nodesArray.size());
+        if(nodesArray.size()<node.getID())
+        {
+            for(int i=nodesArray.size();nodesArray.size()<node.getID();i++)
+            {
+                nodesArray.add(i, null);
+            }
+        }
         nodesArray.add(node.getID(), node);         
     }
     
@@ -49,8 +56,15 @@ public class GraphData {
             else
             {
                 countEdges++;
-                GraphEdge edge=new GraphEdge(nodesArray.size(), from, to, dir);
-                edgesArray.add(edge.getID(), edge); 
+                GraphEdge edge=new GraphEdge(edgesArray.size(), from, to, dir);
+                if(edgesArray.size()<edge.getID())
+                {
+                    for(int i=edgesArray.size();edgesArray.size()<edge.getID();i++)
+                    {
+                        edgesArray.add(i, null);
+                    }
+                }
+                edgesArray.add(edge.getID(), edge);                
                 nodesArray.get(from).addEdge(edge.getID());
                 nodesArray.get(to).addEdge(edge.getID());
             }
@@ -76,12 +90,24 @@ public class GraphData {
             ArrayList<Integer> edgesID=nodesArray.get(ID).getNodeEdgesIDArray();
             for(int i=0; i<edgesID.size(); i++)
             {
-                countEdges--;
-                edgesArray.set(edgesID.get(i), null);
+                if(edgesID.get(i)!=null)
+                {
+                    countEdges--;
+                    if(edgesArray.get(i).getFromID()!=ID)
+                    {
+                        nodesArray.get(edgesArray.get(i).getFromID()).deleteEdgeFromArray(i);
+                    }
+
+                    if(edgesArray.get(i).getToID()!=ID)
+                    {
+                        nodesArray.get(edgesArray.get(i).getToID()).deleteEdgeFromArray(i);
+                    }  
+                    edgesArray.set(edgesID.get(i), null);
+                }
             }
             
             countNodes--;
-            edgesArray.set(ID, null);
+            nodesArray.set(ID, null);
         }
     }
     
@@ -100,6 +126,26 @@ public class GraphData {
             countEdges--;
             edgesArray.set(ID, null);
         }
+    }
+    
+    public ArrayList getNodesArray()
+    {
+        return this.nodesArray;
+    }
+    
+    public ArrayList getEdgesArray()
+    {
+        return this.edgesArray;
+    }
+    
+    public int getCountNodes()
+    {
+        return this.countNodes;
+    }
+    
+    public int getCountEdges()
+    {
+        return this.countEdges;
     }
     
 }
