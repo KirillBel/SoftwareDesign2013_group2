@@ -14,7 +14,7 @@ public class GraphEdge {
     private int edgeID;
     private int fromID;
     private int toID;
-    public Direction direct;    
+    private Direction direct;    
                 
     public GraphEdge(int ID, int from, int to, Direction dir)
     {
