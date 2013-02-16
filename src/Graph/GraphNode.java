@@ -18,6 +18,7 @@ public class GraphNode {
     public GraphNode(int ID)
     {
         this.nodeID=ID;
+        nodeEdgesIDArray=null;
         nodeEdgesIDArray.clear();
     }
     
@@ -29,6 +30,11 @@ public class GraphNode {
     public int getID()
     {
         return this.nodeID;
+    }
+    
+    public ArrayList getNodeEdgesIDArray()
+    {
+        return this.nodeEdgesIDArray;
     }
     
 }
