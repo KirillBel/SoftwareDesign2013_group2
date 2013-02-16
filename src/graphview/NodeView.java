@@ -37,4 +37,11 @@ public abstract class NodeView extends ViewAspect {
     public void setPlacement(Rectangle rect){
         placement=rect;
     }
+    
+    public boolean onMouseDrag(Point location, Point delta){
+        
+        placement.x+=delta.x;
+        placement.y+=delta.y;
+        return true;
+    };
 }

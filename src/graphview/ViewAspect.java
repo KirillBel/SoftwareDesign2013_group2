@@ -31,7 +31,7 @@ public abstract class ViewAspect {
     public boolean onMouseClick(Point pt){
         return false;
     };
-    public boolean onMouseDrag(Point pt){
+    public boolean onMouseDrag(Point location, Point delta){
         return false;
     };
     

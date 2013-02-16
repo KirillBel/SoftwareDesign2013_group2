@@ -29,6 +29,7 @@ public class DrawPanel extends javax.swing.JPanel {
     
     Point mousePos=new Point();
     Point mouseDelta=new Point();
+    int buttonPressed=0;
     
     private GraphScene scene;
     
@@ -75,6 +76,14 @@ public class DrawPanel extends javax.swing.JPanel {
                 formMouseWheelMoved(evt);
             }
         });
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                formMouseReleased(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                formMousePressed(evt);
+            }
+        });
         addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 formMouseDragged(evt);
@@ -98,7 +107,8 @@ public class DrawPanel extends javax.swing.JPanel {
 
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
         updateMousePos(evt.getLocationOnScreen());
-        scene.onMouseDrag(evt.getButton(),evt.getLocationOnScreen(),mouseDelta);
+       
+        scene.onMouseDrag(buttonPressed,evt.getLocationOnScreen(),mouseDelta);
         updateScene();
     }//GEN-LAST:event_formMouseDragged
 
@@ -110,6 +120,14 @@ public class DrawPanel extends javax.swing.JPanel {
         scene.onMouseWheel(evt.getWheelRotation());
         updateScene();
     }//GEN-LAST:event_formMouseWheelMoved
+
+    private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
+        buttonPressed=evt.getButton();
+    }//GEN-LAST:event_formMousePressed
+
+    private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
+        buttonPressed=0;
+    }//GEN-LAST:event_formMouseReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
