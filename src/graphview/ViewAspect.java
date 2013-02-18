@@ -4,6 +4,8 @@
  */
 package graphview;
 
+import geometry.Rect;
+import geometry.Vec2;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -24,14 +26,14 @@ public abstract class ViewAspect {
     public String label="label";
     public Color color;
     
-    public abstract Rectangle getBoundingRect();
+    public abstract Rect getBoundingRect();
     public abstract void draw(Graphics2D g);
     public abstract void update();
     
-    public boolean onMouseClick(Point pt){
+    public boolean onMouseClick(Vec2 pt){
         return false;
     };
-    public boolean onMouseDrag(Point location, Point delta){
+    public boolean onMouseDrag(Vec2 location, Vec2 delta){
         return false;
     };
     

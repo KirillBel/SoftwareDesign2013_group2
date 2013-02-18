@@ -4,6 +4,7 @@
  */
 package graphview;
 
+import geometry.Rect;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -21,27 +22,27 @@ public class ShapeNodeView extends NodeView {
     {
     };
     
-    public ShapeNodeView(Rectangle rect)
+    public ShapeNodeView(Rect rect)
     {
         placement=rect;
     };
     
     public ShapeNodeView(int posX,int posY, int sizeX, int sizeY)
     {
-        placement=new Rectangle(posX,posY,sizeX,sizeY);
+        placement=new Rect(posX,posY,posX+sizeX,posY+sizeY);
     };
     
-    public Rectangle getBoundingRect(){
+    public Rect getBoundingRect(){
         return placement;
     }
     public void draw(Graphics2D g)
     {
         g.setColor(color);
-        g.fillRect(placement.x, placement.y, placement.width, placement.height);
+        g.fillRect((int)placement.left, (int)placement.top, (int)placement.getSize().x, (int)placement.getSize().y);
         g.setColor(Color.black);
-        g.drawRect(placement.x, placement.y, placement.width, placement.height);
+        g.drawRect((int)placement.left, (int)placement.top, (int)placement.getSize().x, (int)placement.getSize().y);
         
-        g.drawString(label, placement.x, placement.y);
+        g.drawString(label, (int)placement.left, (int)placement.top);
     };
     public void update()
     {

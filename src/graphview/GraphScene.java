@@ -4,14 +4,23 @@
  */
 package graphview;
 
+import geometry.Rect;
+import geometry.Vec2;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -28,67 +37,137 @@ public class GraphScene {
     }
     
     public void draw(Graphics2D g){
-        g.setTransform(transform);
+        g.translate(offset.x, offset.y);
+        g.scale(scale.x, scale.y);
 
+        drawGrid(g,new Vec2(100,100));
         for(int i=0;i<nodes.size();i++)
         {
             ((ViewAspect)nodes.get(i)).draw(g);
         };
+        
+        g.fillRect((int)mousePoint.x-5, (int)mousePoint.y-5, 10, 10);
+        
+        //g.drawString(String.format("Screen: %.1f,%.1f\nScene: %.1f,%.1f", mousePointScreen.x,mousePointScreen.y,mousePoint.x,mousePoint.y),0,0);
     }
     
-    public Point toScreen(Point pt)
+    public void drawGrid(Graphics2D g, Vec2 gridSize)
     {
-        return (Point)transform.transform(pt, null);
+        Rect frameRect=fromScreen(new Rect(0,0,frameSize.x,frameSize.y));
+        if((frameRect.getSize().x/gridSize.x)>50) return;
+        if((frameRect.getSize().y/gridSize.y)>50) return;
+        
+        float startX=frameRect.left-frameRect.left%gridSize.x;
+        float startY=frameRect.top-frameRect.top%gridSize.y;
+        
+        
+        g.setColor(Color.lightGray);
+        
+        Stroke oldStroke=g.getStroke();
+        BasicStroke stroke=new BasicStroke(1,BasicStroke.CAP_BUTT,BasicStroke.JOIN_BEVEL,0,new float[]{9}, 0);
+        g.setStroke(stroke);
+        
+        for(float i=startX;i<=frameRect.right;i+=gridSize.x)
+        {
+            g.drawLine((int)i, (int)frameRect.top, (int)i, (int)frameRect.bottom);
+        };
+        
+        for(float i=startY;i<=frameRect.bottom;i+=gridSize.y)
+        {
+            g.drawLine((int)frameRect.left, (int)i, (int)frameRect.right, (int)i);
+        };
+        g.setStroke(oldStroke);
     };
     
-    public void onMouseDrag(int nbutton, Point location, Point delta) {
+    public Vec2 fromScreen(Vec2 pt)
+    {
+        AffineTransform tr=new AffineTransform();
+        tr.translate(offset.x, offset.y);
+        tr.scale(scale.x, scale.y);
+        
+        Point.Float pt1=new Point.Float();
+        try {
+            tr.inverseTransform(pt.toPoint(), pt1);
+        } catch (NoninvertibleTransformException ex) {
+            Logger.getLogger(GraphScene.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new Vec2(pt1.x,pt1.y);
+    };
+    
+    public Rect fromScreen(Rect r)
+    {
+        Vec2 topLeft=fromScreen(r.getTopLeft());
+        Vec2 bottomRight=fromScreen(r.getBottomRight());
+        return new Rect(topLeft.x,topLeft.y,bottomRight.x,bottomRight.y);
+    }
+    
+    public Vec2 toScreen(Vec2 pt)
+    {
+        AffineTransform tr=new AffineTransform();
+        tr.translate(offset.x, offset.y);
+        tr.scale(scale.x, scale.y);
+        
+        Point.Float pt1=new Point.Float();
+        tr.transform(pt.toPoint(), pt1);
+        return new Vec2(pt1.x,pt1.y);
+    };
+    
+    public Rect toScreen(Rect r)
+    {
+        Vec2 topLeft=toScreen(r.getTopLeft());
+        Vec2 bottomRight=toScreen(r.getBottomRight());
+        return new Rect(topLeft.x,topLeft.y,bottomRight.x,bottomRight.y);
+    }
+    
+    public void onMouseMove(Vec2 location, Vec2 delta) {
+        mousePointScreen=location;
+        mousePoint=fromScreen(location);
+        bUpdateMe=true;
+    }
+    Vec2 mousePoint=new Vec2();
+    Vec2 mousePointScreen=new Vec2();
+    
+    public void onMouseDrag(int nbutton, Vec2 location, Vec2 delta) {
         if(nbutton==1)
         {
-//            for(int i=0;i<nodes.size();i++)
-//            {
-//                if(((ViewAspect)nodes.get(i)).getBoundingRect().contains(toScreen(location)))
-//                {
-//                    ((ViewAspect)nodes.get(i)).onMouseDrag(toScreen(location),delta);
-//                };
-//            };
+            for(int i=0;i<nodes.size();i++)
+            {
+                if(((ViewAspect)nodes.get(i)).getBoundingRect().pointIn(fromScreen(location)))
+                {
+                    ((ViewAspect)nodes.get(i)).onMouseDrag(fromScreen(location),delta.divide(scale));
+                };
+            };
+            bUpdateMe=true;
         }
         else if(nbutton==3)
         {
-            setOffset(new Point.Float(getOffset().x+delta.x,getOffset().y+delta.y));
+            offset=offset.plus(delta);
+            //setOffset(getOffset().plus(delta));
             bUpdateMe=true;
         }
     };
+    
+    public void onResize(Vec2 size)
+    {
+        frameSize=size;
+    }
     
     public void onMouseWheel(int scrollRotation){
         
         if(scrollRotation>0) {
-            transform.scale(0.8, 0.8);
+            scale=scale.multiply(0.8f);
             bUpdateMe=true;
         }
         else if(scrollRotation<0) {
-            transform.scale(1.2, 1.2);
+            scale=scale.multiply(1.2f);
             bUpdateMe=true;
         }
     }
     
-    public Point.Float getScale(){
-        return new Point.Float((float)transform.getScaleX(),(float)transform.getScaleY());
-    }
-    
-    public Point.Float getOffset(){
-        return new Point.Float((float)transform.getTranslateX(),(float)transform.getTranslateY());
-    }
-    
-    public void setScale(Point.Float pt){
-        transform.setToScale(pt.x, pt.y);
-    }
-    
-    public void setOffset(Point.Float pt){
-        transform.setToTranslation(pt.x, pt.y);
-    }
-    
+    Vec2 frameSize=new Vec2(1,1);
+    Vec2 offset=new Vec2();
+    Vec2 scale=new Vec2(1,1);
     public boolean bUpdateMe;
     public Font font=new Font("Arial",Font.PLAIN,20);
     ArrayList nodes=new ArrayList();
-    AffineTransform transform=new AffineTransform();
 }

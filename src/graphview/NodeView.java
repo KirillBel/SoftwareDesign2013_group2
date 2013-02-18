@@ -4,6 +4,8 @@
  */
 package graphview;
 
+import geometry.Rect;
+import geometry.Vec2;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
@@ -15,33 +17,29 @@ import java.awt.geom.Rectangle2D;
  */
 public abstract class NodeView extends ViewAspect {
     
-    protected Rectangle placement=new Rectangle();
+    protected Rect placement=new Rect();
     
-    public Point2D getPosition() {
-        return new Point(placement.x,placement.y);
+    public Vec2 getPosition() {
+        return placement.getTopLeft();
     };
-    public void setPosition(Point pt){
-        placement.x=(int)pt.getX();
-        placement.y=(int)pt.getY();
+    public void setPosition(Vec2 pt){
+        placement.setPosition(pt);
     }
-    public Point2D getSize(){
-        return new Point(placement.width,placement.height);
+    public Vec2 getSize(){
+        return placement.getSize();
     }
-    public void setSize(Point pt){
-        placement.width=(int)pt.getX();
-        placement.height=(int)pt.getY();
+    public void setSize(Vec2 pt){
+        placement.setSize(pt);
     }
-    public Rectangle2D getPlacement(){
+    public Rect getPlacement(){
         return placement;
     }
-    public void setPlacement(Rectangle rect){
+    public void setPlacement(Rect rect){
         placement=rect;
     }
     
-    public boolean onMouseDrag(Point location, Point delta){
-        
-        placement.x+=delta.x;
-        placement.y+=delta.y;
+    public boolean onMouseDrag(Vec2 location, Vec2 delta){
+        placement.move(delta);
         return true;
     };
 }

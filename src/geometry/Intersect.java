@@ -18,7 +18,7 @@ public class Intersect {
     
     public static int rectangle_point(Rect r, Vec2 v)
     {
-        if((v.x>=r.left) && (v.x<=r.right) && (v.y>=r.bottom) && (v.y<=r.top)) return INCLUSION;
+        if((v.x>=r.left) && (v.x<=r.right) && (v.y<=r.bottom) && (v.y>=r.top)) return INCLUSION;
         return EXCLUSION;
     }
     

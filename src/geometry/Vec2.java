@@ -4,6 +4,9 @@
  */
 package geometry;
 
+import java.awt.Point;
+import java.awt.geom.Point2D;
+
 /**
  *
  * @author Kirill
@@ -137,5 +140,15 @@ public class Vec2 {
         Vec2 v=new Vec2(this);
         v.rotate(angle);
         return v;
+    };
+    
+    public Point.Float toPoint()
+    {
+        return new Point.Float(x,y);
+    };
+    
+    public static Vec2 fromPoint(Point pt)
+    {
+        return new Vec2(pt.x,pt.y);
     };
 }

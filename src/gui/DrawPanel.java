@@ -4,6 +4,7 @@
  */
 package gui;
 
+import geometry.Vec2;
 import graphview.GraphScene;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -49,14 +50,17 @@ public class DrawPanel extends javax.swing.JPanel {
     
     void updateMousePos(Point pos)
     {
+        pos.x-=this.getLocationOnScreen().x;
+        pos.y-=this.getLocationOnScreen().y;
+        
         mouseDelta.x=pos.x-mousePos.x;
         mouseDelta.y=pos.y-mousePos.y;
         mousePos=pos;
     };
     
-    void updateScene()
+    void updateScene(boolean forceUpdate)
     {
-        if(scene.bUpdateMe) {
+        if(scene.bUpdateMe || forceUpdate) {
             updateUI();
             scene.bUpdateMe=false;
         }
@@ -84,6 +88,11 @@ public class DrawPanel extends javax.swing.JPanel {
                 formMousePressed(evt);
             }
         });
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
         addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 formMouseDragged(evt);
@@ -108,17 +117,19 @@ public class DrawPanel extends javax.swing.JPanel {
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
         updateMousePos(evt.getLocationOnScreen());
        
-        scene.onMouseDrag(buttonPressed,evt.getLocationOnScreen(),mouseDelta);
-        updateScene();
+        scene.onMouseDrag(buttonPressed,Vec2.fromPoint(mousePos),Vec2.fromPoint(mouseDelta));
+        updateScene(false);
     }//GEN-LAST:event_formMouseDragged
 
     private void formMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseMoved
         updateMousePos(evt.getLocationOnScreen());
+        scene.onMouseMove(Vec2.fromPoint(mousePos),Vec2.fromPoint(mouseDelta));
+        updateScene(false);
     }//GEN-LAST:event_formMouseMoved
 
     private void formMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_formMouseWheelMoved
         scene.onMouseWheel(evt.getWheelRotation());
-        updateScene();
+        updateScene(false);
     }//GEN-LAST:event_formMouseWheelMoved
 
     private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
@@ -128,6 +139,11 @@ public class DrawPanel extends javax.swing.JPanel {
     private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
         buttonPressed=0;
     }//GEN-LAST:event_formMouseReleased
+
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        scene.onResize(new Vec2(this.getSize().width,this.getSize().height));
+        updateScene(false);
+    }//GEN-LAST:event_formComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

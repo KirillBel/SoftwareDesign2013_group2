@@ -52,18 +52,18 @@ public class Rect {
     
     public Vec2 getCenter()
     {
-        return new Vec2(left+(right-left)/2,bottom+(top-bottom)/2);
+        return new Vec2(left+(right-left)/2,top+(bottom-top)/2);
     };
     
     public Vec2 getSize()
     {
-        return new Vec2(right-left,top-bottom);
+        return new Vec2(right-left,bottom-top);
     };
     
     public void setSize(Vec2 size)
     {
         right=left+size.x;
-        top=bottom+size.y;
+        bottom=top+size.y;
     };
     
     public float getSquare()
@@ -78,5 +78,37 @@ public class Rect {
         right=r;
         top=t;
         bottom=b;
+    };
+    
+    public void setPosition(Vec2 v)
+    {
+        Vec2 size=getSize();
+        left=v.x;
+        right=left+size.x;
+        top=v.y;
+        bottom=top+size.y;
+    }
+    
+    public void setCenterPosition(Vec2 v)
+    {
+        Vec2 size=getSize();
+        left=v.x-size.x/2;
+        right=left+size.x/2;
+        top=v.y-size.y/2;
+        bottom=top+size.y/2;
+    }
+    
+    public void move(Vec2 v)
+    {
+        left+=v.x;
+        right+=v.x;
+        top+=v.y;
+        bottom+=v.y;
+    };
+    
+    public boolean pointIn(Vec2 v)
+    {
+        if((v.x>=left) && (v.x<=right) && (v.y<=bottom) && (v.y>=top)) return true;
+        return false;
     };
 }
