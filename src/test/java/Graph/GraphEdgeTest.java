@@ -37,9 +37,7 @@ public class GraphEdgeTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of getID method, of class GraphEdge.
-     */
+    /*
     @Test
     public void testGetIDandGetDirection() {
         try
@@ -73,38 +71,11 @@ public class GraphEdgeTest {
         resultDirect=edge.getDirection();
         assertEquals(direct, resultDirect);
         
-        edge=null; 
-        try {
-                edge = new GraphEdge(123, 1, 2, GraphEdge.Direction.OUT);
-            } catch (Exception e) {
-                fail("Create Edge error:" + e.getMessage());
-            }
-        
-        expResult = 123;
-        result = edge.getID();
-        assertEquals(expResult, result);
-        direct= GraphEdge.Direction.OUT;
-        resultDirect=edge.getDirection();
-        assertEquals(direct, resultDirect);
-        
-        edge=null; 
-        try {
-                edge = new GraphEdge(21, 2, 3, GraphEdge.Direction.BIDIR);
-            } catch (Exception e) {
-                fail("Create Edge error:" + e.getMessage());
-            }
-        
-        expResult = 21;
-        result = edge.getID();
-        assertEquals(expResult, result);
-        direct= GraphEdge.Direction.BIDIR;
-        resultDirect=edge.getDirection();
-        assertEquals(direct, resultDirect);
         
         }
         catch (Exception ex) {
             fail("test error");
         }
     }
-
+*/
 }
