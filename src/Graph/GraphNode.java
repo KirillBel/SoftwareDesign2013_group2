@@ -1,13 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package Graph;
 
 import java.util.ArrayList;
 
 /**
- *
+ * Ксласс для представления вершины графа
+ * Представляет собой уникальный ID вершины и список ID ребер взаимодействующих с этой вершиной 
  * @author FlyPig
  */
 public class GraphNode {
@@ -15,6 +12,10 @@ public class GraphNode {
     private int nodeID;
     private ArrayList<Integer> nodeEdgesIDArray;
    
+    /**
+     * Конструктор для создания новой вершины графа
+     * @param ID - Уникалиный ID вершины
+     */
     public GraphNode(int ID)
     {
         this.nodeID=ID;
@@ -22,50 +23,109 @@ public class GraphNode {
         nodeEdgesIDArray.clear();
     }
     
-    public void addEdge(int edgeID)
+    /**
+     * Функция добавления ID связанного с вершиной ребра в список nodeEdgesIDArray
+     * @param ID - ID ребра для добавления
+     * @exception IndexBoundException возникает при попытке добавить элемент с неправиьным индексом индексом
+     * @exception NullPointerException возникает при попытке добавить что-либо в неинициализированный ArrayList
+     * @return Возвращает ID ребра, если успешно создано, -1 - добавление неудачно
+     */
+    public int addEdge(int edgeID)
     {
-        if(nodeEdgesIDArray.indexOf(edgeID)!=-1)
+        try
+        {                      
+            nodeEdgesIDArray.add(edgeID);
+            return edgeID;
+        }    
+        catch(Exception ex)
         {
-            System.err.printf("Ребро с ID: %d уже взаимодействует с вершиной с ID: %d", edgeID, this.nodeID);
+            System.err.printf("Ошибка при добавлении ребра с ID: %d в список ребер вершины %d \n",edgeID, this.nodeID);
+            return -1;
         }
-        else
-        {
-            if(nodeEdgesIDArray.size()<edgeID)
-            {
-                for(int i=nodeEdgesIDArray.size();nodeEdgesIDArray.size()<edgeID;i++)
-                {
-                    nodeEdgesIDArray.add(i, null);
-                }
-            }            
-            nodeEdgesIDArray.add(edgeID,edgeID);
-        }        
     }
     
+    /**
+     * Функция для получения ID данной вершины
+     * @return Возвращает ID данной вершины
+     */
     public int getID()
     {
-        return this.nodeID;
+        int ID=this.nodeID;
+        return ID;
     }
     
-    public ArrayList getNodeEdgesIDArray()
+    /**
+     * Функция для получения одного из ID ребей, связанных с данной вершиной
+     * @param indexID - индекс элемента в списке nodeEdgesIDArray
+     * @return Возвращает ID ребра, связанного с данной вершиной и находящегося по нужному индексу
+     */
+    public int getElementOfNodeEdgesIDArray(int indexID)
     {
-        return this.nodeEdgesIDArray;
+        int edgeID=nodeEdgesIDArray.get(indexID);
+        return edgeID;
     }
     
+    /**
+     * Функция для сравнения двух элементов класса GraphNode на равенство
+     * @param node - Вершина, которую требуется сравнить с данной
+     * @return Возвращает true, если вершины равны, false - вершины не равны
+     */
     public boolean equals(GraphNode node)
     {
-        if(this.nodeID==node.getID() && this.nodeEdgesIDArray.equals(node.getNodeEdgesIDArray()))
+        if(this.nodeID==node.getID())
         {
+            for(int i=0; i<this.nodeEdgesIDArray.size();i++)
+            {
+                if(this.nodeEdgesIDArray.get(i)!=node.getElementOfNodeEdgesIDArray(i))
+                {
+                    return false;
+                }  
+            }
             return true;
         }
         else
         {
             return false;
+        }   
+    }
+    
+    /**
+     * Функция удаления ID связанного с вершиной ребра из списока nodeEdgesIDArray
+     * @param ID - ID ребра для удаления
+     * @exception IndexBoundException возникает при попытке изменить элемент с несуществующим индексом
+     * @exception NullPointerException возникает при попытке изменить что-либо в неинициализированном ArrayList
+     * @return Возвращает ID ребра, если успешно создано, -1 - добавление неудачно
+     */
+    public boolean deleteEdgeFromArray(int ID)
+    {
+        int index=nodeEdgesIDArray.indexOf(ID);
+        if(index==-1)
+        {
+            return true;
+        }
+        else
+        {
+            try
+            {      
+
+                nodeEdgesIDArray.remove(index);
+                return true;
+            }    
+            catch(Exception ex)
+            {
+                System.err.printf("Ошибка при удалении ребра с ID: %d из списка ребер вершины %d \n",ID, this.nodeID);
+                return false;
+            }   
         }
     }
     
-    public void deleteEdgeFromArray(int ID)
+    /**
+     * Функция для получения размера списка ребер, связанных с данной вершиной
+     * @return Возвращает размера списка ребер, связанных с данной вершиной
+     */
+    public int getSizeOfNodeEdgesIDArray()
     {
-        nodeEdgesIDArray.set(ID, null);
+        return this.nodeEdgesIDArray.size();
     }
     
 }
