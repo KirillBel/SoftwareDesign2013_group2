@@ -4,6 +4,8 @@
  */
 package geometry;
 
+import java.awt.Rectangle;
+
 /**
  *
  * @author Kirill
@@ -110,5 +112,38 @@ public class Rect {
     {
         if((v.x>=left) && (v.x<=right) && (v.y<=bottom) && (v.y>=top)) return true;
         return false;
+    };
+    
+    public void add(Rect r)
+    {
+        if(left<r.left) left=r.left;
+        if(top<r.top) top=r.top;
+        if(right>r.right) right=r.right;
+        if(bottom>r.bottom) bottom=r.bottom;
+    };
+    
+    public void add(Vec2 v)
+    {
+        if(left<v.x) left=v.x;
+        if(top<v.y) top=v.y;
+        if(right>v.x) right=v.x;
+        if(bottom>v.y) bottom=v.y;
+    };
+    
+    public static Rect fromRectangle(Rectangle rect)
+    {
+        return new Rect(rect.x,rect.height,rect.x+rect.width,rect.y+rect.height);
+    };
+    
+    public Vec2 getVertex(int index)
+    {
+        switch(index)
+        {
+            case 0: return getTopLeft();
+            case 1: return getTopRight();
+            case 2: return getBottomRight();
+            case 3: return getBottomLeft();
+        };
+        return null;
     };
 }

@@ -39,6 +39,18 @@ public class Vec2 {
         y=Y;
     };
     
+    public void set(Vec2 v)
+    {
+        x=v.x;
+        y=v.y;
+    };
+    
+    public boolean equals(Vec2 v)
+    {
+        if(x==v.x && y==v.y) return true;
+        return false;
+    };
+    
     public Vec2 plus(float f)
     {
         return new Vec2(this.x+f,this.y+f);
@@ -150,5 +162,10 @@ public class Vec2 {
     public static Vec2 fromPoint(Point pt)
     {
         return new Vec2(pt.x,pt.y);
+    };
+    
+    public static Vec2 lerp(Vec2 A, Vec2 B, float c)
+    {
+        return new Vec2(A.x+(B.x-A.x)*c,A.y+(B.y-A.y)*c);
     };
 }

@@ -4,6 +4,8 @@
  */
 package geometry;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Kirill
@@ -44,4 +46,93 @@ public class Intersect {
         if(distance<=lineWidth) return INCLUSION;
         return EXCLUSION;
     }
+    
+    public static int line_line(Vec2 lineA1,Vec2 lineA2, Vec2 lineB1,Vec2 lineB2, Vec2 outPoint)
+    {
+        float Epsilon = (float)0.0000001f;
+
+        Vec2 delta = lineB1.minus(lineA1);
+
+        Vec2 dirA = lineA2.minus(lineA1);
+        Vec2 dirB = lineB2.minus(lineB1);
+
+        float det = dirA.x * dirB.y - dirA.y * dirB.x;
+        float detA = delta.x * dirB.y - delta.y * dirB.x;
+        float detB = delta.x * dirA.y - delta.y * dirA.x;
+
+        float absDet = Math.abs(det);
+
+        if (absDet >= Epsilon)
+        {
+            float invDet = (float)1.0 / det;
+
+            float a = detA * invDet;
+            float b = detB * invDet;
+            //outA = a;
+            //outB = b;
+            outPoint=Vec2.lerp(lineA1, lineA2, a);
+
+            if ((a > (float)1.0) || (a < (float)0.0) || (b > (float)1.0) || (b < (float)0.0))
+                    return EXCLUSION;
+        }
+        else
+        {
+            //outA = outB = (F)0.5;
+            outPoint=Vec2.lerp(lineA1, lineA2, 0.5f);
+
+            return EXCLUSION;
+        }
+        
+        return INCLUSION;
+    };
+
+    public static int line_line2(Vec2 lineA1,Vec2 lineA2, Vec2 lineB1,Vec2 lineB2, Vec2 outPoint)
+    {
+        outPoint.set(0, 0);
+
+        Vec2 b = lineA2.minus(lineA1);
+        Vec2 d = lineB2.minus(lineB1);
+        float bDotDPerp = b.x * d.y - b.y * d.x;
+
+        // if b dot d == 0, it means the lines are parallel so have infinite intersection points
+        if (bDotDPerp == 0)
+            return EXCLUSION;
+
+        Vec2 c = lineB1.minus(lineA1);
+        float t = (c.x * d.y - c.y * d.x) / bDotDPerp;
+        if (t < 0 || t > 1)
+            return EXCLUSION;
+
+        float u = (c.x * b.y - c.y * b.x) / bDotDPerp;
+        if (u < 0 || u > 1)
+            return EXCLUSION;
+
+        outPoint.set(lineA1.plus(b.multiply(t)));
+
+        return INCLUSION;
+    }
+    
+    public static int line_rect(Vec2 lineA1,Vec2 lineA2, Rect r, ArrayList<Vec2> outArray)
+    {
+        Vec2 out = new Vec2();
+        
+        for(int i=0;i<3;i++)
+        {
+            if(line_line2(lineA1,lineA2,r.getVertex(i),r.getVertex(i+1),out)==INCLUSION)
+            {
+                outArray.add(new Vec2(out));
+            };
+        };
+        
+        if(line_line2(lineA1,lineA2,r.getVertex(3),r.getVertex(0),out)==INCLUSION)
+        {
+            outArray.add(new Vec2(out));
+        };
+        
+        if(outArray.size()!=0)
+        {
+            return INCLUSION;
+        };
+        return EXCLUSION;
+    };
 }

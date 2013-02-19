@@ -9,9 +9,12 @@ import com.javadocking.dock.Position;
 import com.javadocking.dockable.DefaultDockable;
 import com.javadocking.dockable.Dockable;
 import com.javadocking.dockable.DockingMode;
+import geometry.Vec2;
+import graphview.BaseShape;
+import graphview.BoxShape;
 import graphview.GraphScene;
-import graphview.ShapeNodeView;
-import graphview.ViewAspect;
+import graphview.LineShape;
+import graphview.NodeShape;
 import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -61,8 +64,16 @@ public class MainPanel extends DockablePanel{
     
     public void initScene()
     {
-        ViewAspect as=new ShapeNodeView(10,10,200,300);
-        as.color=Color.yellow;
-        scene.add(as);
+        NodeShape shape=new BoxShape(10,10,200,300);
+        shape.color=Color.yellow;
+        
+        NodeShape shape2=new BoxShape(0,0,100,100);
+        shape2.color=Color.red;
+        shape2.setPosition(new Vec2(300,10));
+        
+        LineShape line = new LineShape(shape,shape2);
+        scene.add(shape);
+        scene.add(shape2);
+        scene.add(line);
     };
 }

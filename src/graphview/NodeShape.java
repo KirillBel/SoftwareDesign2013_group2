@@ -6,16 +6,19 @@ package graphview;
 
 import geometry.Rect;
 import geometry.Vec2;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.Graphics2D;
+import java.util.ArrayList;
 
 /**
  *
  * @author Kirill
  */
-public abstract class NodeView extends ViewAspect {
+public abstract class NodeShape extends BaseShape {
+
+    public NodeShape()
+    {
+        shapeType=eShapeType.NODE;
+    };
     
     protected Rect placement=new Rect();
     
@@ -24,6 +27,9 @@ public abstract class NodeView extends ViewAspect {
     };
     public void setPosition(Vec2 pt){
         placement.setPosition(pt);
+    }
+    public void move(Vec2 pt){
+        placement.move(pt);
     }
     public Vec2 getSize(){
         return placement.getSize();
@@ -38,8 +44,9 @@ public abstract class NodeView extends ViewAspect {
         placement=rect;
     }
     
-    public boolean onMouseDrag(Vec2 location, Vec2 delta){
-        placement.move(delta);
-        return true;
+    public abstract Vec2 getPortPoint(Vec2 from);
+    
+    public boolean onGripDrag(int nGrip, Vec2 location, Vec2 delta){
+        return false;
     };
 }

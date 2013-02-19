@@ -32,8 +32,8 @@ public class GraphScene {
         bUpdateMe=true;
     }
     
-    public void add(ViewAspect aspect){
-        nodes.add(aspect);
+    public void add(BaseShape shape){
+        nodes.add(shape);
     }
     
     public void draw(Graphics2D g){
@@ -43,10 +43,8 @@ public class GraphScene {
         drawGrid(g,new Vec2(100,100));
         for(int i=0;i<nodes.size();i++)
         {
-            ((ViewAspect)nodes.get(i)).draw(g);
+            nodes.get(i).draw(g);
         };
-        
-        g.fillRect((int)mousePoint.x-5, (int)mousePoint.y-5, 10, 10);
         
         //g.drawString(String.format("Screen: %.1f,%.1f\nScene: %.1f,%.1f", mousePointScreen.x,mousePointScreen.y,mousePoint.x,mousePoint.y),0,0);
     }
@@ -120,23 +118,58 @@ public class GraphScene {
     }
     
     public void onMouseMove(Vec2 location, Vec2 delta) {
-        mousePointScreen=location;
-        mousePoint=fromScreen(location);
-        bUpdateMe=true;
     }
-    Vec2 mousePoint=new Vec2();
-    Vec2 mousePointScreen=new Vec2();
+    
+    public void onMouseDown(int nbutton, Vec2 location) {
+    }
+    
+    public void onMouseUp(int nbutton, Vec2 location) {
+    }
+    
+    public void onMouseClick(int nbutton, Vec2 location) {
+        if(nbutton==1)
+        {
+            boolean bIntersects=false;
+            for(int i=0;i<nodes.size();i++)
+            {
+                if(nodes.get(i).isIntersects(fromScreen(location)))
+                {
+                    setSelected(i, !nodes.get(i).bSelected);
+                    bIntersects=true;
+                };
+            };
+            if(!bIntersects)
+            {
+                clearSelection();
+            };
+            bUpdateMe=true;
+        }
+    }
     
     public void onMouseDrag(int nbutton, Vec2 location, Vec2 delta) {
         if(nbutton==1)
         {
-            for(int i=0;i<nodes.size();i++)
+            boolean bIntersects=false;
+            for(int i=0;i<selectedShapes.size();i++)
             {
-                if(((ViewAspect)nodes.get(i)).getBoundingRect().pointIn(fromScreen(location)))
+                if(selectedShapes.get(i).isIntersects(fromScreen(location)))
                 {
-                    ((ViewAspect)nodes.get(i)).onMouseDrag(fromScreen(location),delta.divide(scale));
+                    bIntersects=true;
+                    break;
                 };
             };
+            
+            if(bIntersects)
+            {
+                for(int i=0;i<selectedShapes.size();i++)
+                {
+                    if(selectedShapes.get(i).getType()==eShapeType.NODE)
+                    {
+                        ((NodeShape)selectedShapes.get(i)).move(delta);
+                    };
+                }
+            };
+            
             bUpdateMe=true;
         }
         else if(nbutton==3)
@@ -164,10 +197,44 @@ public class GraphScene {
         }
     }
     
+    public void setSelected(int Index, boolean bSelected)
+    {
+        if(bSelected)
+        {
+            for(int i=0;i<selectedShapes.size();i++)
+            {
+                if(selectedShapes.get(i)==nodes.get(Index)) return;
+            };
+            selectedShapes.add(nodes.get(Index));
+            nodes.get(Index).bSelected=true;
+        }
+        else
+        {
+            for(int i=0;i<selectedShapes.size();i++)
+            {
+                if(selectedShapes.get(i)==nodes.get(Index))
+                {
+                    selectedShapes.remove(i);
+                };
+            };
+            nodes.get(Index).bSelected=false;
+        };
+    };
+    
+    public void clearSelection()
+    {
+        for(int i=0;i<selectedShapes.size();i++)
+        {
+            selectedShapes.get(i).bSelected=false;
+        };
+        selectedShapes.clear();
+    };
+    
     Vec2 frameSize=new Vec2(1,1);
     Vec2 offset=new Vec2();
     Vec2 scale=new Vec2(1,1);
     public boolean bUpdateMe;
     public Font font=new Font("Arial",Font.PLAIN,20);
-    ArrayList nodes=new ArrayList();
+    ArrayList<BaseShape> nodes=new ArrayList();
+    ArrayList<BaseShape> selectedShapes=new ArrayList();
 }

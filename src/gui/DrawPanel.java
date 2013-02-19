@@ -31,6 +31,7 @@ public class DrawPanel extends javax.swing.JPanel {
     Point mousePos=new Point();
     Point mouseDelta=new Point();
     int buttonPressed=0;
+    int buttonReleased=0;
     
     private GraphScene scene;
     
@@ -84,6 +85,9 @@ public class DrawPanel extends javax.swing.JPanel {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 formMouseReleased(evt);
             }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                formMouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 formMousePressed(evt);
             }
@@ -134,16 +138,24 @@ public class DrawPanel extends javax.swing.JPanel {
 
     private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
         buttonPressed=evt.getButton();
+        buttonReleased=0;
     }//GEN-LAST:event_formMousePressed
 
     private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
         buttonPressed=0;
+        buttonReleased=evt.getButton();
     }//GEN-LAST:event_formMouseReleased
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
         scene.onResize(new Vec2(this.getSize().width,this.getSize().height));
         updateScene(false);
     }//GEN-LAST:event_formComponentResized
+
+    private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
+        updateMousePos(evt.getLocationOnScreen());
+        scene.onMouseClick(buttonReleased, Vec2.fromPoint(mousePos));
+        updateScene(false);
+    }//GEN-LAST:event_formMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
