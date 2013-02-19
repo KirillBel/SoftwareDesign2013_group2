@@ -1,6 +1,6 @@
-package Graph;
+package graph;
 
-import Graph.GraphEdge.Direction;
+import graph.GraphEdge.Direction;
 import java.util.ArrayList;
 
 /**

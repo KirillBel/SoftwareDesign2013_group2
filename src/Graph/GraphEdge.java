@@ -1,4 +1,4 @@
-package Graph;
+package graph;
 
 /**
  * Ксласс для представления ребра графа
