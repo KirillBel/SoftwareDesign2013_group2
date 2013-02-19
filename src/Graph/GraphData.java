@@ -1,10 +1,11 @@
 package Graph;
 
+import Graph.GraphEdge.Direction;
 import java.util.ArrayList;
 
 /**
- * Ксласс для представления графа
- * Представляет собой списки верший и ребер графа, а также их количество
+ * Класс для представления графа
+ * Представляет собой списки вершин и ребер графа, а также их количество
  * @author FlyPig
  */
 public class GraphData {
@@ -63,7 +64,7 @@ public class GraphData {
         int result=0;
         try
         {         
-            if(nodesArray.contains(from)==true && nodesArray.contains(to)==true)
+            if(nodesArray.size()>from && nodesArray.size()>to)
             {
                 if(nodesArray.get(from)==null)
                 {
@@ -227,10 +228,10 @@ public class GraphData {
     }
     
     /**
-     * Функция для получения ht,hf графа с нужным индексом
+     * Функция для получения ребра графа с нужным индексом
      * @param index - index вершины в edgesArray
      * @exception NullPointerException возникает при попытке добавить что-либо в неинициализированный ArrayList
-     * @exception IndexBoundException возникает при попытке добавить элемент с неправиьным индексом индексом
+     * @exception IndexBoundException возникает при попытке добавить элемент с неправильным индексом
      * @return Возвращает нужное ребро, если успешно, null - при ошибке
      */
     public GraphEdge getElementOfEdgesArray(int index)
@@ -248,7 +249,7 @@ public class GraphData {
     }
    
     /**
-     * Функция для получения количества верший графа
+     * Функция для получения количества вершин графа
      * @return Возвращает количество вершин графа
      */
     public int getCountNodes()
@@ -266,5 +267,6 @@ public class GraphData {
         int counter=this.countEdges;
         return counter;
     }
+
     
 }
