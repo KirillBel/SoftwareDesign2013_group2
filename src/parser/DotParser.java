@@ -14,7 +14,8 @@ import java.util.ArrayList;
  * Класс осуществляющий синтаксический анализ файла формата .dot
  * @author BoytsevAndrey
  */
-public class DotParser {
+public class DotParser 
+{
     
     private Reader m_input;
     private GraphData graphData = new GraphData();
@@ -30,7 +31,7 @@ public class DotParser {
     }
     
     /**
-     * Функция для запуска парсера
+     * Метод для запуска парсера
      * @return Возвращает объект GraphData
      */
     public GraphData parse() 
@@ -43,6 +44,10 @@ public class DotParser {
         return graphData;
     }
     
+    /**
+     * Метод для устанавки синтаксиса StreamTokenizer
+     * @param tk - поток StreamTokenizer
+     */
     protected void setSyntax(StreamTokenizer tk) 
     {
         tk.resetSyntax();
@@ -65,6 +70,10 @@ public class DotParser {
         tk.ordinaryChar('=');
     }
     
+    /**
+     * Метод, определяющий направленность графа
+     * @param tk - поток StreamTokenizer
+     */
     protected void graph(StreamTokenizer tk) 
     {
         try {
@@ -92,6 +101,10 @@ public class DotParser {
         catch(Exception ex) { ex.printStackTrace(); }
     }
     
+    /**
+     * Метод, определяющий наличие подграфов
+     * @param tk - поток StreamTokenizer
+     */
     protected void cluster(StreamTokenizer tk) throws IOException 
     {
         if(tk.ttype=='{') {
@@ -118,6 +131,11 @@ public class DotParser {
         System.out.println("End of graph!");    
     }
     
+    /**
+     * Метод для проверки списка на повторение вершины
+     * @param name - имя вершины
+     * @return Возвращает объект GraphNode 
+     */
     protected GraphNode getNode(String name)
     {
         for(int i=0;i<list.size();i++)
@@ -134,6 +152,10 @@ public class DotParser {
         return node;
     }
     
+    /**
+     * Метод для определения вершин и ребер
+     * @param tk - поток StreamTokenizer
+     */
     protected void edge(StreamTokenizer tk) throws IOException
     {
         if(tk.ttype==tk.TT_WORD) {
