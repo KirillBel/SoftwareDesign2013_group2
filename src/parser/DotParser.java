@@ -1,9 +1,9 @@
 package parser;
 
-import Graph.GraphData;
-import Graph.GraphEdge;
-import Graph.GraphEdge.Direction;
-import Graph.GraphNode;
+import graph.GraphData;
+import graph.GraphEdge;
+import graph.GraphEdge.Direction;
+import graph.GraphNode;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
