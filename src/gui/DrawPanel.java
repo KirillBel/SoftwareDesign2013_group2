@@ -43,8 +43,6 @@ public class DrawPanel extends javax.swing.JPanel {
         
         g2d.setColor(Color.white);
         g2d.fillRect(0, 0, getWidth(), getHeight());
-        
-        g2d.setFont(scene.font);
 
         scene.draw(g2d);
     }
@@ -61,9 +59,9 @@ public class DrawPanel extends javax.swing.JPanel {
     
     void updateScene(boolean forceUpdate)
     {
-        if(scene.bUpdateMe || forceUpdate) {
+        if(scene.isNeedUpdate() || forceUpdate) {
             updateUI();
-            scene.bUpdateMe=false;
+            scene.setUpdate(false);
         }
     };
 

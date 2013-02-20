@@ -13,14 +13,18 @@ import java.awt.Graphics2D;
  *
  * @author Kirill
  */
-public class LineShape extends EdgeShape {
-
-    public LineShape(NodeShape portA, NodeShape portB )
+public class LineShape extends BaseShape {  
+    protected BaseShape portNodeA=null;
+    protected BaseShape portNodeB=null;
+    
+    public LineShape(BaseShape portA, BaseShape portB)
     {
         portNodeA=portA;
         portNodeB=portB;
+        bMoveable=false;
+        bChildsRelativeCoord=false;
     };
-     
+    
     @Override
     public void draw(Graphics2D g) {
         g.setColor(color);
@@ -31,8 +35,8 @@ public class LineShape extends EdgeShape {
         {
             if(portNodeA==null || portNodeB==null) return;
             
-            portA=portNodeA.getPortPoint(portNodeB.getPlacement().getCenter());
-            portB=portNodeB.getPortPoint(portNodeA.getPlacement().getCenter());
+            portA=portNodeA.getPortPoint(portNodeB.getGlobalPlacement().getCenter());
+            portB=portNodeB.getPortPoint(portNodeA.getGlobalPlacement().getCenter());
             
             if(portA==null || portB==null) return;
             g.fillOval((int)portA.x-3, (int)portA.y-3, 6, 6);
@@ -45,48 +49,76 @@ public class LineShape extends EdgeShape {
             Vec2 point1=null;
             if(portNodeA!=null)
             {
-                point=childs.get(0).getPlacement().getCenter();
+                point=childs.get(0).getGlobalPlacement().getCenter();
                 portA=portNodeA.getPortPoint(point);
                 if(portA==null) return;
-                g.setColor(Color.gray);
-                g.fillOval((int)portA.x-5, (int)portA.y-5, (int)portA.x+5, (int)portA.y+5);
-                g.setColor(color);
+                g.fillOval((int)portA.x-3, (int)portA.y-3, 6, 6);
                 g.drawLine((int)portA.x, (int)portA.y, (int)point.x, (int)point.y);
             };
             
             if(portNodeB!=null)
             {
-                point=childs.get(childs.size()-1).getPlacement().getCenter();
+                point=childs.get(childs.size()-1).getGlobalPlacement().getCenter();
                 portB=portNodeB.getPortPoint(point);
                 if(portB==null) return;
-                g.setColor(Color.gray);
-                g.fillOval((int)portB.x-5, (int)portB.y-5, (int)portB.x+5, (int)portB.y+5);
-                g.setColor(color);
+                g.fillOval((int)portB.x-3, (int)portB.y-3, 6, 6);
                 g.drawLine((int)portB.x, (int)portB.y, (int)point.x, (int)point.y);
             };
             
             for(int i=0;i<childs.size()-1;i++)
             {
-                point=childs.get(i).getPlacement().getCenter();
-                point1=childs.get(i+1).getPlacement().getCenter();
+                point=childs.get(i).getGlobalPlacement().getCenter();
+                point1=childs.get(i+1).getGlobalPlacement().getCenter();
                 g.drawLine((int)point.x, (int)point.y, (int)point1.x, (int)point1.y);
             };
         };
     }
     
-    @Override
-    public void insertPoint(Vec2 pt, int index) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    
+    public Vec2 getPoint(int index){
+        return getChild(index).getGlobalPosition();
     }
-
+    public void setPoint(Vec2 pt, int index){
+        getChild(index).setGlobalPosition(pt);
+        update();
+    };
+    
+    public void setPortA(BaseShape shape){
+        portNodeA=shape;
+        update();
+    }
+    public void setPortB(BaseShape shape){
+        portNodeB=shape;
+        update();
+    }
+    
     @Override
-    public Rect getBoundingRect() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void update(){
+        
+        bMoveable=true;
+        if(childs.size()==0) setLocalPlacement(new Rect());
+        else
+        {
+            Rect r=childs.get(0).getLocalPlacement();
+            for(int i=1;i<childs.size();i++)
+            {
+                r.add(childs.get(i).getLocalPlacement());
+            };
+            setLocalPlacement(r);
+        };
+        bMoveable=false;
+        
+        super.update();
     }
 
     @Override
     public boolean isIntersects(Vec2 pt) {
-        return false;
+        return getGlobalPlacement().pointIn(pt);
+    }
+
+    @Override
+    public Vec2 getPortPoint(Vec2 from) {
+        return null;
     }
     
 }

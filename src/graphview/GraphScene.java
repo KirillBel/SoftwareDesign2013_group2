@@ -11,13 +11,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Float;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,26 +23,29 @@ import java.util.logging.Logger;
  * @author Kirill
  */
 public class GraphScene {
-    
-    public GraphScene(){
-        bUpdateMe=true;
-    }
+    Vec2 frameSize=new Vec2(1,1);
+    Vec2 offset=new Vec2();
+    Vec2 scale=new Vec2(1,1);
+    boolean bNeedUpdate=true;
+    Font font=new Font("Arial",Font.PLAIN,20);
+    ArrayList<BaseShape> shapes=new ArrayList();
+    ArrayList<BaseShape> selectedShapes=new ArrayList();
     
     public void add(BaseShape shape){
-        nodes.add(shape);
+        shapes.add(shape);
     }
     
     public void draw(Graphics2D g){
         g.translate(offset.x, offset.y);
         g.scale(scale.x, scale.y);
+        
+        g.setFont(font);
 
         drawGrid(g,new Vec2(100,100));
-        for(int i=0;i<nodes.size();i++)
+        for(int i=0;i<shapes.size();i++)
         {
-            nodes.get(i).draw(g);
+            shapes.get(i).draw(g);
         };
-        
-        //g.drawString(String.format("Screen: %.1f,%.1f\nScene: %.1f,%.1f", mousePointScreen.x,mousePointScreen.y,mousePoint.x,mousePoint.y),0,0);
     }
     
     public void drawGrid(Graphics2D g, Vec2 gridSize)
@@ -117,6 +116,14 @@ public class GraphScene {
         return new Rect(topLeft.x,topLeft.y,bottomRight.x,bottomRight.y);
     }
     
+    public boolean isNeedUpdate() {
+        return bNeedUpdate;
+    }
+    
+    public void setUpdate(boolean val) {
+        bNeedUpdate=val;
+    }
+    
     public void onMouseMove(Vec2 location, Vec2 delta) {
     }
     
@@ -130,19 +137,20 @@ public class GraphScene {
         if(nbutton==1)
         {
             boolean bIntersects=false;
-            for(int i=0;i<nodes.size();i++)
+            for(int i=shapes.size()-1;i>=0;i--)
             {
-                if(nodes.get(i).isIntersects(fromScreen(location)))
+                if(shapes.get(i).isIntersects(fromScreen(location)))
                 {
-                    setSelected(i, !nodes.get(i).bSelected);
+                    setSelected(i, !shapes.get(i).bSelected);
                     bIntersects=true;
+                    break;
                 };
             };
             if(!bIntersects)
             {
                 clearSelection();
             };
-            bUpdateMe=true;
+            setUpdate(true);
         }
     }
     
@@ -163,20 +171,16 @@ public class GraphScene {
             {
                 for(int i=0;i<selectedShapes.size();i++)
                 {
-                    if(selectedShapes.get(i).getType()==eShapeType.NODE)
-                    {
-                        ((NodeShape)selectedShapes.get(i)).move(delta.divide(scale));
-                    };
+                    selectedShapes.get(i).move(delta);
                 }
             };
             
-            bUpdateMe=true;
+            setUpdate(true);
         }
         else if(nbutton==3)
         {
             offset=offset.plus(delta);
-            //setOffset(getOffset().plus(delta));
-            bUpdateMe=true;
+            setUpdate(true);
         }
     };
     
@@ -189,11 +193,11 @@ public class GraphScene {
         
         if(scrollRotation>0) {
             scale=scale.multiply(0.8f);
-            bUpdateMe=true;
+            setUpdate(true);
         }
         else if(scrollRotation<0) {
             scale=scale.multiply(1.2f);
-            bUpdateMe=true;
+            setUpdate(true);
         }
     }
     
@@ -203,21 +207,21 @@ public class GraphScene {
         {
             for(int i=0;i<selectedShapes.size();i++)
             {
-                if(selectedShapes.get(i)==nodes.get(Index)) return;
+                if(selectedShapes.get(i)==shapes.get(Index)) return;
             };
-            selectedShapes.add(nodes.get(Index));
-            nodes.get(Index).bSelected=true;
+            selectedShapes.add(shapes.get(Index));
+            shapes.get(Index).bSelected=true;
         }
         else
         {
             for(int i=0;i<selectedShapes.size();i++)
             {
-                if(selectedShapes.get(i)==nodes.get(Index))
+                if(selectedShapes.get(i)==shapes.get(Index))
                 {
                     selectedShapes.remove(i);
                 };
             };
-            nodes.get(Index).bSelected=false;
+            shapes.get(Index).bSelected=false;
         };
     };
     
@@ -229,12 +233,4 @@ public class GraphScene {
         };
         selectedShapes.clear();
     };
-    
-    Vec2 frameSize=new Vec2(1,1);
-    Vec2 offset=new Vec2();
-    Vec2 scale=new Vec2(1,1);
-    public boolean bUpdateMe;
-    public Font font=new Font("Arial",Font.PLAIN,20);
-    ArrayList<BaseShape> nodes=new ArrayList();
-    ArrayList<BaseShape> selectedShapes=new ArrayList();
 }

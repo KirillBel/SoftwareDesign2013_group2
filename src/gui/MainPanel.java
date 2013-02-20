@@ -4,13 +4,17 @@
  */
 package gui;
 
+import graphview.BaseShape;
+import graphview.LineShape;
+import graphview.GraphScene;
+import graphview.BoxShape;
+import graphview.TextShape;
 import com.javadocking.dock.LineDock;
 import com.javadocking.dock.Position;
 import com.javadocking.dockable.DefaultDockable;
 import com.javadocking.dockable.Dockable;
 import com.javadocking.dockable.DockingMode;
 import geometry.Vec2;
-import graphview.*;
 import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -60,21 +64,28 @@ public class MainPanel extends DockablePanel{
     
     public void initScene()
     {
-        NodeShape shape=new BoxShape(10,10,200,300);
+        BaseShape shape=new BoxShape(10,10,200,300);
         shape.color=Color.yellow;
         
-        NodeShape shape2=new BoxShape(0,0,100,100);
+        BaseShape shape2=new BoxShape(0,0,100,100);
         shape2.color=Color.red;
-        shape2.setPosition(new Vec2(300,10));
+        shape2.setLocalPosition(new Vec2(300,10));
+        
+        BaseShape dot=new BoxShape(0,0,10,10);
+        dot.move(new Vec2(200,-100));
+        dot.color=Color.GREEN;
         
         TextShape text=new TextShape("12345\n67890");
         shape.addChild(text);
-        shape.setContainerMode(NodeShape.CONTAIN_NODE_TO_CHILDS);
+        shape.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
         
         LineShape line = new LineShape(shape,shape2);
+        line.addChild(dot);
+        
         scene.add(shape);
         scene.add(shape2);
         scene.add(line);
+        scene.add(dot);
         //scene.add(text);
     };
 }
