@@ -140,6 +140,13 @@ public class Vec2 {
         x *= mul; y *= mul; 
     };
     
+    public Vec2 getWithLength(float val)
+    {
+        Vec2 v=new Vec2(this);
+        v.setLength(val);
+        return v;
+    };
+    
     public void rotate(float angle)
     {
         float nX=x,nY=y;

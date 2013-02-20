@@ -165,7 +165,7 @@ public class GraphScene {
                 {
                     if(selectedShapes.get(i).getType()==eShapeType.NODE)
                     {
-                        ((NodeShape)selectedShapes.get(i)).move(delta);
+                        ((NodeShape)selectedShapes.get(i)).move(delta.divide(scale));
                     };
                 }
             };

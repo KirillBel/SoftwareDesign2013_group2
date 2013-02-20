@@ -10,11 +10,7 @@ import com.javadocking.dockable.DefaultDockable;
 import com.javadocking.dockable.Dockable;
 import com.javadocking.dockable.DockingMode;
 import geometry.Vec2;
-import graphview.BaseShape;
-import graphview.BoxShape;
-import graphview.GraphScene;
-import graphview.LineShape;
-import graphview.NodeShape;
+import graphview.*;
 import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -71,9 +67,14 @@ public class MainPanel extends DockablePanel{
         shape2.color=Color.red;
         shape2.setPosition(new Vec2(300,10));
         
+        TextShape text=new TextShape("12345\n67890");
+        shape.addChild(text);
+        shape.setContainerMode(NodeShape.CONTAIN_NODE_TO_CHILDS);
+        
         LineShape line = new LineShape(shape,shape2);
         scene.add(shape);
         scene.add(shape2);
         scene.add(line);
+        //scene.add(text);
     };
 }

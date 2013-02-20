@@ -5,6 +5,7 @@
 package geometry;
 
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -30,6 +31,14 @@ public class Rect {
         right=r;
         top=t;
         bottom=b;
+    };
+    
+    public Rect(Rect r)
+    {
+        left=r.left;
+        right=r.right;
+        top=r.top;
+        bottom=r.bottom;
     };
     
     public Vec2 getTopLeft()
@@ -82,6 +91,14 @@ public class Rect {
         bottom=b;
     };
     
+    public void set(Rect r)
+    {
+        left=r.left;
+        right=r.right;
+        top=r.top;
+        bottom=r.bottom;
+    };
+    
     public void setPosition(Vec2 v)
     {
         Vec2 size=getSize();
@@ -108,6 +125,13 @@ public class Rect {
         bottom+=v.y;
     };
     
+    public Rect getMoved(Vec2 v)
+    {
+        Rect r=new Rect(this);
+        r.move(v);
+        return r;
+    };
+    
     public boolean pointIn(Vec2 v)
     {
         if((v.x>=left) && (v.x<=right) && (v.y<=bottom) && (v.y>=top)) return true;
@@ -116,25 +140,55 @@ public class Rect {
     
     public void add(Rect r)
     {
-        if(left<r.left) left=r.left;
-        if(top<r.top) top=r.top;
-        if(right>r.right) right=r.right;
-        if(bottom>r.bottom) bottom=r.bottom;
+        if(left>r.left) left=r.left;
+        if(top>r.top) top=r.top;
+        if(right<r.right) right=r.right;
+        if(bottom<r.bottom) bottom=r.bottom;
     };
     
     public void add(Vec2 v)
     {
-        if(left<v.x) left=v.x;
-        if(top<v.y) top=v.y;
-        if(right>v.x) right=v.x;
-        if(bottom>v.y) bottom=v.y;
+        if(left>v.x) left=v.x;
+        if(top>v.y) top=v.y;
+        if(right<v.x) right=v.x;
+        if(bottom<v.y) bottom=v.y;
     };
     
-    public static Rect fromRectangle(Rectangle rect)
+    public static Rect fromRectangle2D(Rectangle2D rect)
     {
-        return new Rect(rect.x,rect.height,rect.x+rect.width,rect.y+rect.height);
+        return new Rect((float)rect.getX(),(float)rect.getY(),(float)(rect.getX()+rect.getWidth()),(float)(rect.getY()+rect.getHeight()));
     };
     
+    public void reduce(float val)
+    {
+        left+=val;
+        right-=val;
+        top+=val;
+        bottom-=val;
+    };
+    
+    public void increase(float val)
+    {
+        left-=val;
+        right+=val;
+        top-=val;
+        bottom+=val;
+    };
+    
+    public Rect getReduced(float val)
+    {
+        Rect r=new Rect(this);
+        r.reduce(val);
+        return r;
+    };
+    
+    public Rect getIncreased(float val)
+    {
+        Rect r=new Rect(this);
+        r.increase(val);
+        return r;
+    };
+            
     public Vec2 getVertex(int index)
     {
         switch(index)

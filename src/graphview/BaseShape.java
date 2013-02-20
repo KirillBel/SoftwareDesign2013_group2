@@ -20,12 +20,16 @@ enum eShapeType{
     NODE,
     EDGE
 };
+
+
 public abstract class BaseShape {
     public String hint="hint";
     public String label="label";
     public Color color;
     public boolean bSelected=false;
     protected eShapeType shapeType=eShapeType.BASE;
+    protected BaseShape parent=null;
+    
     
     public abstract Rect getBoundingRect();
     
@@ -61,6 +65,7 @@ public abstract class BaseShape {
             if(childs.get(i)==shape) return;
         };
         childs.add(shape);
+        shape.parent=this;
     };
     
     public Rect getChildsRect()
@@ -68,7 +73,8 @@ public abstract class BaseShape {
         Rect r=new Rect();
         for(int i=0;i<childs.size();i++)
         {
-            r.add(childs.get(i).getBoundingRect());
+            if(i==0) r.set(childs.get(i).getBoundingRect());
+            else r.add(childs.get(i).getBoundingRect());
         };
         return r;
     };
@@ -87,6 +93,35 @@ public abstract class BaseShape {
         {
             childs.get(i).draw(g);
         };
+    };
+    
+    public Vec2 getGlobalOffset()
+    {
+        return new Vec2();
+    };
+    
+    public Vec2 toGlobal(Vec2 v)
+    {
+        if(parent==null) return v;
+        return parent.toGlobal(v);
+    };
+    
+    public Rect toGlobal(Rect r)
+    {
+        if(parent==null) return r;
+        return parent.toGlobal(r);
+    };
+    
+    public Vec2 toLocal(Vec2 v)
+    {
+        if(parent==null) return v;
+        return parent.toLocal(v);
+    };
+    
+    public Rect toLocal(Rect r)
+    {
+        if(parent==null) return r;
+        return parent.toLocal(r);
     };
     
     protected ArrayList<NodeShape> childs=new ArrayList<NodeShape>();
