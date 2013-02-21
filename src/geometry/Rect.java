@@ -200,4 +200,29 @@ public class Rect {
         };
         return null;
     };
+    
+    public void convertToStd()
+    {
+        float temp=0;
+        if(right<left) 
+        {
+            temp=left;
+            left=right;
+            right=temp;
+        };
+        
+        if(bottom<top) 
+        {
+            temp=top;
+            top=bottom;
+            bottom=temp;
+        };
+    };
+    
+    public Rect getConvertedToStd()
+    {
+        Rect r=new Rect(this);
+        r.convertToStd();;
+        return r;
+    };
 }

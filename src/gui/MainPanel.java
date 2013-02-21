@@ -26,7 +26,7 @@ import javax.swing.JTextArea;
  */
 public class MainPanel extends DockablePanel{
     
-    GraphScene scene;
+    GraphScene scenePanel;
     Dockable[] buttonDockables;
     
     public MainPanel(JFrame frame)
@@ -38,9 +38,8 @@ public class MainPanel extends DockablePanel{
     @Override
     public void initUI()
     {
-        scene=new GraphScene();
-        DrawPanel panel=new DrawPanel(scene);
-        Dockable dockable1 = new DefaultDockable("Scene", panel, "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
+        scenePanel=new GraphScene();
+        Dockable dockable1 = new DefaultDockable("Scene", scenePanel, "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
         dockable1=addActions(dockable1);
         rightDoc.addDockable(dockable1, new Position(1));
         
@@ -82,10 +81,10 @@ public class MainPanel extends DockablePanel{
         LineShape line = new LineShape(shape,shape2);
         line.addChild(dot);
         
-        scene.add(shape);
-        scene.add(shape2);
-        scene.add(line);
-        scene.add(dot);
+        scenePanel.add(shape);
+        scenePanel.add(shape2);
+        scenePanel.add(line);
+        scenePanel.add(dot);
         //scene.add(text);
     };
 }
