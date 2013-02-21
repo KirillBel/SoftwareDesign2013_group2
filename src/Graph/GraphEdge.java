@@ -1,5 +1,7 @@
 package graph;
 
+import graphview.LineShape;
+
 /**
  * Ксласс для представления ребра графа
  * Представляет собой уникальный ID ребра, ID вершины из который идёт ребро, ID вершины в которую идёт ребро и направление ребра 
@@ -12,6 +14,7 @@ public class GraphEdge {
     private int fromID;
     private int toID;
     private Direction direct;    
+    private LineShape edgeShape=null;
       
     /**
      * Конструктор для создания нового ребра графа без связи с вершинами
@@ -23,6 +26,7 @@ public class GraphEdge {
         this.fromID=-1;
         this.toID=-1;
         this.direct=null;
+        edgeShape=null;
     }    
     
     /**
@@ -38,6 +42,7 @@ public class GraphEdge {
         this.fromID=from;
         this.toID=to;
         this.direct=dir;
+        edgeShape=null;
     }   
     
     /**
@@ -87,7 +92,7 @@ public class GraphEdge {
      */
     public boolean equals(GraphEdge edge)
     {
-        if(this.edgeID==edge.getID() && this.fromID==edge.getFromID() && this.toID==edge.toID && this.direct==edge.getDirection())
+        if(this.edgeID==edge.getID() && this.fromID==edge.getFromID() && this.toID==edge.toID && this.direct==edge.getDirection() && this.edgeShape==edge.getShape())
         {
             return  true;
         }
@@ -123,4 +128,24 @@ public class GraphEdge {
      {
          this.direct=newDirection;
      }
+     
+     /**
+     * Функция для задания фигуры ребра
+     * @param shape - Фигура ребра
+     */
+     public void setShape(LineShape shape)
+     {
+         this.edgeShape=shape;
+     }
+     
+     /**
+     * Функция для получения фигуры ребра
+     * @return  shape - Фигура ребра
+     */
+     public LineShape getShape()
+     {
+         LineShape shape=this.edgeShape;
+         return shape;
+     }
+
 }

@@ -1,5 +1,6 @@
 package graph;
 
+import graphview.BaseShape;
 import java.util.ArrayList;
 
 /**
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 public class GraphNode {
     
     private int nodeID;
+    BaseShape nodeShape=null;
     private ArrayList<Integer> nodeEdgesIDArray;
    
     /**
@@ -21,6 +23,7 @@ public class GraphNode {
         this.nodeID=ID;
         nodeEdgesIDArray=new ArrayList();
         nodeEdgesIDArray.clear();
+        nodeShape=null;
     }
     
     /**
@@ -72,7 +75,7 @@ public class GraphNode {
      */
     public boolean equals(GraphNode node)
     {
-        if(this.nodeID==node.getID())
+        if(this.nodeID==node.getID() && this.nodeShape==node.getShape())
         {
             for(int i=0; i<this.nodeEdgesIDArray.size();i++)
             {
@@ -128,4 +131,22 @@ public class GraphNode {
         return this.nodeEdgesIDArray.size();
     }
     
+     /**
+     * Функция для задания фигуры ребра
+     * @param shape - Фигура ребра
+     */    
+     public void setShape(BaseShape shape)
+     {
+         this.nodeShape=shape;
+     }
+     
+     /**
+     * Функция для получения фигуры ребра
+     * @return  shape - Фигура ребра
+     */
+     public BaseShape getShape()
+     {
+         BaseShape shape=this.nodeShape;
+         return shape;
+     }
 }
