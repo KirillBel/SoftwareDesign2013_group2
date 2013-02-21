@@ -28,6 +28,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     
     MainPanel mainPanel;
+    Properties properties;
     
     /**
      * Creates new form MainFrame
@@ -42,9 +43,11 @@ public class MainFrame extends javax.swing.JFrame {
         mainPanel=new MainPanel(this);
         add(mainPanel);
         
+        properties=new Properties(this, true);
+        
         JPanel mainPanel1=mainPanel;//new JPanel();
         mainPanel1.setBackground(Color.yellow);
-        
+ 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -68,6 +71,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenu4 = new javax.swing.JMenu();
         jMenuItemNimbusSkin = new javax.swing.JMenuItem();
@@ -75,7 +80,16 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItemMotifSkin = new javax.swing.JMenuItem();
         jMenuItemWindowsSkin = new javax.swing.JMenuItem();
         jMenuItemWindowsClas = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
+        jMenu5 = new javax.swing.JMenu();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenu6 = new javax.swing.JMenu();
+        jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
+        jMenuItem9 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -86,6 +100,18 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Edit");
+
+        jMenuItem1.setText("Properties");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem1);
+
+        jMenuBar1.add(jMenu2);
 
         jMenu3.setText("View");
 
@@ -133,10 +159,39 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenu3.add(jMenu4);
 
+        jMenuItem2.setText("Zoom in");
+        jMenu3.add(jMenuItem2);
+
+        jMenuItem3.setText("Zoom out");
+        jMenu3.add(jMenuItem3);
+
+        jMenuItem4.setText("Fit");
+        jMenu3.add(jMenuItem4);
+
         jMenuBar1.add(jMenu3);
 
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
+        jMenu5.setText("Layout");
+
+        jMenuItem5.setText("Simple");
+        jMenu5.add(jMenuItem5);
+
+        jMenuBar1.add(jMenu5);
+
+        jMenu6.setText("Windows");
+
+        jMenuItem6.setText("Show/hide scene");
+        jMenu6.add(jMenuItem6);
+
+        jMenuItem7.setText("Object Properties");
+        jMenu6.add(jMenuItem7);
+
+        jMenuItem8.setText("Overview");
+        jMenu6.add(jMenuItem8);
+
+        jMenuItem9.setText("Structure view");
+        jMenu6.add(jMenuItem9);
+
+        jMenuBar1.add(jMenu6);
 
         setJMenuBar(jMenuBar1);
 
@@ -183,6 +238,20 @@ public class MainFrame extends javax.swing.JFrame {
         SwingUtilities.updateComponentTreeUI(this);
     }//GEN-LAST:event_jMenuItemWindowsClasActionPerformed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        //Properties
+        properties.setLocation(
+                this.getLocationOnScreen().x+
+                this.getWidth()/2-
+                properties.getWidth()/2,
+                this.getLocationOnScreen().y+
+                this.getHeight()/2-
+                properties.getHeight()/2 
+                );
+        properties.setVisible(true);
+      
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     public static void setSkin(String str)
     {
         try {
@@ -212,7 +281,7 @@ public class MainFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainFrame().setVisible(true);
+                new MainFrame().setVisible(true); 
             }
         });
     }
@@ -221,7 +290,18 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenu jMenu5;
+    private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemMetalSkin;
     private javax.swing.JMenuItem jMenuItemMotifSkin;
     private javax.swing.JMenuItem jMenuItemNimbusSkin;
