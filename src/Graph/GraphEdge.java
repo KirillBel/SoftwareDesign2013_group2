@@ -92,7 +92,13 @@ public class GraphEdge {
      */
     public boolean equals(GraphEdge edge)
     {
-        if(this.edgeID==edge.getID() && this.fromID==edge.getFromID() && this.toID==edge.toID && this.direct==edge.getDirection() && this.edgeShape==edge.getShape())
+        if(
+                this.edgeID==edge.getID() &&
+                this.fromID==edge.getFromID() &&
+                this.toID==edge.toID &&
+                this.direct==edge.getDirection() &&
+                this.edgeShape==edge.getShape()
+                )
         {
             return  true;
         }
