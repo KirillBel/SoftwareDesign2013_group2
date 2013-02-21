@@ -165,10 +165,7 @@ public class GraphDataTest {
             System.out.println("DeleteNode");
             
             GraphData graph=null;
-            GraphNode node=null;
             boolean result=false;
-            ArrayList<GraphNode> nodes=new ArrayList();
-            ArrayList<GraphNode> expNodes=new ArrayList();
             try {
                 graph = new GraphData();
             } catch (Exception e) {
@@ -368,5 +365,118 @@ public class GraphDataTest {
             fail("test error");
         }
     }
+    
+    @Test
+    public void testCreateEdgeFail() {
+        
+        try
+        {
+            System.out.println("CreateEdgeFail");
+            
+            Random r=new Random();
+            GraphData graph=null;
+            GraphEdge edge=null;
+            int tempFrom=0;
+            int tempTo=0;
+            int temp=0;
+            int countEdges=0;
+            GraphEdge.Direction tempDirection=null;
+            try {
+                graph = new GraphData();
+            } catch (Exception e) {
+                fail("Create graph error:" + e.getMessage());
+            }
+             
+            for(int i=0; i<20; i++)
+            {
+                temp=r.nextInt(2);
+                if(temp==0)
+                {
+                    tempDirection=GraphEdge.Direction.IN;
+                }
+                else if(temp==1)
+                {
+                    tempDirection=GraphEdge.Direction.OUT;
+                }
+                else
+                {
+                    tempDirection=GraphEdge.Direction.BIDIR;
+                }
+                
+                tempFrom=r.nextInt(100);
+                tempTo=r.nextInt(100);
+                                
+                edge=graph.createEdge(tempFrom, tempTo, tempDirection);
+                
+                countEdges=graph.getCountEdges();
+                assertEquals(0, countEdges);
+                
+                assertNull(edge);    
+                edge=null;
+            }  
+        }        
+        catch (Exception ex) {
+            fail("test error");
+        }
+    }
+    
+    @Test
+    public void testDeleteNodeFail() {
+        
+        try
+        {
+            System.out.println("DeleteNodeFail");
+            
+            GraphData graph=null;
+            boolean result=false;
+            try {
+                graph = new GraphData();
+            } catch (Exception e) {
+                fail("Create graph error:" + e.getMessage());
+            }
+
+            for(int i=0; i<20;i++)
+            {
+                result=graph.deleteNode(i);
+                assertFalse(result);
+            }
+        
+        }
+        catch (Exception ex) {
+            fail("test error");
+        }
+    }
+
+    
+    @Test
+    public void testSimpleDeleteEdgeFail() {
+        
+        try
+        {
+            System.out.println("SimpleDeleteEdgeFail");
+            
+            Random r=new Random();
+            GraphData graph=null; 
+            boolean result=false;
+
+            System.out.println("getIDandGetDirection");
+            try {
+                graph = new GraphData();
+            } catch (Exception e) {
+                fail("Create graph error:" + e.getMessage());
+            }                   
+            
+            for(int i=0; i<20;i++)
+            {
+                result=graph.deleteEdge(i);
+                assertFalse(result);
+            }  
+        }
+        catch (Exception ex) {
+            fail("test error");
+        }
+    }
+    
+  
     
 }
