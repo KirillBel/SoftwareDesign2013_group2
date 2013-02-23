@@ -28,6 +28,7 @@ public class LineShape extends BaseShape {
     @Override
     public void draw(Graphics2D g) {
         g.setColor(color);
+        if(bSelected) g.setColor(Color.red);
         
         Vec2 portA=null;
         Vec2 portB=null;

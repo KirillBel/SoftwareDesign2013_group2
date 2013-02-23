@@ -64,7 +64,8 @@ public class GraphScene extends javax.swing.JPanel{
     boolean bNeedUpdate=true;
     Font font=new Font("Arial",Font.PLAIN,20);
     ArrayList<BaseShape> shapes=new ArrayList();
-    ArrayList<BaseShape> selectedShapes=new ArrayList();
+    ArrayList<Integer> zbuffer=new ArrayList();
+    ArrayList<Integer> selectedShapes=new ArrayList();
     MouseState mouseState=new MouseState();
     int sceneMode=0;
     Rect selectionRect=new Rect();
@@ -167,20 +168,20 @@ public class GraphScene extends javax.swing.JPanel{
     private void formMousePressed(java.awt.event.MouseEvent evt) {                                  
         mouseState.setBtn(evt.getButton(), 1);
         
-        BaseShape shape=testIntersect(mouseState.scenePos);
+        int index=testIntersect(mouseState.scenePos);
         
-        if(shape==null)
+        if(index==-1)
         {
             if(mouseState.MouseBtnL==1)
                 setSceneMode(SCENE_MODE_SELECT);
             else if(mouseState.MouseBtnR==1)
                 setSceneMode(SCENE_MODE_OFFSET);
         }
-        else if(shape!=null && mouseState.MouseBtnL==1)
+        else if(index!=-1 && mouseState.MouseBtnL==1)
         {
             for(int i=0;i<selectedShapes.size();i++)
             {
-                if(selectedShapes.get(i)==shape)
+                if(selectedShapes.get(i)==index)
                 {
                     setSceneMode(SCENE_MODE_DRAG_SELECTED);
                     break;
@@ -259,7 +260,7 @@ public class GraphScene extends javax.swing.JPanel{
         {
             for(int i=0;i<selectedShapes.size();i++)
             {
-                selectedShapes.get(i).move(mouseState.sceneDelta);
+               getShape(selectedShapes.get(i)).move(mouseState.sceneDelta);
                 updateScene(true);
             }
         }
@@ -276,7 +277,21 @@ public class GraphScene extends javax.swing.JPanel{
             if(shapes.get(i)==shape) return;
         };
         shapes.add(shape);
+        zbuffer.add(new Integer(shapes.size()-1));
     }
+    
+    public void moveToTop(int index)
+    {
+        for(int i=0;i<zbuffer.size();i++)
+        {
+            if(zbuffer.get(i).intValue()==index)
+            {
+                zbuffer.remove(i);
+                zbuffer.add(index);
+                return;
+            };
+        };
+    };
     
     public void draw(Graphics2D g){
         g.translate(offset.x, offset.y);
@@ -285,9 +300,9 @@ public class GraphScene extends javax.swing.JPanel{
         g.setFont(font);
 
         drawGrid(g,new Vec2(100,100));
-        for(int i=0;i<shapes.size();i++)
+        for(int i=0;i<zbuffer.size();i++)
         {
-            shapes.get(i).draw(g);
+            shapes.get(zbuffer.get(i)).draw(g);
         };
         
         if(sceneMode==SCENE_MODE_SELECT)
@@ -341,6 +356,11 @@ public class GraphScene extends javax.swing.JPanel{
         return new Vec2(pt1.x,pt1.y);
     };
     
+    public BaseShape getShape(int index)
+    {
+        return shapes.get(index);
+    };
+    
     public Rect fromScreen(Rect r)
     {
         Vec2 topLeft=fromScreen(r.getTopLeft());
@@ -374,32 +394,28 @@ public class GraphScene extends javax.swing.JPanel{
         bNeedUpdate=val;
     }
     
-    public BaseShape testIntersect(Vec2 pt)
+    public int testIntersect(Vec2 pt)
     {
-        for(int i=shapes.size()-1;i>=0;i--)
+        for(int i=zbuffer.size()-1;i>=0;i--)
         {
-            if(shapes.get(i).isIntersects(pt))
+            if(shapes.get(zbuffer.get(i)).isIntersects(pt))
             {
-                return shapes.get(i);
+                return zbuffer.get(i);
             };
         };
-        return null;
+        return -1;
     };
     
     public void onMouseClick(MouseState state) {
         if(state.LastBtn==1)
         {
-            boolean bIntersects=false;
-            for(int i=shapes.size()-1;i>=0;i--)
+            int index=testIntersect(state.scenePos);
+            if(index!=-1)
             {
-                if(shapes.get(i).isIntersects(state.scenePos))
-                {
-                    setSelected(i, !shapes.get(i).bSelected);
-                    bIntersects=true;
-                    break;
-                };
-            };
-            if(!bIntersects)
+                clearSelection();
+                setSelected(index, !shapes.get(index).bSelected);
+            }
+            else  
             {
                 clearSelection();
             };
@@ -413,16 +429,20 @@ public class GraphScene extends javax.swing.JPanel{
         {
             for(int i=0;i<selectedShapes.size();i++)
             {
-                if(selectedShapes.get(i)==shapes.get(Index)) return;
+                if(selectedShapes.get(i)==Index) {
+                    moveToTop(Index);
+                    return;
+                }
             };
-            selectedShapes.add(shapes.get(Index));
+            selectedShapes.add(Index);
             shapes.get(Index).bSelected=true;
+            moveToTop(Index);
         }
         else
         {
             for(int i=0;i<selectedShapes.size();i++)
             {
-                if(selectedShapes.get(i)==shapes.get(Index))
+                if(selectedShapes.get(i)==Index)
                 {
                     selectedShapes.remove(i);
                 };
@@ -435,7 +455,7 @@ public class GraphScene extends javax.swing.JPanel{
     {
         for(int i=0;i<selectedShapes.size();i++)
         {
-            selectedShapes.get(i).bSelected=false;
+            getShape(selectedShapes.get(i)).bSelected=false;
         };
         selectedShapes.clear();
     };

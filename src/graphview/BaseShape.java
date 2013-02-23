@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * @author Kirill
  */
 public abstract class BaseShape {
-    public Color color;
+    public Color color=Color.BLACK;
     public boolean bSelected=false;
     protected BaseShape parent=null;
     private Rect placement=new Rect();
