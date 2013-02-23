@@ -1,0 +1,6 @@
+digraph graphname {
+	a [color = blue];
+	b [color = pink];
+    a -- b -- c[color = red];
+	b -- d[color = green];
+}
