@@ -218,6 +218,11 @@ public class DotParser
             }
         }
     }
+    
+    /**
+     * Метод для разбора опций вершин и ребер
+     * @param tk - поток StreamTokenizer
+     */
     protected void optionlist(StreamTokenizer tk) throws IOException
   {
       if(tk.ttype=='[') {
@@ -235,6 +240,10 @@ public class DotParser
       System.out.println("End options!");
   }
  
+  /**
+     * Метод для реализации опций вершин и ребер
+     * @param tk - поток StreamTokenizer
+     */  
   protected void property(StreamTokenizer tk) throws IOException
   {
       LineShape b = new LineShape(null, null);
@@ -316,19 +325,28 @@ public class DotParser
                 }
   }
   
-  protected void setColorEdge(Color c)
+  /**
+     * Метод для задания цвета ребер
+     * @param color - цвет ребра
+     */
+  protected void setColorEdge(Color color)
   {
       for(int i=0; i<listEdge.size();i++){
           System.out.println("OPTION for edge "+listEdge.get(i).getID()); 
-          listEdge.get(i).getShape().color=c;
+          listEdge.get(i).getShape().color=color;
       }
       return;
   }
-  protected void setColorNode (Color c)
+  
+  /**
+     * Метод для задания цвета вершин
+     * @param color - цвет ребра
+     */
+  protected void setColorNode (Color color)
   {
       for(int i=0; i<listNode.size();i++){
           System.out.println("OPT for node "+listNode.get(i).getID()); 
-          listNode.get(0).getShape().color = c;
+          listNode.get(0).getShape().color = color;
       }
       return;
       
