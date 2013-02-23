@@ -202,15 +202,8 @@ public class DotParser
                 GraphEdge edge = graphMain.createCustomEdge(node1.getID(), node2.getID(), dir, new LineShape(null,null));
 
                 System.out.println("ID ребра = "+edge.getID()+" Из вершины "+node1.getID()+" в вершину "+node2.getID());
-                tk.nextToken();
-                if(tk.ttype=='['){
-                    tk.pushBack();
-                    System.out.println("Call optionlist!");
-                    tk.nextToken();
-                    //optionlist(tk);
-                }
+                edge(tk);
             }
         }
     }
-  
 }
