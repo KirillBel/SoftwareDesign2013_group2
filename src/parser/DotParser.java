@@ -24,6 +24,8 @@ public class DotParser
     private Reader m_input;
     private GraphMain graphMain = null;
     private ArrayList<NodeID> list = new ArrayList<NodeID>();
+    private ArrayList<GraphEdge> listEdge = new ArrayList<GraphEdge>();
+    private ArrayList<GraphNode> listNode = new ArrayList<GraphNode>();
     
     /**
      * Конструктор для создания нового парсера
@@ -121,6 +123,8 @@ public class DotParser
                             //subgraph(tk);
                         }
                         else{
+                            listEdge.removeAll(listEdge);
+                            listNode.removeAll(listNode);
                             System.out.println("Call edge!");
                             edge(tk);
                         }
@@ -167,8 +171,16 @@ public class DotParser
     {
         if(tk.ttype==tk.TT_WORD) {
             GraphNode node1 = getNode(tk.sval);
+            listNode.add(node1);
             System.out.println("Вершина: "+list.get(node1.getID()).nameNode+" (ID = "+list.get(node1.getID()).IDNode+")");
             tk.nextToken();
+            
+            if(tk.ttype=='['){
+              optionlist(tk);
+              listEdge.removeAll(listEdge);
+              listNode.removeAll(listNode);
+              tk.nextToken();
+            }
             
             Direction dir;
             if(tk.ttype=='-')
@@ -198,12 +210,145 @@ public class DotParser
             if(tk.ttype==tk.TT_WORD){
                 GraphNode node2 = getNode(tk.sval);
                 System.out.println("Вершина: "+list.get(node2.getID()).nameNode+" (ID = "+list.get(node2.getID()).IDNode+")");
-
+                
                 GraphEdge edge = graphMain.createCustomEdge(node1.getID(), node2.getID(), dir, new LineShape(null,null));
-
+                listEdge.add(edge);
                 System.out.println("ID ребра = "+edge.getID()+" Из вершины "+node1.getID()+" в вершину "+node2.getID());
                 edge(tk);
             }
         }
     }
+    
+    /**
+     * Метод для разбора опций вершин и ребер
+     * @param tk - поток StreamTokenizer
+     */
+    protected void optionlist(StreamTokenizer tk) throws IOException
+  {
+      if(tk.ttype=='[') {
+          tk.nextToken();
+          while(tk.ttype!=']'){
+              property(tk);
+              tk.nextToken();
+              if(tk.ttype==','){
+                  property(tk);
+              }
+              
+          }
+          
+      }
+      System.out.println("End options!");
+  }
+ 
+  /**
+     * Метод для реализации опций вершин и ребер
+     * @param tk - поток StreamTokenizer
+     */  
+  protected void property(StreamTokenizer tk) throws IOException
+  {
+      LineShape b = new LineShape(null, null);
+      if(tk.ttype==tk.TT_WORD){
+          System.out.println("Option: "+tk.sval);
+          switch(tk.sval){
+                    case "color":
+                        tk.nextToken();
+                        if(tk.ttype=='='){
+                            tk.nextToken();
+                            if(tk.ttype==tk.TT_WORD){
+                                System.out.println( "is "+tk.sval);
+                                switch(tk.sval){
+                                    case "black":
+                                        if(listEdge.size()==0) setColorNode(Color.black);
+                                        else setColorEdge(Color.black);
+                                        break;
+                                    case "blue":
+                                        if(listEdge.size()==0) setColorNode(Color.blue);
+                                        else setColorEdge(Color.blue);
+                                        break;
+                                    case "cyan":
+                                        if(listEdge.size()==0) setColorNode(Color.cyan);
+                                        else setColorEdge(Color.cyan);
+                                        break;
+                                    case "darkGray":
+                                        if(listEdge.size()==0) setColorNode(Color.darkGray);
+                                        else setColorEdge(Color.darkGray);
+                                        break;
+                                    case "gray":
+                                        if(listEdge.size()==0) setColorNode(Color.gray);
+                                        else setColorEdge(Color.gray);
+                                        break;
+                                    case "green":
+                                        if(listEdge.size()==0) setColorNode(Color.green);
+                                        else setColorEdge(Color.green);
+                                        break;
+                                    case "lightGray":
+                                        if(listEdge.size()==0) setColorNode(Color.lightGray);
+                                        else setColorEdge(Color.lightGray);
+                                        break;
+                                    case "margenta":
+                                        if(listEdge.size()==0) setColorNode(Color.magenta);
+                                        else setColorEdge(Color.magenta);
+                                        break;
+                                    case "orange":
+                                        if(listEdge.size()==0) setColorNode(Color.orange);
+                                        else setColorEdge(Color.orange);
+                                        break;  
+                                    case "pink":
+                                        if(listEdge.size()==0) setColorNode(Color.pink);
+                                        else setColorEdge(Color.pink);
+                                        break;
+                                    case "red":
+                                        if(listEdge.size()==0) setColorNode(Color.red);
+                                        else setColorEdge(Color.red);
+                                        break;
+                                    case "white":
+                                        if(listEdge.size()==0) setColorNode(Color.white);
+                                        else setColorEdge(Color.white);
+                                        break;
+                                    case "yellow":
+                                        if(listEdge.size()==0) setColorNode(Color.yellow);
+                                        else setColorEdge(Color.yellow);
+                                        break;    
+                                    default:
+                                        System.err.println("Ошибка. Цвет "+tk.sval+" недопустим");
+                                        return;
+                                }
+                            }
+                            
+                        }
+                        break;
+                    default:
+                        System.err.println("Ошибка. Опции не существует");
+                        return;
+          }
+          
+                }
+  }
+  
+  /**
+     * Метод для задания цвета ребер
+     * @param color - цвет ребра
+     */
+  protected void setColorEdge(Color color)
+  {
+      for(int i=0; i<listEdge.size();i++){
+          System.out.println("OPTION for edge "+listEdge.get(i).getID()); 
+          listEdge.get(i).getShape().color=color;
+      }
+      return;
+  }
+  
+  /**
+     * Метод для задания цвета вершин
+     * @param color - цвет ребра
+     */
+  protected void setColorNode (Color color)
+  {
+      for(int i=0; i<listNode.size();i++){
+          System.out.println("OPT for node "+listNode.get(i).getID()); 
+          listNode.get(0).getShape().color = color;
+      }
+      return;
+      
+  }
 }
