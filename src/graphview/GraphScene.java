@@ -4,7 +4,6 @@
  */
 package graphview;
 
-import geometry.Intersect;
 import geometry.Rect;
 import geometry.Vec2;
 import java.awt.BasicStroke;
@@ -16,7 +15,6 @@ import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +22,7 @@ import java.util.logging.Logger;
  *
  * @author Kirill
  */
+
 class MouseState{
     public Vec2 screenPos=new Vec2();
     public Vec2 screenDelta=new Vec2();
@@ -61,11 +60,8 @@ public class GraphScene extends javax.swing.JPanel{
     Vec2 frameSize=new Vec2(1,1);
     Vec2 offset=new Vec2();
     Vec2 scale=new Vec2(1,1);
-    boolean bNeedUpdate=true;
     Font font=new Font("Arial",Font.PLAIN,20);
-    ArrayList<BaseShape> shapes=new ArrayList();
-    ArrayList<Integer> zbuffer=new ArrayList();
-    ArrayList<Integer> selectedShapes=new ArrayList();
+    BaseShape root=new BoxShape(new Rect(0,0,0,0));
     MouseState mouseState=new MouseState();
     int sceneMode=0;
     Rect selectionRect=new Rect();
@@ -135,24 +131,24 @@ public class GraphScene extends javax.swing.JPanel{
         mouseState.sceneDelta=mouseState.screenDelta.divide(scale);
     };
     
-    void updateScene(boolean forceUpdate)
+    void updateScene()
     {
-        if(isNeedUpdate() || forceUpdate) {
-            updateUI();
-            setUpdate(false);
-        }
+        updateUI();
     };
     
     private void formMouseDragged(java.awt.event.MouseEvent evt) {                                  
         updateMousePos(Vec2.fromPoint(evt.getLocationOnScreen()));
-       
-        //onMouseDrag(mouseState);
+        root.onMouseDrag(mouseState.LastBtn, mouseState.scenePos,mouseState.sceneDelta);
         processSceneMode();
+        updateScene();
     }                                 
 
     private void formMouseMoved(java.awt.event.MouseEvent evt) {                                
         updateMousePos(Vec2.fromPoint(evt.getLocationOnScreen()));
+        int index=root.testChildIntersect(mouseState.scenePos);
+        root.onMouseMove(mouseState.scenePos,mouseState.sceneDelta);
         processSceneMode();
+        updateScene();
     }                               
 
     private void formMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {                                     
@@ -162,13 +158,13 @@ public class GraphScene extends javax.swing.JPanel{
         else if(evt.getWheelRotation()<0) {
             scale=scale.multiply(1.2f);
         }
-        updateScene(true);
+        updateScene();
     }                                    
 
     private void formMousePressed(java.awt.event.MouseEvent evt) {                                  
         mouseState.setBtn(evt.getButton(), 1);
         
-        int index=testIntersect(mouseState.scenePos);
+        int index=root.testChildIntersect(mouseState.scenePos);
         
         if(index==-1)
         {
@@ -177,36 +173,25 @@ public class GraphScene extends javax.swing.JPanel{
             else if(mouseState.MouseBtnR==1)
                 setSceneMode(SCENE_MODE_OFFSET);
         }
-        else if(index!=-1 && mouseState.MouseBtnL==1)
-        {
-            for(int i=0;i<selectedShapes.size();i++)
-            {
-                if(selectedShapes.get(i)==index)
-                {
-                    setSceneMode(SCENE_MODE_DRAG_SELECTED);
-                    break;
-                };
-            };
-            
-        };
+        else root.onMousePress(mouseState.LastBtn, mouseState.scenePos);
     }                                 
 
     private void formMouseReleased(java.awt.event.MouseEvent evt) {                                   
         mouseState.setBtn(evt.getButton(), 0);
         if(sceneMode==SCENE_MODE_SELECT && mouseState.LastBtn==1) endSceneMode();
-        else if(sceneMode==SCENE_MODE_DRAG_SELECTED && mouseState.LastBtn==1) endSceneMode();
         else if(sceneMode==SCENE_MODE_OFFSET && mouseState.LastBtn==3) endSceneMode();
+        else root.onMouseRelease(mouseState.LastBtn, mouseState.scenePos);
     }                                  
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {              
         frameSize=new Vec2(this.getSize().width,this.getSize().height);
-        updateScene(true);
+        updateScene();
     }                                     
 
     private void formMouseClicked(java.awt.event.MouseEvent evt) {                                  
         updateMousePos(Vec2.fromPoint(evt.getLocationOnScreen()));
-        onMouseClick(mouseState);
-        updateScene(false);
+        root.onMouseClick(mouseState.LastBtn, mouseState.scenePos);
+        updateScene();
     }
     
     @Override
@@ -221,22 +206,31 @@ public class GraphScene extends javax.swing.JPanel{
         draw(g2d);
     }
     
+    public void add(BaseShape shape){
+        root.addChild(shape);
+    }
+    
+    public void removeAllShapes()
+    {
+        root.removeAllChilds();
+    };
+    
     public void setSceneMode(int nMode)
     {
         endSceneMode();
         sceneMode=nMode;
         if(sceneMode==SCENE_MODE_SELECT)
         {
-            clearSelection();
+            root.clearSelection();
             selectionRect.set(mouseState.scenePos.x,mouseState.scenePos.y,mouseState.scenePos.x,mouseState.scenePos.y);
-            updateScene(true);
+            updateScene();
         };
     };
     
     public void endSceneMode()
     {
         sceneMode=0;
-        updateScene(true);
+        updateScene();
     };
     
     public void processSceneMode()
@@ -246,50 +240,22 @@ public class GraphScene extends javax.swing.JPanel{
             selectionRect.right=mouseState.scenePos.x;
             selectionRect.bottom=mouseState.scenePos.y;
             
-            clearSelection();
-            for(int i=0;i<shapes.size();i++)
+            root.clearSelection();
+            for(int i=0;i<root.getNumChilds();i++)
             {
-                if(Intersect.rectangle_rectangle(selectionRect.getConvertedToStd(), shapes.get(i).getGlobalPlacement())==Intersect.INCLUSION)
+                if(root.getChild(i)==null) continue;
+
+                if(root.getChild(i).isIntersects(selectionRect.getConvertedToStd()))
                 {
-                    setSelected(i,true);
+                    root.getChild(i).setSelected(true);
                 };
             }
-            updateScene(true);
-        }
-        else if(sceneMode==SCENE_MODE_DRAG_SELECTED)
-        {
-            for(int i=0;i<selectedShapes.size();i++)
-            {
-               getShape(selectedShapes.get(i)).move(mouseState.sceneDelta);
-                updateScene(true);
-            }
+            updateScene();
         }
         else if(sceneMode==SCENE_MODE_OFFSET)
         {
             offset=offset.plus(mouseState.screenDelta);
-            updateScene(true);
-        };
-    };
-    
-    public void add(BaseShape shape){
-        for(int i=0;i<shapes.size();i++)
-        {
-            if(shapes.get(i)==shape) return;
-        };
-        shapes.add(shape);
-        zbuffer.add(new Integer(shapes.size()-1));
-    }
-    
-    public void moveToTop(int index)
-    {
-        for(int i=0;i<zbuffer.size();i++)
-        {
-            if(zbuffer.get(i).intValue()==index)
-            {
-                zbuffer.remove(i);
-                zbuffer.add(index);
-                return;
-            };
+            updateScene();
         };
     };
     
@@ -300,10 +266,7 @@ public class GraphScene extends javax.swing.JPanel{
         g.setFont(font);
 
         drawGrid(g,new Vec2(100,100));
-        for(int i=0;i<zbuffer.size();i++)
-        {
-            shapes.get(zbuffer.get(i)).draw(g);
-        };
+        root.draw(g);
         
         if(sceneMode==SCENE_MODE_SELECT)
         {
@@ -356,11 +319,6 @@ public class GraphScene extends javax.swing.JPanel{
         return new Vec2(pt1.x,pt1.y);
     };
     
-    public BaseShape getShape(int index)
-    {
-        return shapes.get(index);
-    };
-    
     public Rect fromScreen(Rect r)
     {
         Vec2 topLeft=fromScreen(r.getTopLeft());
@@ -385,85 +343,4 @@ public class GraphScene extends javax.swing.JPanel{
         Vec2 bottomRight=toScreen(r.getBottomRight());
         return new Rect(topLeft.x,topLeft.y,bottomRight.x,bottomRight.y);
     }
-    
-    public boolean isNeedUpdate() {
-        return bNeedUpdate;
-    }
-    
-    public void setUpdate(boolean val) {
-        bNeedUpdate=val;
-    }
-    
-    public int testIntersect(Vec2 pt)
-    {
-        for(int i=zbuffer.size()-1;i>=0;i--)
-        {
-            if(shapes.get(zbuffer.get(i)).isIntersects(pt))
-            {
-                return zbuffer.get(i);
-            };
-        };
-        return -1;
-    };
-    
-    public void onMouseClick(MouseState state) {
-        if(state.LastBtn==1)
-        {
-            int index=testIntersect(state.scenePos);
-            if(index!=-1)
-            {
-                clearSelection();
-                setSelected(index, !shapes.get(index).bSelected);
-            }
-            else  
-            {
-                clearSelection();
-            };
-            setUpdate(true);
-        }
-    }
-    
-    public void setSelected(int Index, boolean bSelected)
-    {
-        if(bSelected)
-        {
-            for(int i=0;i<selectedShapes.size();i++)
-            {
-                if(selectedShapes.get(i)==Index) {
-                    moveToTop(Index);
-                    return;
-                }
-            };
-            selectedShapes.add(Index);
-            shapes.get(Index).bSelected=true;
-            moveToTop(Index);
-        }
-        else
-        {
-            for(int i=0;i<selectedShapes.size();i++)
-            {
-                if(selectedShapes.get(i)==Index)
-                {
-                    selectedShapes.remove(i);
-                };
-            };
-            shapes.get(Index).bSelected=false;
-        };
-    };
-    
-    public void clearSelection()
-    {
-        for(int i=0;i<selectedShapes.size();i++)
-        {
-            getShape(selectedShapes.get(i)).bSelected=false;
-        };
-        selectedShapes.clear();
-    };
-    
-    public void removeAllShapes()
-    {
-        shapes.clear();
-        selectedShapes.clear();
-        updateScene(true);
-    };
 }

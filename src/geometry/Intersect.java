@@ -26,11 +26,19 @@ public class Intersect {
     
     public static int rectangle_rectangle(Rect r1, Rect r2)
     {
-        if(((r2.left>=r1.left) && (r2.left<=r1.right)) || ((r2.right>=r1.left) && (r2.right<=r1.right))){
-            if(((r2.top>=r1.top) && (r2.top<=r1.bottom)) || ((r2.bottom>=r1.top) && (r2.right<=r1.bottom))){
-                return INCLUSION;
-            }
-        }
+        if (((((r1.left >= r2.left) && (r1.left <= r2.right))
+            || ((r1.right >= r2.left) && (r1.right <= r2.right))))
+            && (((r1.top >= r2.top) && (r1.top <= r2.bottom)) 
+            || ((r1.bottom >= r2.top) && (r1.bottom <= r2.bottom))
+            || ((r1.top <= r2.top) && (r1.bottom >= r2.bottom))))
+        return INCLUSION;
+
+        if (((((r2.left >= r1.left) && (r2.left <= r1.right))
+            || ((r2.right >= r1.left) && (r2.right <= r1.right))))
+            && (((r2.top >= r1.top) && (r2.top <= r1.bottom)) 
+            || ((r2.bottom >= r1.top) && (r2.bottom <= r1.bottom))
+            || ((r2.top <= r1.top) && (r2.bottom >= r1.bottom))))
+        return INCLUSION;
         return EXCLUSION;
     }
     

@@ -52,7 +52,14 @@ public class BoxShape extends BaseShape{
 
     @Override
     public boolean isIntersects(Vec2 pt) {
-        return getGlobalPlacement().pointIn(pt);
+        if(bUnbodied) return true;
+        return getLocalPlacement().pointIn(pt);
+    }
+    
+    @Override
+    public boolean isIntersects(Rect r) {
+        if(bUnbodied) return true;
+        return Intersect.rectangle_rectangle(getLocalPlacement(), r)==Intersect.INCLUSION;
     }
 
     @Override
@@ -75,5 +82,4 @@ public class BoxShape extends BaseShape{
         
         return array.get(minIndex);
     }
-    
 }

@@ -33,6 +33,7 @@ public class TextShape extends BoxShape{
         if(parent!=null) parent.updateContainer();
         
         Rect globalPlace=getGlobalPlacement();
+        g.setColor(color);
         g.drawString(text, globalPlace.left, globalPlace.bottom-bounds.bottom);
         
         if(bSelected)

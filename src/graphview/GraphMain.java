@@ -37,7 +37,7 @@ public class GraphMain {
         GraphNode node=graphData.createNode();
         node.setShape(shape);
         graphScene.add(shape);
-        graphScene.updateScene(true);
+        graphScene.updateScene();
         return node;
     };
     
@@ -48,7 +48,7 @@ public class GraphMain {
         graphScene.add(shape);
         shape.setPortA(graphData.getElementOfNodesArray(fromID).getShape());
         shape.setPortB(graphData.getElementOfNodesArray(toID).getShape());
-        graphScene.updateScene(true);
+        graphScene.updateScene();
         return edge;
     };
     
@@ -80,7 +80,7 @@ public class GraphMain {
         
         DotParser parser=new DotParser(stream,this);
         boolean b=parser.parse();
-        graphScene.updateScene(true);
+        graphScene.updateScene();
         return b;
     }
     

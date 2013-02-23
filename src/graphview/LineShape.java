@@ -13,7 +13,8 @@ import java.awt.Graphics2D;
  *
  * @author Kirill
  */
-public class LineShape extends BaseShape {  
+public class LineShape extends BaseShape {
+
     protected BaseShape portNodeA=null;
     protected BaseShape portNodeB=null;
     
@@ -22,7 +23,6 @@ public class LineShape extends BaseShape {
         portNodeA=portA;
         portNodeB=portB;
         bMoveable=false;
-        bChildsRelativeCoord=false;
     };
     
     @Override
@@ -73,6 +73,8 @@ public class LineShape extends BaseShape {
                 g.drawLine((int)point.x, (int)point.y, (int)point1.x, (int)point1.y);
             };
         };
+        
+        super.draw(g);
     }
     
     
@@ -92,34 +94,19 @@ public class LineShape extends BaseShape {
         portNodeB=shape;
         update();
     }
-    
-    @Override
-    public void update(){
-        
-        bMoveable=true;
-        if(childs.size()==0) setLocalPlacement(new Rect());
-        else
-        {
-            Rect r=childs.get(0).getLocalPlacement();
-            for(int i=1;i<childs.size();i++)
-            {
-                r.add(childs.get(i).getLocalPlacement());
-            };
-            setLocalPlacement(r);
-        };
-        bMoveable=false;
-        
-        super.update();
-    }
 
     @Override
     public boolean isIntersects(Vec2 pt) {
-        return getGlobalPlacement().pointIn(pt);
+        return testChildIntersect(pt)!=-1;
+    }
+    
+    @Override
+    public boolean isIntersects(Rect r) {
+        return false;
     }
 
     @Override
     public Vec2 getPortPoint(Vec2 from) {
         return null;
     }
-    
 }

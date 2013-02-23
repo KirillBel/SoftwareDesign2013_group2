@@ -8,7 +8,6 @@ import graphview.BaseShape;
 import graphview.LineShape;
 import graphview.GraphScene;
 import graphview.BoxShape;
-import graphview.TextShape;
 import com.javadocking.dock.LineDock;
 import com.javadocking.dock.Position;
 import com.javadocking.dockable.DefaultDockable;
@@ -16,6 +15,7 @@ import com.javadocking.dockable.Dockable;
 import com.javadocking.dockable.DockingMode;
 import geometry.Vec2;
 import graphview.GraphMain;
+import graphview.TextShape;
 import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -67,6 +67,10 @@ public class MainPanel extends DockablePanel{
         BaseShape shape=new BoxShape(10,10,200,300);
         shape.color=Color.yellow;
         
+        BaseShape shape3=new BoxShape(15,15,100,100);
+        shape3.color=Color.red;
+        //shape.addChild(shape3);
+        
         BaseShape shape2=new BoxShape(0,0,100,100);
         shape2.color=Color.red;
         shape2.setLocalPosition(new Vec2(300,10));
@@ -78,14 +82,15 @@ public class MainPanel extends DockablePanel{
         TextShape text=new TextShape("12345\n67890");
         shape.addChild(text);
         shape.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
+        //shape.setContainerMode(BaseShape.CONTAIN_CHILDS_TO_NODE);
         
-        LineShape line = new LineShape(shape,null);
+        LineShape line = new LineShape(shape,shape2);
         line.addChild(dot);
         
         graphMain.getGraphScene().add(shape);
         graphMain.getGraphScene().add(shape2);
         graphMain.getGraphScene().add(line);
-        graphMain.getGraphScene().add(dot);
-        //scene.add(text);
+        //graphMain.getGraphScene().add(dot);
+        //graphMain.getGraphScene().add(text);
     };
 }
