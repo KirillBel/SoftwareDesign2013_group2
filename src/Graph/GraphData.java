@@ -268,5 +268,13 @@ public class GraphData {
         return counter;
     }
 
+    /**
+     * Функция для удаления всех ребер и вершин графа
+     */
+    public void removeAll()
+    {
+        this.edgesArray.clear();
+        this.nodesArray.clear();
+    };
     
 }

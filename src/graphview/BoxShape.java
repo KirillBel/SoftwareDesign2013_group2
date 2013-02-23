@@ -24,7 +24,7 @@ public class BoxShape extends BaseShape{
         setLocalPlacement(rect);
     };
     
-    public BoxShape(int posX,int posY, int sizeX, int sizeY)
+    public BoxShape(float posX,float posY, float sizeX, float sizeY)
     {
         setLocalPlacement(new Rect(posX,posY,posX+sizeX,posY+sizeY));
     };

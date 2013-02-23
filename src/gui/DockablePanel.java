@@ -73,11 +73,6 @@ public class DockablePanel extends JPanel {
         // Add the border dock of the minimizer to this panel.
 	this.add(maximizePanel, BorderLayout.CENTER);
         dockModel.addRootDock("dock", toolBarBorderDock, frame);
-        initUI();
-    }
-    
-    public void initUI()
-    {
     }
     
     protected Dockable addActions(Dockable dockable)

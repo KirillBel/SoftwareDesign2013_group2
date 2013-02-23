@@ -13,10 +13,12 @@ import com.javadocking.dockable.DefaultDockable;
 import com.javadocking.dockable.Dockable;
 import com.javadocking.dockable.DockingMode;
 import com.javadocking.model.FloatDockModel;
+import graphview.GraphMain;
 import graphview.GraphScene;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.io.File;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
@@ -26,7 +28,7 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    
+    GraphMain graphMain=null;
     MainPanel mainPanel;
     Properties properties;
     
@@ -40,7 +42,8 @@ public class MainFrame extends javax.swing.JFrame {
     
     public void initUI()
     {
-        mainPanel=new MainPanel(this);
+        graphMain=new GraphMain();
+        mainPanel=new MainPanel(this,graphMain);
         add(mainPanel);
         
         properties=new Properties(this, true);
@@ -71,6 +74,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenuItemFileOpen = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
@@ -99,6 +103,15 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         jMenu1.setText("File");
+
+        jMenuItemFileOpen.setText("Open...");
+        jMenuItemFileOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemFileOpenActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItemFileOpen);
+
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Edit");
@@ -252,6 +265,20 @@ public class MainFrame extends javax.swing.JFrame {
       
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void jMenuItemFileOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemFileOpenActionPerformed
+        final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+        int returnVal = fc.showOpenDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            
+            if(!graphMain.loadDot(file.getPath())) {
+                JOptionPane.showMessageDialog(this, "Load failed!");
+            }
+            else JOptionPane.showMessageDialog(this, "Load OK!");
+        }
+    }//GEN-LAST:event_jMenuItemFileOpenActionPerformed
+
     public static void setSkin(String str)
     {
         try {
@@ -302,6 +329,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
+    private javax.swing.JMenuItem jMenuItemFileOpen;
     private javax.swing.JMenuItem jMenuItemMetalSkin;
     private javax.swing.JMenuItem jMenuItemMotifSkin;
     private javax.swing.JMenuItem jMenuItemNimbusSkin;

@@ -15,6 +15,7 @@ import com.javadocking.dockable.DefaultDockable;
 import com.javadocking.dockable.Dockable;
 import com.javadocking.dockable.DockingMode;
 import geometry.Vec2;
+import graphview.GraphMain;
 import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -26,20 +27,20 @@ import javax.swing.JTextArea;
  */
 public class MainPanel extends DockablePanel{
     
-    GraphScene scenePanel;
+    GraphMain graphMain;
     Dockable[] buttonDockables;
     
-    public MainPanel(JFrame frame)
+    public MainPanel(JFrame frame,GraphMain graphMain_)
     {
         super(frame);
+        graphMain=graphMain_;
+        initUI();
         initScene();
     }
     
-    @Override
     public void initUI()
     {
-        scenePanel=new GraphScene();
-        Dockable dockable1 = new DefaultDockable("Scene", scenePanel, "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
+        Dockable dockable1 = new DefaultDockable("Scene", graphMain.getGraphScene(), "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
         dockable1=addActions(dockable1);
         rightDoc.addDockable(dockable1, new Position(1));
         
@@ -78,13 +79,13 @@ public class MainPanel extends DockablePanel{
         shape.addChild(text);
         shape.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
         
-        LineShape line = new LineShape(shape,shape2);
+        LineShape line = new LineShape(shape,null);
         line.addChild(dot);
         
-        scenePanel.add(shape);
-        scenePanel.add(shape2);
-        scenePanel.add(line);
-        scenePanel.add(dot);
+        graphMain.getGraphScene().add(shape);
+        graphMain.getGraphScene().add(shape2);
+        graphMain.getGraphScene().add(line);
+        graphMain.getGraphScene().add(dot);
         //scene.add(text);
     };
 }

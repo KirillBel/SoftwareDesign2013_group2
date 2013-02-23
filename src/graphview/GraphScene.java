@@ -271,6 +271,10 @@ public class GraphScene extends javax.swing.JPanel{
     };
     
     public void add(BaseShape shape){
+        for(int i=0;i<shapes.size();i++)
+        {
+            if(shapes.get(i)==shape) return;
+        };
         shapes.add(shape);
     }
     
@@ -434,5 +438,12 @@ public class GraphScene extends javax.swing.JPanel{
             selectedShapes.get(i).bSelected=false;
         };
         selectedShapes.clear();
+    };
+    
+    public void removeAllShapes()
+    {
+        shapes.clear();
+        selectedShapes.clear();
+        updateScene(true);
     };
 }
