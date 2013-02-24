@@ -12,11 +12,16 @@ import com.javadocking.dock.LineDock;
 import com.javadocking.dock.Position;
 import com.javadocking.dockable.DefaultDockable;
 import com.javadocking.dockable.Dockable;
+import com.javadocking.dockable.DockableState;
 import com.javadocking.dockable.DockingMode;
+import com.javadocking.dockable.action.DefaultDockableStateAction;
 import geometry.Vec2;
 import graphview.GraphMain;
 import graphview.TextShape;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
@@ -27,9 +32,21 @@ import javax.swing.JTextArea;
  */
 public class MainPanel extends DockablePanel{
     
+    private Action closeAction;
+    private Action restoreAction;
+    
     GraphMain graphMain;
     Dockable[] buttonDockables;
     
+    StructurePanel structure;
+    ObjectPropertiesPanel objectProperties;
+    OverviewPanel overview;
+    
+    Dockable sceneDock;
+    Dockable structureDock;
+    Dockable objectPropertiesDock;
+    Dockable overviewDock;
+     
     public MainPanel(JFrame frame,GraphMain graphMain_)
     {
         super(frame);
@@ -41,29 +58,29 @@ public class MainPanel extends DockablePanel{
     public void initUI()
     {
         
-        StructurePanel structure=new StructurePanel();
-        Dockable dockable5 = new DefaultDockable("Structure", structure, "Structure", null, DockingMode.ALL - DockingMode.FLOAT);
-        dockable5=addActions(dockable5);
-        centerTabbedDock.addDockable(dockable5, new Position(1));
+        structure=new StructurePanel();
+        structureDock = new DefaultDockable("Structure", structure, "Structure", null, DockingMode.ALL - DockingMode.FLOAT);
+        structureDock=addActions(structureDock);
+        centerTabbedDock.addDockable(structureDock, new Position(1));
         
-        Dockable dockable1 = new DefaultDockable("Scene", graphMain.getGraphScene(), "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
-        dockable1=addActions(dockable1);
-        centerTabbedDock.addDockable(dockable1, new Position(0));
+        sceneDock = new DefaultDockable("Scene", graphMain.getGraphScene(), "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
+        sceneDock=addActions(sceneDock);
+        centerTabbedDock.addDockable(sceneDock, new Position(0));
         
         JTextArea textPanel1 = new JTextArea();
-        Dockable dockable2 = new DefaultDockable("Text", textPanel1, "Text", null, DockingMode.ALL - DockingMode.FLOAT);
-        dockable2=addActions(dockable2);
-        botLeftTabbedDock.addDockable(dockable2, new Position(1));
+        Dockable textPanelDock = new DefaultDockable("Text", textPanel1, "Text", null, DockingMode.ALL - DockingMode.FLOAT);
+        textPanelDock=addActions(textPanelDock);
+        botLeftTabbedDock.addDockable(textPanelDock, new Position(1));
         
-        ObjectPropertiesPanel objectProperties=new ObjectPropertiesPanel();
-        Dockable dockable3 = new DefaultDockable("Object Properties", objectProperties, "Object Properties", null, DockingMode.ALL - DockingMode.FLOAT);
-        dockable3=addActions(dockable3);
-        rightTabbedDock.addDockable(dockable3, new Position(1));
+        objectProperties=new ObjectPropertiesPanel();
+        objectPropertiesDock = new DefaultDockable("Object Properties", objectProperties, "Object Properties", null, DockingMode.ALL - DockingMode.FLOAT);
+        objectPropertiesDock=addActions(objectPropertiesDock);
+        rightTabbedDock.addDockable(objectPropertiesDock, new Position(1));
         
-        OverviewPanel overview=new OverviewPanel();
-        Dockable dockable4 = new DefaultDockable("Overview", overview, "Overview", null, DockingMode.ALL - DockingMode.FLOAT);
-        dockable4=addActions(dockable4);
-        topLeftTabbedDock.addDockable(dockable4, new Position(1));
+        overview=new OverviewPanel();
+        overviewDock = new DefaultDockable("Overview", overview, "Overview", null, DockingMode.ALL - DockingMode.FLOAT);
+        overviewDock=addActions(overviewDock);
+        topLeftTabbedDock.addDockable(overviewDock, new Position(1));
         
         
         
@@ -127,4 +144,72 @@ public class MainPanel extends DockablePanel{
         //graphMain.getGraphScene().add(dot);
         //graphMain.getGraphScene().add(text);
     };
+    
+    public void hideDock(String str)
+    {
+        
+        
+        switch (str) {
+            case "Scene":
+                closeAction = new DefaultDockableStateAction(sceneDock, DockableState.CLOSED);
+                restoreAction = new DefaultDockableStateAction(sceneDock, DockableState.NORMAL);
+                if (graphMain.getGraphScene().isDisplayable())
+                {
+                    // Close the dockable.
+                    closeAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Close"));
+                } 
+                else 
+                {
+                    // Restore the dockable.
+                    restoreAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Restore"));
+                }
+                break;
+            case "ObjectProperties":
+                closeAction = new DefaultDockableStateAction(objectPropertiesDock, DockableState.CLOSED);
+                restoreAction = new DefaultDockableStateAction(objectPropertiesDock, DockableState.NORMAL);
+                if (objectProperties.isDisplayable())
+                {
+                    // Close the dockable.
+                    closeAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Close"));
+                } 
+                else 
+                {
+                    // Restore the dockable.
+                    restoreAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Restore"));
+                }
+                break;
+            case "Structure":
+                closeAction = new DefaultDockableStateAction(structureDock, DockableState.CLOSED);
+                restoreAction = new DefaultDockableStateAction(structureDock, DockableState.NORMAL);
+                if (structure.isDisplayable())
+                {
+                    // Close the dockable.
+                    closeAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Close"));
+                } 
+                else 
+                {
+                    // Restore the dockable.
+                    restoreAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Restore"));
+                }
+                break;
+            case "Overview":
+                closeAction = new DefaultDockableStateAction(overviewDock, DockableState.CLOSED);
+                restoreAction = new DefaultDockableStateAction(overviewDock, DockableState.NORMAL);
+                if (overview.isDisplayable())
+                {
+                    // Close the dockable.
+                    closeAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Close"));
+                } 
+                else 
+                {
+                    // Restore the dockable.
+                    restoreAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Restore"));
+                }
+                break;
+                
+        }
+        
+       
+        
+    }
 }
