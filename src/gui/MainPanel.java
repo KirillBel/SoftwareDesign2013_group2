@@ -42,12 +42,27 @@ public class MainPanel extends DockablePanel{
     {
         Dockable dockable1 = new DefaultDockable("Scene", graphMain.getGraphScene(), "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
         dockable1=addActions(dockable1);
-        rightDoc.addDockable(dockable1, new Position(1));
+        centerTabbedDock.addDockable(dockable1, new Position(1));
         
         JTextArea textPanel1 = new JTextArea();
         Dockable dockable2 = new DefaultDockable("Text", textPanel1, "Text", null, DockingMode.ALL - DockingMode.FLOAT);
         dockable2=addActions(dockable2);
-        leftDoc.addDockable(dockable2, new Position(1));
+        leftTabbedDock.addDockable(dockable2, new Position(1));
+        
+        ObjectPropertiesPanel objectProperties=new ObjectPropertiesPanel();
+        Dockable dockable3 = new DefaultDockable("Object Properties", objectProperties, "Object Properties", null, DockingMode.ALL - DockingMode.FLOAT);
+        dockable3=addActions(dockable3);
+        rightTabbedDock.addDockable(dockable3, new Position(1));
+        
+        OverviewPanel overview=new OverviewPanel();
+        Dockable dockable4 = new DefaultDockable("Overview", overview, "Overview", null, DockingMode.ALL - DockingMode.FLOAT);
+        dockable4=addActions(dockable4);
+        leftTabbedDock.addDockable(dockable4, new Position(1));
+        
+        StructurePanel structure=new StructurePanel();
+        Dockable dockable5 = new DefaultDockable("Structure", structure, "Structure", null, DockingMode.ALL - DockingMode.FLOAT);
+        dockable5=addActions(dockable5);
+        bottomTabbedDock.addDockable(dockable5, new Position(1));
         
         buttonDockables = new Dockable[3];
         buttonDockables[0]  = createButtonDockable("ButtonDockableAdd",              "Add",               new ImageIcon("res/icons/add.png"),               "Add!");

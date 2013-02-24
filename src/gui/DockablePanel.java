@@ -41,11 +41,47 @@ public class DockablePanel extends JPanel {
         // Give the dock model to the docking manager.
         DockingManager.setDockModel(dockModel);
 
-        rootDock.addChildDock(leftDoc, new Position(Position.LEFT));
-        rootDock.addChildDock(rightDoc, new Position(Position.RIGHT));
-        rootDock.setDividerLocation(200);
-
-        BorderDock toolBarBorderDock = new BorderDock(new CompositeToolBarDockFactory(), rootDock);
+        /*
+        SplitDock centerSplitDock = new SplitDock();
+        centerSplitDock.addChildDock(topCenterTabbedDock, new Position(Position.TOP));
+        centerSplitDock.addChildDock(botRightTabbedDock, new Position(Position.BOTTOM));
+        centerSplitDock.setDividerLocation(frame.getHeight()/2);
+        SplitDock leftSplitDock = new SplitDock();
+        leftSplitDock.addChildDock(topLeftTabbedDock, new Position(Position.TOP));
+        leftSplitDock.addChildDock(botLeftTabbedDock, new Position(Position.BOTTOM));
+        centerSplitDock.setDividerLocation(frame.getHeight()/2);
+        SplitDock rightSplitDock = new SplitDock();
+        rightSplitDock.addChildDock(topRightTabbedDock, new Position(Position.TOP));
+        rightSplitDock.addChildDock(botRightTabbedDock, new Position(Position.BOTTOM));
+        centerSplitDock.setDividerLocation(frame.getHeight()/2);        
+        SplitDock leftCenterSplitDock = new SplitDock();
+        leftCenterSplitDock.addChildDock(leftSplitDock, new Position(Position.LEFT));
+        leftCenterSplitDock.addChildDock(centerSplitDock, new Position(Position.RIGHT));
+        centerSplitDock.setDividerLocation(frame.getWidth()/6);
+        SplitDock totalSplitDock = new SplitDock();
+        totalSplitDock.addChildDock(leftCenterSplitDock, new Position(Position.LEFT));
+        totalSplitDock.addChildDock(centerSplitDock, new Position(Position.RIGHT));
+        centerSplitDock.setDividerLocation(frame.getWidth()+frame.getWidth()*5/6);
+        */
+        
+        SplitDock centerSplitDock = new SplitDock();
+        centerSplitDock.addChildDock(centerTabbedDock, new Position(Position.CENTER));
+        centerSplitDock.addChildDock(rightTabbedDock, new Position(Position.RIGHT));
+        centerSplitDock.setDividerLocation(530);
+        SplitDock bottomSplitDock = new SplitDock();
+        bottomSplitDock.addChildDock(bottomTabbedDock, new Position(Position.CENTER));
+        SplitDock rightSplitDock = new SplitDock();
+        rightSplitDock.addChildDock(centerSplitDock, new Position(Position.CENTER));
+        rightSplitDock.addChildDock(bottomSplitDock, new Position(Position.BOTTOM));
+        rightSplitDock.setDividerLocation(400);
+        SplitDock leftSplitDock = new SplitDock();
+        leftSplitDock.addChildDock(leftTabbedDock, new Position(Position.CENTER));
+        SplitDock totalSplitDock = new SplitDock();
+        totalSplitDock.addChildDock(leftSplitDock, new Position(Position.LEFT));
+        totalSplitDock.addChildDock(rightSplitDock, new Position(Position.RIGHT));
+        totalSplitDock.setDividerLocation(180);
+        
+        BorderDock toolBarBorderDock = new BorderDock(new CompositeToolBarDockFactory(), totalSplitDock);
 		toolBarBorderDock.setMode(BorderDock.MODE_TOOL_BAR);
        
         toolBarBorderDock.setDock(compositeToolBarDockTop, Position.TOP);
@@ -156,9 +192,20 @@ public class DockablePanel extends JPanel {
 
     }
     
-    TabDock leftDoc = new TabDock();
-    TabDock rightDoc = new TabDock();
-    SplitDock rootDock = new SplitDock();
+    
+    /*
+    TabDock topLeftTabbedDock = new TabDock();    
+    TabDock botLeftTabbedDock = new TabDock();    
+    TabDock topCenterTabbedDock = new TabDock();    
+    TabDock botCenterTabbedDock = new TabDock();    
+    TabDock topRightTabbedDock = new TabDock();    
+    TabDock botRightTabbedDock = new TabDock();*/
+    
+    TabDock centerTabbedDock = new TabDock();
+    TabDock bottomTabbedDock = new TabDock();
+    TabDock leftTabbedDock = new TabDock();
+    TabDock rightTabbedDock = new TabDock();
+    
     CompositeLineDock compositeToolBarDockTop = new CompositeLineDock(CompositeLineDock.ORIENTATION_HORIZONTAL, false,
                     new ToolBarDockFactory(), DockingMode.HORIZONTAL_TOOLBAR, DockingMode.VERTICAL_TOOLBAR);
     CompositeLineDock compositeToolBarDockLeft = new CompositeLineDock(CompositeLineDock.ORIENTATION_VERTICAL, false,
