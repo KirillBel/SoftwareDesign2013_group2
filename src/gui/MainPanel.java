@@ -40,14 +40,20 @@ public class MainPanel extends DockablePanel{
     
     public void initUI()
     {
+        
+        StructurePanel structure=new StructurePanel();
+        Dockable dockable5 = new DefaultDockable("Structure", structure, "Structure", null, DockingMode.ALL - DockingMode.FLOAT);
+        dockable5=addActions(dockable5);
+        centerTabbedDock.addDockable(dockable5, new Position(1));
+        
         Dockable dockable1 = new DefaultDockable("Scene", graphMain.getGraphScene(), "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
         dockable1=addActions(dockable1);
-        centerTabbedDock.addDockable(dockable1, new Position(1));
+        centerTabbedDock.addDockable(dockable1, new Position(0));
         
         JTextArea textPanel1 = new JTextArea();
         Dockable dockable2 = new DefaultDockable("Text", textPanel1, "Text", null, DockingMode.ALL - DockingMode.FLOAT);
         dockable2=addActions(dockable2);
-        leftTabbedDock.addDockable(dockable2, new Position(1));
+        botLeftTabbedDock.addDockable(dockable2, new Position(1));
         
         ObjectPropertiesPanel objectProperties=new ObjectPropertiesPanel();
         Dockable dockable3 = new DefaultDockable("Object Properties", objectProperties, "Object Properties", null, DockingMode.ALL - DockingMode.FLOAT);
@@ -57,24 +63,37 @@ public class MainPanel extends DockablePanel{
         OverviewPanel overview=new OverviewPanel();
         Dockable dockable4 = new DefaultDockable("Overview", overview, "Overview", null, DockingMode.ALL - DockingMode.FLOAT);
         dockable4=addActions(dockable4);
-        leftTabbedDock.addDockable(dockable4, new Position(1));
+        topLeftTabbedDock.addDockable(dockable4, new Position(1));
         
-        StructurePanel structure=new StructurePanel();
-        Dockable dockable5 = new DefaultDockable("Structure", structure, "Structure", null, DockingMode.ALL - DockingMode.FLOAT);
-        dockable5=addActions(dockable5);
-        bottomTabbedDock.addDockable(dockable5, new Position(1));
         
-        buttonDockables = new Dockable[3];
+        
+        buttonDockables = new Dockable[6];
         buttonDockables[0]  = createButtonDockable("ButtonDockableAdd",              "Add",               new ImageIcon("res/icons/add.png"),               "Add!");
 	buttonDockables[1]  = createButtonDockable("ButtonDockableAccept",           "Accept",            new ImageIcon("res/icons/accept.png"),            "Accept!");
 	buttonDockables[2]  = createButtonDockable("ButtonDockableCancel",           "Cancel",            new ImageIcon("res/icons/cancel.png"),            "Cancel!");
+        buttonDockables[3]  = createButtonDockable("ButtonDockableAdd",              "Add",               new ImageIcon("res/icons/add.png"),               "Add!");
+	buttonDockables[4]  = createButtonDockable("ButtonDockableAccept",           "Accept",            new ImageIcon("res/icons/accept.png"),            "Accept!");
+	buttonDockables[5]  = createButtonDockable("ButtonDockableCancel",           "Cancel",            new ImageIcon("res/icons/cancel.png"),            "Cancel!");
         
         LineDock toolBarDock1 = new LineDock(LineDock.ORIENTATION_HORIZONTAL, false, DockingMode.HORIZONTAL_TOOLBAR, DockingMode.VERTICAL_TOOLBAR);
         toolBarDock1.addDockable(buttonDockables[0], new Position(0));
 	toolBarDock1.addDockable(buttonDockables[1], new Position(1));
 	toolBarDock1.addDockable(buttonDockables[2], new Position(2));
+
+        LineDock mainToolBar = new LineDock(LineDock.ORIENTATION_HORIZONTAL, false, DockingMode.HORIZONTAL_TOOLBAR, DockingMode.VERTICAL_TOOLBAR);
+        mainToolBar.addDockable(buttonDockables[3], new Position(0));
+        
+        LineDock nodeToolBar = new LineDock(LineDock.ORIENTATION_HORIZONTAL, false, DockingMode.HORIZONTAL_TOOLBAR, DockingMode.VERTICAL_TOOLBAR);
+	nodeToolBar.addDockable(buttonDockables[4], new Position(1));
+	        
+        LineDock edgeToolBar = new LineDock(LineDock.ORIENTATION_HORIZONTAL, false, DockingMode.HORIZONTAL_TOOLBAR, DockingMode.VERTICAL_TOOLBAR);
+      	edgeToolBar.addDockable(buttonDockables[5], new Position(2));
         
         compositeToolBarDockTop.addChildDock(toolBarDock1, new Position(0));
+        compositeToolBarDockTop.addChildDock(mainToolBar, new Position(1));
+        compositeToolBarDockTop.addChildDock(nodeToolBar, new Position(2));
+        compositeToolBarDockTop.addChildDock(edgeToolBar, new Position(3));
+        
     };
     
     public void initScene()
