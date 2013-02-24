@@ -21,6 +21,7 @@ public class TextShape extends BoxShape{
     {
         super(0,0,0,0);
         text=text_;
+        bMoveable=false;
     };
     
     @Override
@@ -29,7 +30,9 @@ public class TextShape extends BoxShape{
         Vec2 newSize=getSize();
         newSize.x=Math.max(newSize.x, bounds.getSize().x);
         newSize.y=Math.max(newSize.y, bounds.getSize().y);
+        bMoveable=true;
         setSize(newSize);
+        bMoveable=false;
         if(parent!=null) parent.updateContainer();
         
         Rect globalPlace=getGlobalPlacement();

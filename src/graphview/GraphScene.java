@@ -6,6 +6,7 @@ package graphview;
 
 import geometry.Rect;
 import geometry.Vec2;
+import graphevents.ShapeMouseEvent;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -13,6 +14,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.logging.Level;
@@ -73,6 +75,7 @@ public class GraphScene extends javax.swing.JPanel{
     
     public GraphScene() {
         initComponents();
+        //root.bUnbodied=true;
     }
     
     private void initComponents() {
@@ -138,7 +141,7 @@ public class GraphScene extends javax.swing.JPanel{
     
     private void formMouseDragged(java.awt.event.MouseEvent evt) {                                  
         updateMousePos(Vec2.fromPoint(evt.getLocationOnScreen()));
-        root.onMouseDrag(mouseState.LastBtn, mouseState.scenePos,mouseState.sceneDelta);
+        root.processEvent(ShapeMouseEvent.createMouseDrag(mouseState.LastBtn, mouseState.scenePos, mouseState.sceneDelta));
         processSceneMode();
         updateScene();
     }                                 
@@ -146,7 +149,7 @@ public class GraphScene extends javax.swing.JPanel{
     private void formMouseMoved(java.awt.event.MouseEvent evt) {                                
         updateMousePos(Vec2.fromPoint(evt.getLocationOnScreen()));
         int index=root.testChildIntersect(mouseState.scenePos);
-        root.onMouseMove(mouseState.scenePos,mouseState.sceneDelta);
+        root.processEvent(ShapeMouseEvent.createMouseMove(mouseState.scenePos, mouseState.sceneDelta));
         processSceneMode();
         updateScene();
     }                               
@@ -173,14 +176,14 @@ public class GraphScene extends javax.swing.JPanel{
             else if(mouseState.MouseBtnR==1)
                 setSceneMode(SCENE_MODE_OFFSET);
         }
-        else root.onMousePress(mouseState.LastBtn, mouseState.scenePos);
+        else root.processEvent(ShapeMouseEvent.createMousePress(mouseState.LastBtn, mouseState.scenePos));
     }                                 
 
     private void formMouseReleased(java.awt.event.MouseEvent evt) {                                   
         mouseState.setBtn(evt.getButton(), 0);
         if(sceneMode==SCENE_MODE_SELECT && mouseState.LastBtn==1) endSceneMode();
         else if(sceneMode==SCENE_MODE_OFFSET && mouseState.LastBtn==3) endSceneMode();
-        else root.onMouseRelease(mouseState.LastBtn, mouseState.scenePos);
+        else root.processEvent(ShapeMouseEvent.createMouseRelease(mouseState.LastBtn, mouseState.scenePos));
     }                                  
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {              
@@ -190,7 +193,7 @@ public class GraphScene extends javax.swing.JPanel{
 
     private void formMouseClicked(java.awt.event.MouseEvent evt) {                                  
         updateMousePos(Vec2.fromPoint(evt.getLocationOnScreen()));
-        root.onMouseClick(mouseState.LastBtn, mouseState.scenePos);
+        root.processEvent(ShapeMouseEvent.createMouseClick(mouseState.LastBtn, mouseState.scenePos));
         updateScene();
     }
     

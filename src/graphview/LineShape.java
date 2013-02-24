@@ -23,6 +23,7 @@ public class LineShape extends BaseShape {
         portNodeA=portA;
         portNodeB=portB;
         bMoveable=false;
+        bUnbodied=true;
     };
     
     @Override

@@ -6,6 +6,8 @@ package graphview;
 
 import geometry.Rect;
 import geometry.Vec2;
+import graphevents.BaseEvent;
+import graphevents.ShapeMouseEvent;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -367,6 +369,136 @@ public abstract class BaseShape {
     public Rect getBoundingRect() {
         return getGlobalPlacement();
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    protected void processEvent(BaseEvent evt)
+    {
+        switch(evt.getType())
+        {
+            case BaseEvent.EVENT_TYPE_MOUSE: 
+                processMouseEvent((ShapeMouseEvent)evt);
+                break;
+        };
+    };
+    
+    private void processMouseEvent(ShapeMouseEvent evt)
+    {
+        boolean bRet=false;
+        int numChild=testChildIntersect(evt.getPosition());
+        evt.setIntersectedChild(numChild);
+        switch(evt.getSubtype())
+        {
+            case ShapeMouseEvent.CLICK: bRet= onMouseClick(evt); break;
+            case ShapeMouseEvent.DRAG: bRet= onMouseDrag(evt); break;
+            case ShapeMouseEvent.MOVE: bRet= onMouseMove(evt); break;
+            case ShapeMouseEvent.PRESS: bRet= onMousePress(evt); break;
+            case ShapeMouseEvent.RELEASE: bRet= onMouseRelease(evt); break;
+            default: return;
+        };
+        
+        if(!bRet)
+        {       
+            if(numChild!=-1) 
+            {
+                evt.toClientRectangle(childs.get(numChild).getLocalPosition());
+                childs.get(numChild).processEvent(evt);
+            }
+            for(int j=0;j<childs.size();j++)
+            {
+                if(j!=numChild && childs.get(j).bUnbodied==true) 
+                {
+                    childs.get(j).processEvent(new ShapeMouseEvent(evt));
+                };
+            };
+        };
+    };
+    
+    public boolean onMouseClick(ShapeMouseEvent evt){
+        if(evt.getButton()==1 && evt.getIntersectedChild()==-1)
+        {
+            clearSelection();
+            setSelected(!bSelected);
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean onMousePress(ShapeMouseEvent evt){
+        
+        if(evt.getIntersectedChild()!=-1 && 
+                evt.getButton()==1 && 
+                childs.get(evt.getIntersectedChild()).bSelected) 
+        {
+            nMode=1;
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean onMouseRelease(ShapeMouseEvent evt){
+        nMode=0;
+        return false;
+    }
+    
+    public boolean onMouseDrag(ShapeMouseEvent evt){
+        if(nMode==1)
+        {
+            for(int j=0;j<selectedChilds.size();j++)
+            {
+                childs.get(selectedChilds.get(j)).move(evt.getDelta());
+            };
+            return true;
+        }
+        return false;
+    }
+   
+    public boolean onMouseMove(ShapeMouseEvent evt){
+        debugMouseMove=toGlobal(evt.getPosition());
+        int numChild=evt.getIntersectedChild();
+        if(numChild==-1)
+        {
+            if(prevMoveIntersect!=-1)
+            {
+                childs.get(prevMoveIntersect).onMouseOut(evt);
+                prevMoveIntersect=-1;
+            };
+            return false;
+        }
+        
+        if(prevMoveIntersect!=-1 && prevMoveIntersect!=numChild)
+        {
+            childs.get(prevMoveIntersect).onMouseOut(evt);
+            prevMoveIntersect=-1;
+        };
+        childs.get(numChild).onMouseIn(evt);
+        prevMoveIntersect=numChild;
+        return false;
+    }
+    
+    public boolean onMouseIn(ShapeMouseEvent evt){
+        bMouseIn=true;
+        return false;
+    }
+    
+    public boolean onMouseOut(ShapeMouseEvent evt){
+        bMouseIn=false;
+        //if(!bUnbodied) nMode=0;
+        return false;
+    }
+    
+    
+    
+    
+    
+    
+    
     
     public void onMouseClick(int nButton, Vec2 pt){
         int i=testChildIntersect(pt);
