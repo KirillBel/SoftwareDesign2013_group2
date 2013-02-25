@@ -124,7 +124,6 @@ public class DotParser
                         }
                         else{
                             listEdge.removeAll(listEdge);
-                            listNode.removeAll(listNode);
                             System.out.println("Call edge!");
                             edge(tk);
                         }
@@ -180,6 +179,10 @@ public class DotParser
               listEdge.removeAll(listEdge);
               listNode.removeAll(listNode);
               tk.nextToken();
+            }
+            
+            if(tk.ttype==','){
+                tk.nextToken();
             }
             
             Direction dir;
@@ -317,6 +320,24 @@ public class DotParser
                             
                         }
                         break;
+                    case "label":
+                        tk.nextToken();
+                        if(tk.ttype=='='){
+                            tk.nextToken();
+                        }
+                        break;
+                    case "shape":
+                        tk.nextToken();
+                        if(tk.ttype=='='){
+                            tk.nextToken();
+                        }
+                        break;
+                    case "style":
+                        tk.nextToken();
+                        if(tk.ttype=='='){
+                            tk.nextToken();
+                        }
+                        break;
                     default:
                         System.err.println("Ошибка. Опции не существует");
                         return;
@@ -346,7 +367,7 @@ public class DotParser
   {
       for(int i=0; i<listNode.size();i++){
           System.out.println("OPT for node "+listNode.get(i).getID()); 
-          listNode.get(0).getShape().color = color;
+          listNode.get(i).getShape().color = color;
       }
       return;
       

@@ -2,5 +2,6 @@ digraph graphname {
 	a [color = blue];
 	b [color = pink];
     a -- b -- c[color = red];
+	c, d [color = green];
 	b -- d[color = green];
 }
