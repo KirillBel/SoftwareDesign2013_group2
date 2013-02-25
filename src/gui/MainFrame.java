@@ -186,6 +186,11 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu5.setText("Layout");
 
         jMenuItem5.setText("Simple");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem5ActionPerformed(evt);
+            }
+        });
         jMenu5.add(jMenuItem5);
 
         jMenuBar1.add(jMenu5);
@@ -322,6 +327,11 @@ public class MainFrame extends javax.swing.JFrame {
         mainPanel.hideDock("Structure");
         
     }//GEN-LAST:event_jMenuItem9ActionPerformed
+
+    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+        // TODO add your handling code here:
+        graphMain.applySimpleLayout();
+    }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     public static void setSkin(String str)
     {

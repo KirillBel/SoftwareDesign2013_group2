@@ -87,4 +87,42 @@ public class GraphMain {
     public void syncronize()
     {
     };
+    
+       public void applySimpleLayout()
+    {
+        GraphNode Node = null;
+        int NodesPerLineCounter = 1;
+        int NodesPerColumnCounter = 1;
+        Vec2 DemencionsOfNode = new Vec2();
+        Vec2 MaxDemencions = new Vec2();
+        Vec2 tempPlacement = new Vec2();
+        BaseShape NodeShape = null;
+        int NodeCount = graphData.getCountNodes();
+        int NodesPerLine = (int)Math.sqrt(NodeCount);
+        for (int i = 0; i<NodeCount; i++)
+        {
+            Node = graphData.getElementOfNodesArray(i);
+            DemencionsOfNode = Node.getShape().getGlobalPlacement().getSize();
+            MaxDemencions.x = Math.max(MaxDemencions.x, DemencionsOfNode.x);
+            MaxDemencions.y = Math.max(MaxDemencions.y, DemencionsOfNode.y);
+        }
+        for (int i = 0; i<NodeCount; i++)
+        {
+            Node = graphData.getElementOfNodesArray(i);
+            tempPlacement.x = MaxDemencions.x*2*NodesPerLineCounter;
+            tempPlacement.y = MaxDemencions.y*2*NodesPerColumnCounter;
+            Node.getShape().setGlobalPosition(tempPlacement);
+            if (NodesPerLineCounter == NodesPerLine+1)
+            {
+                NodesPerLineCounter = 1;
+                NodesPerColumnCounter++;
+            }
+            else
+            {
+                NodesPerLineCounter++;
+            }
+            
+        }
+        graphScene.updateScene();
+    };
 }
