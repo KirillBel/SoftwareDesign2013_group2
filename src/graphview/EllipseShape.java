@@ -71,7 +71,7 @@ public class EllipseShape extends BaseShape{
 
     @Override
     public boolean isIntersects(Rect r) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Intersect.rectangle_rectangle(getLocalPlacement(), r)==Intersect.INCLUSION;
     }
 
     @Override
