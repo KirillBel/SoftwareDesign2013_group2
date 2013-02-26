@@ -174,4 +174,26 @@ public class Intersect {
         };
         return EXCLUSION;
     };
+    
+    public static int line_ellipsecenter(Vec2 lineFrom, Rect ellipse, Vec2 out1, Vec2 out2)
+    {
+        float a=ellipse.getSize().x/2;
+        float b=ellipse.getSize().y/2;
+        float x0=lineFrom.x-ellipse.getCenter().x;
+        float y0=lineFrom.y-ellipse.getCenter().y;
+        
+        float x=((a*b)/(float)Math.sqrt(a*a*y0*y0+b*b*x0*x0))*x0;
+        float y=((a*b)/(float)Math.sqrt(a*a*y0*y0+b*b*x0*x0))*y0;
+        
+        out1.x=x;
+        out1.y=y;
+        
+        out2.x=-x;
+        out2.y=-y;
+        
+        out1.set(out1.x+ellipse.getCenter().x,out1.y+ellipse.getCenter().y);
+        out2.set(out2.x+ellipse.getCenter().x,out2.y+ellipse.getCenter().y);
+        
+        return INCLUSION;
+    }
 }

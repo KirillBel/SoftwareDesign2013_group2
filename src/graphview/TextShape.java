@@ -35,6 +35,7 @@ public class TextShape extends BoxShape{
         setSize(newSize);
         
         bMoveable=false;
+        bResizeable=false;
         bReceiveMouseDrag=false;
         bReceiveMousePress=false;
         bReceiveMouseClick=false;

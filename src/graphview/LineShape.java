@@ -27,6 +27,7 @@ public class LineShape extends BaseShape {
         portNodeA=portA;
         portNodeB=portB;
         bMoveable=false;
+        bResizeable=false;
         bUnbodied=true;
     };
     

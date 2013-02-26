@@ -16,6 +16,7 @@ import com.javadocking.dockable.DockableState;
 import com.javadocking.dockable.DockingMode;
 import com.javadocking.dockable.action.DefaultDockableStateAction;
 import geometry.Vec2;
+import graphview.EllipseShape;
 import graphview.GraphMain;
 import graphview.TextShape;
 import java.awt.Color;
@@ -126,22 +127,32 @@ public class MainPanel extends DockablePanel{
         shape2.color=Color.red;
         shape2.setLocalPosition(new Vec2(300,10));
         
-        BaseShape dot=new BoxShape(0,0,10,10);
+        BaseShape dot=new EllipseShape(0,0,5,5);
         dot.move(new Vec2(200,-100));
-        dot.color=Color.GREEN;
+        dot.color=Color.black;
         
         TextShape text=new TextShape("12345\n67890");
         shape.addChild(text);
         shape.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
         //shape.setContainerMode(BaseShape.CONTAIN_CHILDS_TO_NODE);
         
+        BaseShape ellipse=new EllipseShape(new Vec2(0,0),100);
+        ellipse.setGlobalPosition(new Vec2(40,100));
+        ellipse.color=Color.CYAN;
+        TextShape text2=new TextShape("QWERty");
+        ellipse.addChild(text2);
+        ellipse.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
+        
         LineShape line = new LineShape(shape,shape2);
         line.insertPoint(dot,0);
+        
+        LineShape line2 = new LineShape(shape,ellipse);
         
         graphMain.getGraphScene().add(shape);
         graphMain.getGraphScene().add(shape2);
         graphMain.getGraphScene().add(line);
-        //graphMain.getGraphScene().add(dot);
+        graphMain.getGraphScene().add(ellipse);
+        graphMain.getGraphScene().add(line2);
         //graphMain.getGraphScene().add(text);
     };
     

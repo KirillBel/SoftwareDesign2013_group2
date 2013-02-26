@@ -20,7 +20,9 @@ import java.util.ArrayList;
 public abstract class BaseShape extends ShapeEvents{
     public Color color=Color.black;
     Rect placement=new Rect();
+    public float containerOffset=7;
     protected boolean bMoveable=true;
+    protected boolean bResizeable=true;
     protected BaseShape parent=null;
     protected boolean bSelected=false;
     protected boolean bFocused=false;
@@ -64,7 +66,7 @@ public abstract class BaseShape extends ShapeEvents{
         return placement.getSize();
     }
     public void setSize(Vec2 pt){
-        if(!bMoveable) return;
+        if(!bResizeable) return;
         placement.setSize(pt);
     }
     public Rect getLocalPlacement(){
@@ -72,7 +74,8 @@ public abstract class BaseShape extends ShapeEvents{
     }
     public void setLocalPlacement(Rect rect){
         if(!bMoveable) return;
-        placement=rect;
+        if(!bResizeable) setLocalPosition(rect.getTopLeft());
+        else placement.set(rect);
     }
     public Rect getGlobalPlacement(){
         if(parent==null) return placement;
@@ -80,8 +83,8 @@ public abstract class BaseShape extends ShapeEvents{
     }
     public void setGlobalPlacement(Rect rect){
         if(!bMoveable) return;
-        if(parent!=null) placement=parent.toLocal(rect);
-        else placement=rect;
+        if(parent!=null) setLocalPlacement(parent.toLocal(rect));
+        else setLocalPlacement(rect);
     }
     
     public Vec2 getGlobalOffset()
@@ -332,23 +335,23 @@ public abstract class BaseShape extends ShapeEvents{
             Rect r=new Rect(0,0,placement.getSize().x,placement.getSize().y);
             for(int i=0;i<childs.size();i++)
             {
-                childs.get(i).setLocalPlacement(r.getReduced(5));
+                childs.get(i).setLocalPlacement(r.getReduced(containerOffset));
             };
         }
         else if(containerMode==CONTAIN_NODE_TO_CHILDS)
         {
             Rect r=getChildsRect();
-            r.right+=5;
-            r.bottom+=5;
+            r.right+=containerOffset;
+            r.bottom+=containerOffset;
             r.left=placement.left;
             r.top=placement.top;
             for(int i=0;i<childs.size();i++)
             {
-                if(childs.get(i).placement.left<5) {
-                    childs.get(i).placement.setPosition(new Vec2(5,childs.get(i).placement.top));
+                if(childs.get(i).placement.left<containerOffset) {
+                    childs.get(i).placement.setPosition(new Vec2(containerOffset,childs.get(i).placement.top));
                 }
-                if(childs.get(i).placement.top<5) {
-                    childs.get(i).placement.setPosition(new Vec2(childs.get(i).placement.left,5));
+                if(childs.get(i).placement.top<containerOffset) {
+                    childs.get(i).placement.setPosition(new Vec2(childs.get(i).placement.left,containerOffset));
                 }
             };
             placement.set(r);
