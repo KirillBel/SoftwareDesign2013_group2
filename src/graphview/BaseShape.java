@@ -346,6 +346,7 @@ public abstract class BaseShape {
             if(childs.get(i)!=null) 
                 childs.get(i).update();
         };
+        updateContainer();
     };
     
     public void draw(Graphics2D g)

@@ -273,6 +273,8 @@ public class GraphData {
      */
     public void removeAll()
     {
+        countNodes=0;
+        countEdges=0;
         this.edgesArray.clear();
         this.nodesArray.clear();
     };

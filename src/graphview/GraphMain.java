@@ -81,6 +81,7 @@ public class GraphMain {
         DotParser parser=new DotParser(stream,this);
         boolean b=parser.parse();
         graphScene.updateScene();
+        applySimpleLayout();
         return b;
     }
     

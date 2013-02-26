@@ -7,8 +7,10 @@ package graphview;
 import geometry.Rect;
 import geometry.Vec2;
 import java.awt.BasicStroke;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.font.FontRenderContext;
 
 /**
  *
@@ -16,23 +18,27 @@ import java.awt.Stroke;
  */
 public class TextShape extends BoxShape{
     public String text=null;
+    Font font=new Font("Arial",Font.PLAIN,20);
+    FontRenderContext frc=new FontRenderContext(null, true,true);
+    Rect bounds=null;
 
     public TextShape(String text_)
     {
-        super(0,0,0,0);
+        super(0,0,10,10);
         text=text_;
+       
+        
+        bounds=Rect.fromRectangle2D(font.getStringBounds(text, frc));
+        Vec2 newSize=getSize();
+        newSize.x=Math.max(newSize.x, bounds.getSize().x);
+        newSize.y=Math.max(newSize.y, bounds.getSize().y);
+        setSize(newSize);
+        
         bMoveable=false;
     };
     
     @Override
     public void draw(Graphics2D g) {
-        Rect bounds=Rect.fromRectangle2D(g.getFont().getStringBounds(text, g.getFontRenderContext()));
-        Vec2 newSize=getSize();
-        newSize.x=Math.max(newSize.x, bounds.getSize().x);
-        newSize.y=Math.max(newSize.y, bounds.getSize().y);
-        bMoveable=true;
-        setSize(newSize);
-        bMoveable=false;
         if(parent!=null) parent.updateContainer();
         
         Rect globalPlace=getGlobalPlacement();
