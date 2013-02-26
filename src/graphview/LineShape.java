@@ -46,7 +46,7 @@ public class LineShape extends BaseShape {
             {
                 g.fillOval((int)point.x-3, (int)point.y-3, 6, 6);
             }
-            else if(i==getNumPointsWithPort()-2)
+            if(i==getNumPointsWithPort()-2)
             {
                 g.fillOval((int)point1.x-3, (int)point1.y-3, 6, 6);
             };
