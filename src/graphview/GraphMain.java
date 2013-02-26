@@ -98,7 +98,8 @@ public class GraphMain {
         Vec2 tempPlacement = new Vec2();
         BaseShape NodeShape = null;
         int NodeCount = graphData.getCountNodes();
-        int NodesPerLine = (int)Math.sqrt(NodeCount);
+        double tempNodesPerLine = Math.sqrt(NodeCount);
+        int NodesPerLine = (int) Math.round(tempNodesPerLine);
         for (int i = 0; i<NodeCount; i++)
         {
             Node = graphData.getElementOfNodesArray(i);
@@ -112,7 +113,7 @@ public class GraphMain {
             tempPlacement.x = MaxDemencions.x*2*NodesPerLineCounter;
             tempPlacement.y = MaxDemencions.y*2*NodesPerColumnCounter;
             Node.getShape().setGlobalPosition(tempPlacement);
-            if (NodesPerLineCounter == NodesPerLine+1)
+            if (NodesPerLineCounter == NodesPerLine)
             {
                 NodesPerLineCounter = 1;
                 NodesPerColumnCounter++;
