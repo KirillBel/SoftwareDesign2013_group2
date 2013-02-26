@@ -35,6 +35,9 @@ public class TextShape extends BoxShape{
         setSize(newSize);
         
         bMoveable=false;
+        bReceiveMouseDrag=false;
+        bReceiveMousePress=false;
+        bReceiveMouseClick=false;
     };
     
     @Override
@@ -54,6 +57,6 @@ public class TextShape extends BoxShape{
             g.setStroke(oldStroke);
             
         }
-        else g.drawRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+        //else g.drawRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
     }
 }

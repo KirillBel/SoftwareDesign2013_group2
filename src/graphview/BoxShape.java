@@ -66,7 +66,7 @@ public class BoxShape extends BaseShape{
     public Vec2 getPortPoint(Vec2 from) {
         ArrayList<Vec2> array=new ArrayList();
 
-        if(Intersect.line_rect(from, getGlobalPlacement().getCenter(), getGlobalPlacement(), array)==Intersect.EXCLUSION)
+        if(Intersect.lineseg_rect(from, getGlobalPlacement().getCenter(), getGlobalPlacement(), array)==Intersect.EXCLUSION)
         {
             System.err.printf("Ошибка при расчете пересечения\n");
             return from;

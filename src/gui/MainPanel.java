@@ -136,7 +136,7 @@ public class MainPanel extends DockablePanel{
         //shape.setContainerMode(BaseShape.CONTAIN_CHILDS_TO_NODE);
         
         LineShape line = new LineShape(shape,shape2);
-        line.addChild(dot);
+        line.insertPoint(dot,0);
         
         graphMain.getGraphScene().add(shape);
         graphMain.getGraphScene().add(shape2);

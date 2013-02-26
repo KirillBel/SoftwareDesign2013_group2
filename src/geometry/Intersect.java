@@ -55,7 +55,38 @@ public class Intersect {
         return EXCLUSION;
     }
     
-    public static int line_line(Vec2 lineA1,Vec2 lineA2, Vec2 lineB1,Vec2 lineB2, Vec2 outPoint)
+    public static int lineseg_point(Vec2 lineA1, Vec2 lineA2, float lineWidth, Vec2 point)
+    {
+        float distance=distanceToSegment(lineA1,lineA2,point);
+        if(distance<=lineWidth) return INCLUSION;
+        return EXCLUSION;
+    };
+    
+    public static float distanceToSegment(Vec2 lineA1, Vec2 lineA2, Vec2 point) 
+    {
+
+	final float xDelta = lineA2.x - lineA1.x;
+	final float yDelta = lineA2.y - lineA1.y;
+
+	if ((xDelta == 0) && (yDelta == 0)) {
+	    return lineA1.getDistance(point);
+	}
+
+	final float u = ((point.x - lineA1.x) * xDelta + (point.y - lineA1.y) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
+
+	final Vec2 closestPoint;
+	if (u < 0) {
+	    closestPoint = lineA1;
+	} else if (u > 1) {
+	    closestPoint = lineA2;
+	} else {
+	    closestPoint = new Vec2(lineA1.x + u * xDelta, lineA1.y + u * yDelta);
+	}
+
+	return closestPoint.getDistance(point);
+    }
+    
+    public static int lineseg_lineseg(Vec2 lineA1,Vec2 lineA2, Vec2 lineB1,Vec2 lineB2, Vec2 outPoint)
     {
         float Epsilon = (float)0.0000001f;
 
@@ -94,7 +125,7 @@ public class Intersect {
         return INCLUSION;
     };
 
-    public static int line_line2(Vec2 lineA1,Vec2 lineA2, Vec2 lineB1,Vec2 lineB2, Vec2 outPoint)
+    public static int lineseg_lineseg2(Vec2 lineA1,Vec2 lineA2, Vec2 lineB1,Vec2 lineB2, Vec2 outPoint)
     {
         outPoint.set(0, 0);
 
@@ -120,19 +151,19 @@ public class Intersect {
         return INCLUSION;
     }
     
-    public static int line_rect(Vec2 lineA1,Vec2 lineA2, Rect r, ArrayList<Vec2> outArray)
+    public static int lineseg_rect(Vec2 lineA1,Vec2 lineA2, Rect r, ArrayList<Vec2> outArray)
     {
         Vec2 out = new Vec2();
         
         for(int i=0;i<3;i++)
         {
-            if(line_line2(lineA1,lineA2,r.getVertex(i),r.getVertex(i+1),out)==INCLUSION)
+            if(lineseg_lineseg2(lineA1,lineA2,r.getVertex(i),r.getVertex(i+1),out)==INCLUSION)
             {
                 outArray.add(new Vec2(out));
             };
         };
         
-        if(line_line2(lineA1,lineA2,r.getVertex(3),r.getVertex(0),out)==INCLUSION)
+        if(lineseg_lineseg2(lineA1,lineA2,r.getVertex(3),r.getVertex(0),out)==INCLUSION)
         {
             outArray.add(new Vec2(out));
         };
