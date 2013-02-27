@@ -112,9 +112,9 @@ public class Rect {
     {
         Vec2 size=getSize();
         left=v.x-size.x/2;
-        right=left+size.x/2;
+        right=v.x+size.x/2;
         top=v.y-size.y/2;
-        bottom=top+size.y/2;
+        bottom=v.y+size.y/2;
     }
     
     public void move(Vec2 v)

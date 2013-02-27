@@ -72,6 +72,16 @@ public class GraphMain {
         return shape;
     };
     
+    public EllipseShape createTextCircle(Vec2 pos, String txt, Color color)
+    {
+        EllipseShape shape=new EllipseShape(pos,5);
+        shape.color=color;
+        shape.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
+        shape.addChild(new TextShape(txt));
+        graphScene.add(shape);
+        return shape;
+    };
+    
     public void removeAll()
     {
         graphData.removeAll();

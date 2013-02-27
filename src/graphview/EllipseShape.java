@@ -34,9 +34,11 @@ public class EllipseShape extends BaseShape{
     
     public EllipseShape(Vec2 position, float radius)
     {
+        bConstrainProportions=true;
         Rect r=new Rect(position.x-radius,position.y-radius,position.x+radius,position.y+radius);
         setLocalPlacement(r);
         ell=new Ellipse2D.Float(r.left,r.top,r.getSize().x,r.getSize().y);
+        
     };
     
     @Override

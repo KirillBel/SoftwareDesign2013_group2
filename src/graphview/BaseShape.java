@@ -22,6 +22,7 @@ public abstract class BaseShape extends ShapeEvents{
     Rect placement=new Rect();
     public float containerOffset=7;
     protected boolean bMoveable=true;
+    protected boolean bConstrainProportions=false;
     protected boolean bResizeable=true;
     protected BaseShape parent=null;
     protected boolean bSelected=false;
@@ -68,6 +69,8 @@ public abstract class BaseShape extends ShapeEvents{
     public void setSize(Vec2 pt){
         if(!bResizeable) return;
         placement.setSize(pt);
+        if(bConstrainProportions)
+                setProportional();
     }
     public Rect getLocalPlacement(){
         return placement;
@@ -75,7 +78,12 @@ public abstract class BaseShape extends ShapeEvents{
     public void setLocalPlacement(Rect rect){
         if(!bMoveable) return;
         if(!bResizeable) setLocalPosition(rect.getTopLeft());
-        else placement.set(rect);
+        else 
+        {
+            placement.set(rect);
+            if(bConstrainProportions)
+                setProportional();
+        }
     }
     public Rect getGlobalPlacement(){
         if(parent==null) return placement;
@@ -116,6 +124,15 @@ public abstract class BaseShape extends ShapeEvents{
     {
         if(parent==null) return r;
         return r.getMoved(parent.getGlobalOffset().plus(getLocalPosition()).multiply(-1));
+    };
+    
+    public void setProportional()
+    {
+        if(!bResizeable) return;
+        if(placement.getSize().x>placement.getSize().y)
+            placement.setSize(new Vec2(placement.getSize().x,placement.getSize().x));
+        else 
+            placement.setSize(new Vec2(placement.getSize().y,placement.getSize().y));
     };
     
     public BaseShape testIntersect(Vec2 pt){
@@ -341,20 +358,21 @@ public abstract class BaseShape extends ShapeEvents{
         else if(containerMode==CONTAIN_NODE_TO_CHILDS)
         {
             Rect r=getChildsRect();
-            r.right+=containerOffset;
-            r.bottom+=containerOffset;
-            r.left=placement.left;
-            r.top=placement.top;
+            Rect r1=new Rect(placement);
+            r1.setSize(r.getSize().plus(containerOffset*2));
+            setLocalPlacement(r1);
+            
             for(int i=0;i<childs.size();i++)
             {
-                if(childs.get(i).placement.left<containerOffset) {
-                    childs.get(i).placement.setPosition(new Vec2(containerOffset,childs.get(i).placement.top));
-                }
-                if(childs.get(i).placement.top<containerOffset) {
-                    childs.get(i).placement.setPosition(new Vec2(childs.get(i).placement.left,containerOffset));
-                }
+                childs.get(i).placement.setCenterPosition(getLocalPlacement().getSize().divide(2));
+//                if(childs.get(i).placement.left<containerOffset) {
+//                    childs.get(i).placement.setPosition(new Vec2(containerOffset,childs.get(i).placement.top));
+//                }
+//                if(childs.get(i).placement.top<containerOffset) {
+//                    childs.get(i).placement.setPosition(new Vec2(childs.get(i).placement.left,containerOffset));
+//                }
             };
-            placement.set(r);
+            
         };
     };
     
