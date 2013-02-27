@@ -26,6 +26,7 @@ public class DotParser
     private ArrayList<NodeID> list = new ArrayList<NodeID>();
     private ArrayList<GraphEdge> listEdge = new ArrayList<GraphEdge>();
     private ArrayList<GraphNode> listNode = new ArrayList<GraphNode>();
+    private boolean direction = true;
     
     /**
      * Конструктор для создания нового парсера
@@ -87,15 +88,24 @@ public class DotParser
             if(tk.ttype==tk.TT_WORD) {
                 switch(tk.sval){
                     case "digraph":
+                        direction = true;
                         System.out.println("DIGRAPH");
                         tk.nextToken();
                         if(tk.ttype==tk.TT_WORD) {
                             tk.nextToken();
                             cluster(tk);
                         }
+                        else System.err.println("Ошибка. Некорректно имя ориентированного графа\n");
                         break;
                     case "graph":
+                        direction = false;
                         System.out.println("GRAPH");
+                        tk.nextToken();
+                        if(tk.ttype==tk.TT_WORD) {
+                            tk.nextToken();
+                            cluster(tk);
+                        }
+                        else System.err.println("Ошибка. Некорректное имя графа\n");
                         break;
                     default:
                         System.err.println("Ошибка. Ожидается 'graph' или 'digraph' в строке "+tk.lineno());
@@ -189,17 +199,20 @@ public class DotParser
             if(tk.ttype=='-')
             {
                 tk.nextToken();
-                if(tk.ttype=='>'){
+                if(tk.ttype=='>' && direction==true){
                     dir=Direction.IN;
                     tk.nextToken();
                 }
-                else if(tk.ttype=='-'){
+                else if(tk.ttype=='-' && direction==false){
                     dir=Direction.BIDIR;
                     tk.nextToken();
                 }
-                else return;
+                else {
+                    System.err.println("Ошибка. Некорректно задано ребро\n");
+                    return;
+                }
             }
-            else if(tk.ttype=='<')
+            else if(tk.ttype=='<' && direction==true)
             {
                 tk.nextToken();
                 if(tk.ttype=='-'){
@@ -209,7 +222,7 @@ public class DotParser
                 else return;
             }
             else return;
-            
+                
             if(tk.ttype==tk.TT_WORD){
                 GraphNode node2 = getNode(tk.sval);
                 System.out.println("Вершина: "+list.get(node2.getID()).nameNode+" (ID = "+list.get(node2.getID()).IDNode+")");
@@ -371,5 +384,19 @@ public class DotParser
       }
       return;
       
+  }
+  
+  protected void subgraph(StreamTokenizer tk) throws IOException
+  {
+      tk.nextToken();
+      if(tk.ttype==tk.TT_WORD){
+          System.out.println("Name subgraph: "+tk.sval);
+          tk.nextToken();
+          cluster(tk);
+      }
+      else{
+          System.err.println("Ожидается имя подграфа в строке "+tk.lineno());
+          return;
+      } 
   }
 }
