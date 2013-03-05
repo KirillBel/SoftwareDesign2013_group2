@@ -34,8 +34,8 @@ public class TextShape extends BoxShape{
         newSize.y=Math.max(newSize.y, bounds.getSize().y);
         setSize(newSize);
         
-        bMoveable=false;
-        bResizeable=false;
+        //bMoveable=false;
+        //bResizeable=false;
         bReceiveMouseDrag=false;
         bReceiveMousePress=false;
         bReceiveMouseClick=false;
@@ -45,7 +45,7 @@ public class TextShape extends BoxShape{
     public void draw(Graphics2D g) {
         if(parent!=null) parent.updateContainer();
         
-        Rect globalPlace=getGlobalPlacement();
+        Rect globalPlace=getGlobalRectangle();
         g.setColor(color);
         g.drawString(text, globalPlace.left, globalPlace.bottom-bounds.bottom);
         
@@ -58,6 +58,6 @@ public class TextShape extends BoxShape{
             g.setStroke(oldStroke);
             
         }
-        //else g.drawRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+        else g.drawRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
     }
 }

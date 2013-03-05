@@ -17,138 +17,157 @@ import java.util.ArrayList;
  *
  * @author Kirill
  */
-public abstract class BaseShape extends ShapeEvents{
+public abstract class BaseShape  extends ShapeEvents{
     public Color color=Color.black;
-    Rect placement=new Rect();
-    public float containerOffset=7;
+    private Vec2 localCoord=new Vec2();
+    private Vec2 globalCoord=new Vec2();
+    private Vec2 shapeSize=new Vec2();
     protected boolean bMoveable=true;
-    protected boolean bConstrainProportions=false;
+    protected boolean bEquilateral=false;
     protected boolean bResizeable=true;
     protected BaseShape parent=null;
     protected boolean bSelected=false;
-    protected boolean bFocused=false;
-    protected boolean bUnbodied=false;
-    private boolean bVisible=true;
     protected int childIndex=-1;
+    protected boolean bVisible=true;
+    protected boolean bMouseIn=false;
     
-    int containerMode=CONTAIN_NONE;
-    public static final int CONTAIN_NONE = 0;
+    int containerMode=CONTAIN_DEFAULT;
+    public float containerOffset=7;
+    public static final int CONTAIN_DEFAULT = 0;
     public static final int CONTAIN_CHILDS_TO_NODE = 1;
     public static final int CONTAIN_NODE_TO_CHILDS = 2;
     
     protected ArrayList<BaseShape> childs=new ArrayList<BaseShape>();
     protected ArrayList<Integer> selectedChilds=new ArrayList<Integer>();
     protected ArrayList<Integer> zbuffer=new ArrayList<Integer>();
- 
     
-    public Vec2 getLocalPosition() {
-        return placement.getTopLeft();
+    
+    /////////////////////MOVEMENT///////////////////////////////////////
+    
+    public void updateGlobalCoord()
+    {
+        if(parent==null) globalCoord.set(localCoord);
+        else globalCoord.set(parent.globalCoord.plus(localCoord));
+        updateChildsCoord();
     };
-    public void setLocalPosition(Vec2 pt){
-        if(!bMoveable) return;
-        placement.setPosition(pt);
-    }
     
-    public Vec2 getGlobalPosition() {
-        if(parent==null) return placement.getTopLeft();
-        return parent.toGlobal(placement.getTopLeft());
-    };
-    public void setGlobalPosition(Vec2 pt){
-        if(!bMoveable) return;
-        if(parent!=null) placement.setPosition(parent.toLocal(pt));
-        placement.setPosition(pt);
-    }
-    
-    public void move(Vec2 pt){
-        if(!bMoveable) return;
-        placement.move(pt);
-    }
-    public Vec2 getSize(){
-        return placement.getSize();
-    }
-    public void setSize(Vec2 pt){
-        if(!bResizeable) return;
-        placement.setSize(pt);
-        if(bConstrainProportions)
-                setProportional();
-    }
-    public Rect getLocalPlacement(){
-        return placement;
-    }
-    public void setLocalPlacement(Rect rect){
-        if(!bMoveable) return;
-        if(!bResizeable) setLocalPosition(rect.getTopLeft());
-        else 
+    public void updateChildsCoord()
+    {
+        for(int i=0;i<childs.size();i++)
         {
-            placement.set(rect);
-            if(bConstrainProportions)
-                setProportional();
-        }
-    }
-    public Rect getGlobalPlacement(){
-        if(parent==null) return placement;
-        return parent.toGlobal(placement);
-    }
-    public void setGlobalPlacement(Rect rect){
-        if(!bMoveable) return;
-        if(parent!=null) setLocalPlacement(parent.toLocal(rect));
-        else setLocalPlacement(rect);
-    }
-    
-    public Vec2 getGlobalOffset()
-    {
-        //if(!bChildsRelativeCoord) return new Vec2();
-        if(parent==null) return getLocalPosition();
-        return getLocalPosition().plus(parent.getGlobalOffset());
-    };
-    
-    public Vec2 toGlobal(Vec2 v)
-    {
-        if(parent==null) return v;
-        return v.plus(parent.getGlobalOffset()).plus(getLocalPosition());
-    };
-    
-    public Rect toGlobal(Rect r)
-    {
-        if(parent==null) return r;
-        return r.getMoved(parent.getGlobalOffset()).getMoved(getLocalPosition());
-    };
-
-    public Vec2 toLocal(Vec2 v)
-    {
-        if(parent==null) return v;
-        return v.minus(parent.getGlobalOffset()).minus(getLocalPosition());
-    };
-    
-    public Rect toLocal(Rect r)
-    {
-        if(parent==null) return r;
-        return r.getMoved(parent.getGlobalOffset().plus(getLocalPosition()).multiply(-1));
-    };
-    
-    public void setProportional()
-    {
-        if(!bResizeable) return;
-        if(placement.getSize().x>placement.getSize().y)
-            placement.setSize(new Vec2(placement.getSize().x,placement.getSize().x));
-        else 
-            placement.setSize(new Vec2(placement.getSize().y,placement.getSize().y));
-    };
-    
-    public BaseShape testIntersect(Vec2 pt){
-        if(isIntersects(pt))
-        {
-            BaseShape shape=null;
-            for(int i=zbuffer.size()-1;i>=0;i--)
-            {
-                shape=childs.get(zbuffer.get(i)).testIntersect(pt.minus(childs.get(i).getLocalPosition()));
-                if(shape!=null) return shape;
-            }
-            return this;
+            childs.get(i).updateGlobalCoord();
         };
-        return null;
     };
     
+    public void setPosition(Vec2 coord)
+    {
+        if(!bMoveable) return;
+        localCoord.set(onMove(localCoord,coord));
+        updateGlobalCoord();
+    };
+    
+    public void move(Vec2 v)
+    {
+        setPosition(localCoord.plus(v));
+    };
+    
+    public void setCenterPosition(Vec2 coord)
+    {
+        Rect r=getRectangle();
+        r.setCenterPosition(coord);
+        setRectangle(r);
+    };
+    
+    public Vec2 getPosition()
+    {
+        return localCoord;
+    };
+    
+    public Vec2 getGlobalPosition()
+    {
+        return globalCoord;
+    };
+    
+    public void setSize(Vec2 size)
+    {
+        if(!bResizeable) return;
+        shapeSize.set(onResize(shapeSize,size));
+    };
+    
+    public Vec2 getSize()
+    {
+        return shapeSize;
+    };
+    
+    public void setRectangle(Rect r)
+    {
+        setPosition(r.getTopLeft());
+        setSize(r.getSize());
+    }
+    
+    public Rect getRectangle()
+    {
+        return new Rect(localCoord.x,localCoord.y,
+                localCoord.x+shapeSize.x,localCoord.y+shapeSize.y);
+    };
+    
+    public Rect getGlobalRectangle()
+    {
+        return new Rect(globalCoord.x,globalCoord.y,
+                globalCoord.x+shapeSize.x,globalCoord.y+shapeSize.y);
+    };
+    
+    protected Vec2 onResize(Vec2 oldSize, Vec2 newSize){
+        
+        if(bEquilateral)
+        {
+            if(newSize.x>newSize.y)
+                newSize=new Vec2(newSize.x,newSize.x);
+            else 
+                newSize=new Vec2(newSize.y,newSize.y);
+        };
+        
+        return newSize;
+    }
+    
+    protected Vec2 onMove(Vec2 oldCoord, Vec2 newCoord){
+        return newCoord;
+    }
+    
+    public Vec2 toLocal(Vec2 global)
+    {
+        return global.minus(globalCoord);
+    };
+    
+    public Rect toLocal(Rect global)
+    {
+        Rect r=new Rect(global);
+        r.setPosition(global.getTopLeft().minus(globalCoord));
+        return r;
+    };
+    
+    public Vec2 toGlobal(Vec2 local)
+    {
+        return local.plus(globalCoord);
+    };
+    
+    public Rect toGlobal(Rect local)
+    {
+        Rect r=new Rect(local);
+        r.setPosition(local.getTopLeft().plus(globalCoord));
+        return r;
+    };
+    
+    public Rect getBoundingRect()
+    {
+        Rect r=getRectangle();
+        r.add(this.getChildsRect());
+        return r;
+    };
+    
+    /////////////////////////END MOVEMENT//////////////////////////////////
+    
+    ///////////////////////////CHILDS///////////////////////////////////////
     public int testChildIntersect(Vec2 pt)
     {
         for(int i=zbuffer.size()-1;i>=0;i--)
@@ -158,26 +177,24 @@ public abstract class BaseShape extends ShapeEvents{
         return -1;
     };
     
-    public int testChildMouseEvent(Vec2 pt, BaseEvent evt)
-    {
+    public BaseShape getIntersectedChild(Vec2 pt){
+        BaseShape shape=null;
         for(int i=zbuffer.size()-1;i>=0;i--)
         {
-            if(childs.get(zbuffer.get(i)).isIntersects(pt)) 
-            {
-                if(childs.get(zbuffer.get(i)).testEvent(evt))
-                {
-                    return zbuffer.get(i);
-                };
-            }
+            if(!childs.get(zbuffer.get(i)).isIntersects(pt)) continue;
+            shape=childs.get(zbuffer.get(i)).getIntersectedChild(pt);
+            if(shape!=null) return shape;
         }
-        return -1;
+        if(isIntersects(pt))
+            return this;
+        return null;
     };
     
     public void addChild(BaseShape shape)
     {
+        if(shape==null) return;
         for(int i=0;i<childs.size();i++)
         {
-            if(childs.get(i)==null) continue;
             if(childs.get(i)==shape) return;
         };
         
@@ -188,7 +205,9 @@ public abstract class BaseShape extends ShapeEvents{
         
         childs.add(shape);
         shape.parent=this;
+        shape.updateGlobalCoord();
         shape.childIndex=childs.size()-1;
+        
         addToZBuffer(shape.childIndex);
         update();
     };
@@ -241,6 +260,10 @@ public abstract class BaseShape extends ShapeEvents{
         clearSelection();
         childs.clear();
     };
+    
+    //////////////////////////END CHILDS///////////////////////////////
+    
+    //////////////////////SELECTION_VISIBILITY/////////////////////////
     
     public void setVisible(boolean bVal)
     {
@@ -339,6 +362,10 @@ public abstract class BaseShape extends ShapeEvents{
         update();
     };
     
+    ////////////////////////END SELECTION_VISIBILITY//////////////////////
+    
+    /////////////////////////////CONTAINER////////////////////////////////
+    
     public void setContainerMode(int mode)
     {
         containerMode=mode;
@@ -349,96 +376,70 @@ public abstract class BaseShape extends ShapeEvents{
     {
         if(containerMode==CONTAIN_CHILDS_TO_NODE)
         {
-            Rect r=new Rect(0,0,placement.getSize().x,placement.getSize().y);
+            Rect r=new Rect(0,0,getSize().x,getSize().y);
             for(int i=0;i<childs.size();i++)
             {
-                childs.get(i).setLocalPlacement(r.getReduced(containerOffset));
+                childs.get(i).setRectangle(r.getReduced(containerOffset));
             };
         }
         else if(containerMode==CONTAIN_NODE_TO_CHILDS)
         {
             Rect r=getChildsRect();
-            Rect r1=new Rect(placement);
-            r1.setSize(r.getSize().plus(containerOffset*2));
-            setLocalPlacement(r1);
+            setSize(r.getSize().plus(containerOffset));
             
             for(int i=0;i<childs.size();i++)
             {
-                childs.get(i).placement.setCenterPosition(getLocalPlacement().getSize().divide(2));
-//                if(childs.get(i).placement.left<containerOffset) {
-//                    childs.get(i).placement.setPosition(new Vec2(containerOffset,childs.get(i).placement.top));
-//                }
-//                if(childs.get(i).placement.top<containerOffset) {
-//                    childs.get(i).placement.setPosition(new Vec2(childs.get(i).placement.left,containerOffset));
-//                }
+                childs.get(i).setCenterPosition(getSize().divide(2));
             };
-            
         };
     };
     
-    public void update()
+    ///////////////////////////////END CONTAINER/////////////////////////////
+    
+    /////////////////////////////EVENTS/////////////////////////////////////
+    public int testChildMouseEvent(Vec2 pt, BaseEvent evt)
     {
-        for(int i=0;i<childs.size();i++)
+        for(int i=zbuffer.size()-1;i>=0;i--)
         {
-            if(childs.get(i)!=null) 
-                childs.get(i).update();
-        };
-        updateContainer();
+            if(childs.get(zbuffer.get(i)).isIntersects(pt) &&
+                    childs.get(zbuffer.get(i)).testEvent(evt)) 
+            {
+                return zbuffer.get(i);
+            }
+        }
+        return -1;
     };
     
-    public void draw(Graphics2D g)
+    public void dragSelected(Vec2 delta)
     {
-        if(bMouseIn && !bUnbodied)
+        nMode=2;
+        for(int j=0;j<selectedChilds.size();j++)
         {
-            g.setColor(Color.green);
-            Rect r=getGlobalPlacement().getReduced(10);
-            g.fillRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
-        };
-        
-        //g.setColor(Color.blue);
-        //g.fillRect((int)debugMouseMove.x-5, (int)debugMouseMove.y-5, 10, 10);
-        for(int i=0;i<zbuffer.size();i++)
-        {
-            if(childs.get(zbuffer.get(i))!=null) 
-                childs.get(zbuffer.get(i)).draw(g);
+            childs.get(selectedChilds.get(j)).move(delta);
         };
     };
-    
-    public Rect getBoundingRect() {
-        return getGlobalPlacement();
-    }
-    
-    
     
     @Override
     protected boolean processMouseEvent(ShapeMouseEvent evt)
     {
-        boolean bRet=false;
         int numChild=testChildMouseEvent(evt.getPosition(),evt);
-        evt.setIntersectedChild(numChild);
-        
-        bRet=super.processMouseEvent(evt);
-        
-        if(bRet) return true;
-    
+
         if(numChild!=-1) 
         {
-            evt.toClientRectangle(childs.get(numChild).getLocalPosition());
-            childs.get(numChild).processEvent(evt);
+            if(!childs.get(numChild).processEvent(evt))
+                return super.processMouseEvent(evt);
         }
-        for(int j=0;j<childs.size();j++)
+        else
         {
-            if(j!=numChild && childs.get(j).bUnbodied==true) 
-            {
-                childs.get(j).processEvent(new ShapeMouseEvent(evt));
-            };
+            return super.processMouseEvent(evt);
         };
-        return true;
+
+        return false;
     };
     
     @Override
     public boolean onMouseClick(ShapeMouseEvent evt){
-        if(evt.getButton()==1 && evt.getIntersectedChild()==-1)
+        if(evt.getButton()==1)
         {
             boolean bSel=bSelected;
             clearSelection();
@@ -448,12 +449,10 @@ public abstract class BaseShape extends ShapeEvents{
         return false;
     }
     
+    int nMode=0;
     @Override
     public boolean onMousePress(ShapeMouseEvent evt){
-        
-        if(evt.getIntersectedChild()!=-1 && 
-                evt.getButton()==1 && 
-                childs.get(evt.getIntersectedChild()).bSelected) 
+        if(evt.getButton()==1 && bSelected) 
         {
             nMode=1;
             return true;
@@ -469,58 +468,86 @@ public abstract class BaseShape extends ShapeEvents{
     
     @Override
     public boolean onMouseDrag(ShapeMouseEvent evt){
-        if(nMode==1)
-        {
-            for(int j=0;j<selectedChilds.size();j++)
-            {
-                childs.get(selectedChilds.get(j)).move(evt.getDelta());
-            };
-            return true;
-        }
-        return false;
+//        if(nMode==1)
+//        {
+//            if(parent!=null)
+//                parent.dragSelected(evt.getDelta());
+//        }
+//        else if(nMode==2)
+//        {
+//            dragSelected(evt.getDelta());
+//        };
+        
+        return true;
     }
    
+    Vec2 debugMouseMove=new Vec2();
     @Override
     public boolean onMouseMove(ShapeMouseEvent evt){
         debugMouseMove=toGlobal(evt.getPosition());
-        int numChild=evt.getIntersectedChild();
-        if(numChild==-1)
-        {
-            if(prevMoveIntersect!=-1)
-            {
-                childs.get(prevMoveIntersect).onMouseOut(evt);
-                prevMoveIntersect=-1;
-            };
-            return false;
-        }
         
-        if(prevMoveIntersect!=-1 && prevMoveIntersect!=numChild)
+        if(!bMouseIn)
         {
-            childs.get(prevMoveIntersect).onMouseOut(evt);
-            prevMoveIntersect=-1;
+            onMouseIn(evt);
         };
-        childs.get(numChild).onMouseIn(evt);
-        prevMoveIntersect=numChild;
-        return false;
+        return true;
     }
     
     @Override
     public boolean onMouseIn(ShapeMouseEvent evt){
         bMouseIn=true;
-        return false;
+        for(int i=0;i<childs.size();i++)
+        {
+            if(childs.get(i).bMouseIn)
+                childs.get(i).onMouseOut(evt);
+        };
+        if(parent!=null && parent.bMouseIn)
+            parent.bMouseIn=false;
+        return true;
     }
     
     @Override
     public boolean onMouseOut(ShapeMouseEvent evt){
         bMouseIn=false;
-        //if(!bUnbodied) nMode=0;
-        return false;
+        for(int i=0;i<childs.size();i++)
+        {
+            if(childs.get(i).bMouseIn)
+                childs.get(i).onMouseOut(evt);
+        };
+        if(parent!=null && parent.bMouseIn)
+            parent.bMouseIn=false;
+        return true;
     }
-  
-    int nMode=0;
-    int prevMoveIntersect=-1;
-    Vec2 debugMouseMove=new Vec2();
-    boolean bMouseIn=false;
+    /////////////////////////END EVENTS/////////////////////////////////////
+    
+    
+    public void update()
+    {
+        for(int i=0;i<childs.size();i++)
+        {
+            if(childs.get(i)!=null) 
+                childs.get(i).update();
+        };
+        updateContainer();
+    };
+    
+    public void draw(Graphics2D g)
+    {
+        if(bMouseIn)
+        {
+            g.setColor(Color.green);
+            Rect r=getGlobalRectangle().getReduced(10);
+            g.fillRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
+        };
+        
+        //g.setColor(Color.blue);
+        //g.fillRect((int)debugMouseMove.x-5, (int)debugMouseMove.y-5, 10, 10);
+        for(int i=0;i<zbuffer.size();i++)
+        {
+            if(childs.get(zbuffer.get(i))!=null) 
+                childs.get(zbuffer.get(i)).draw(g);
+        };
+    };
     
     
     public abstract boolean isIntersects(Vec2 pt);

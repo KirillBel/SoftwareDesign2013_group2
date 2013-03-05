@@ -166,7 +166,7 @@ public class DotParser
             }
         }
         
-        GraphNode node=graphMain.createCustomNode(graphMain.createTextEllipse(new Vec2(0,0),name,Color.yellow));
+        GraphNode node=graphMain.createCustomNode(graphMain.createTextCircle(new Vec2(0,0),name,Color.yellow));
         NodeID nodeID=new NodeID(name, node.getID());
         list.add(nodeID);
         return node;

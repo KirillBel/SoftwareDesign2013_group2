@@ -124,7 +124,7 @@ public class GraphMain {
         for (int i = 0; i<NodeCount; i++)
         {
             Node = graphData.getElementOfNodesArray(i);
-            DemencionsOfNode = Node.getShape().getGlobalPlacement().getSize();
+            DemencionsOfNode = Node.getShape().getGlobalRectangle().getSize();
             MaxDemencions.x = Math.max(MaxDemencions.x, DemencionsOfNode.x);
             MaxDemencions.y = Math.max(MaxDemencions.y, DemencionsOfNode.y);
         }
@@ -133,7 +133,7 @@ public class GraphMain {
             Node = graphData.getElementOfNodesArray(i);
             tempPlacement.x = MaxDemencions.x*2*NodesPerLineCounter;
             tempPlacement.y = MaxDemencions.y*2*NodesPerColumnCounter;
-            Node.getShape().setGlobalPosition(tempPlacement);
+            Node.getShape().setPosition(tempPlacement);
             if (NodesPerLineCounter == NodesPerLine)
             {
                 NodesPerLineCounter = 1;

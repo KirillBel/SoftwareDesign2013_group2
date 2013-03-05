@@ -21,17 +21,17 @@ public class BoxShape extends BaseShape{
 
     public BoxShape(Rect rect)
     {
-        setLocalPlacement(rect);
+        setRectangle(rect);
     };
     
     public BoxShape(float posX,float posY, float sizeX, float sizeY)
     {
-        setLocalPlacement(new Rect(posX,posY,posX+sizeX,posY+sizeY));
+        setRectangle(new Rect(posX,posY,posX+sizeX,posY+sizeY));
     };
     
     @Override
     public void draw(Graphics2D g) {
-        Rect globalPlace=getGlobalPlacement();
+        Rect globalPlace=getGlobalRectangle();
         g.setColor(color);
         g.fillRoundRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y,5,5);
         g.setColor(Color.black);
@@ -52,21 +52,19 @@ public class BoxShape extends BaseShape{
 
     @Override
     public boolean isIntersects(Vec2 pt) {
-        if(bUnbodied) return true;
-        return getLocalPlacement().pointIn(pt);
+        return getGlobalRectangle().pointIn(pt);
     }
     
     @Override
     public boolean isIntersects(Rect r) {
-        if(bUnbodied) return true;
-        return Intersect.rectangle_rectangle(getLocalPlacement(), r)==Intersect.INCLUSION;
+        return Intersect.rectangle_rectangle(getGlobalRectangle(), r)==Intersect.INCLUSION;
     }
 
     @Override
     public Vec2 getPortPoint(Vec2 from) {
         ArrayList<Vec2> array=new ArrayList();
 
-        if(Intersect.lineseg_rect(from, getGlobalPlacement().getCenter(), getGlobalPlacement(), array)==Intersect.EXCLUSION)
+        if(Intersect.lineseg_rect(from, getGlobalRectangle().getCenter(), getGlobalRectangle(), array)==Intersect.EXCLUSION)
         {
             System.err.printf("Ошибка при расчете пересечения\n");
             return from;

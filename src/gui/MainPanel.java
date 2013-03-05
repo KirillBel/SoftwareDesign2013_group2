@@ -125,7 +125,7 @@ public class MainPanel extends DockablePanel{
         
         BaseShape shape2=new BoxShape(0,0,100,100);
         shape2.color=Color.red;
-        shape2.setLocalPosition(new Vec2(300,10));
+        shape2.setPosition(new Vec2(300,10));
         
         BaseShape dot=new EllipseShape(0,0,5,5);
         dot.move(new Vec2(200,-100));
@@ -137,7 +137,7 @@ public class MainPanel extends DockablePanel{
         //shape.setContainerMode(BaseShape.CONTAIN_CHILDS_TO_NODE);
         
         BaseShape ellipse=new EllipseShape(new Vec2(0,0),100);
-        ellipse.setGlobalPosition(new Vec2(40,100));
+        ellipse.setPosition(new Vec2(40,100));
         ellipse.color=Color.CYAN;
         TextShape text2=new TextShape("QWERty");
         ellipse.addChild(text2);
@@ -151,8 +151,8 @@ public class MainPanel extends DockablePanel{
         graphMain.getGraphScene().add(shape);
         graphMain.getGraphScene().add(shape2);
         graphMain.getGraphScene().add(line);
-        graphMain.getGraphScene().add(ellipse);
-        graphMain.getGraphScene().add(line2);
+        //graphMain.getGraphScene().add(ellipse);
+        //graphMain.getGraphScene().add(line2);
         //graphMain.getGraphScene().add(text);
     };
     

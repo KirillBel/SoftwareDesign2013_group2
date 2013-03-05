@@ -22,28 +22,28 @@ public class EllipseShape extends BaseShape{
     
     public EllipseShape(Rect rect)
     {
-        setLocalPlacement(rect);
+        setRectangle(rect);
         ell=new Ellipse2D.Float(rect.left,rect.top,rect.getSize().x,rect.getSize().y);
     };
     
     public EllipseShape(float posX,float posY, float sizeX, float sizeY)
     {
-        setLocalPlacement(new Rect(posX,posY,posX+sizeX,posY+sizeY));
+        setRectangle(new Rect(posX,posY,posX+sizeX,posY+sizeY));
         ell=new Ellipse2D.Float(posX,posY,sizeX,sizeY);
     };
     
     public EllipseShape(Vec2 position, float radius)
     {
-        bConstrainProportions=true;
+        bEquilateral=true;
         Rect r=new Rect(position.x-radius,position.y-radius,position.x+radius,position.y+radius);
-        setLocalPlacement(r);
+        setRectangle(r);
         ell=new Ellipse2D.Float(r.left,r.top,r.getSize().x,r.getSize().y);
         
     };
     
     @Override
     public void draw(Graphics2D g) {
-        Rect globalPlace=getGlobalPlacement();
+        Rect globalPlace=getGlobalRectangle();
         g.setColor(color);
         g.fillOval((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
         g.setColor(Color.black);
@@ -64,16 +64,16 @@ public class EllipseShape extends BaseShape{
     
     @Override
     public boolean isIntersects(Vec2 pt) {
-        ell.x=getLocalPlacement().left;
-        ell.y=getLocalPlacement().top;
-        ell.width=getLocalPlacement().getSize().x;
-        ell.height=getLocalPlacement().getSize().y;
+        ell.x=getPosition().x;
+        ell.y=getPosition().y;
+        ell.width=getSize().x;
+        ell.height=getSize().y;
         return ell.contains(pt.toPoint());
     }
 
     @Override
     public boolean isIntersects(Rect r) {
-        return Intersect.rectangle_rectangle(getLocalPlacement(), r)==Intersect.INCLUSION;
+        return Intersect.rectangle_rectangle(getGlobalRectangle(), r)==Intersect.INCLUSION;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class EllipseShape extends BaseShape{
         Vec2 v1=new Vec2();
         Vec2 v2=new Vec2();
         
-        Intersect.line_ellipsecenter(from,getGlobalPlacement(),v1,v2);
+        Intersect.line_ellipsecenter(from,getGlobalRectangle(),v1,v2);
         
         if(from.getDistance(v1)<from.getDistance(v2))
             return v1;

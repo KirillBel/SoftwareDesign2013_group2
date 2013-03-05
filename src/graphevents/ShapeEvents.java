@@ -37,14 +37,14 @@ public class ShapeEvents {
     }
     
     
-    public void processEvent(BaseEvent evt)
+    public boolean processEvent(BaseEvent evt)
     {
         switch(evt.getType())
         {
             case BaseEvent.EVENT_TYPE_MOUSE: 
-                processMouseEvent((ShapeMouseEvent)evt);
-                break;
+                return processMouseEvent((ShapeMouseEvent)evt);
         };
+        return false;
     };
     
     protected boolean processMouseEvent(ShapeMouseEvent evt)

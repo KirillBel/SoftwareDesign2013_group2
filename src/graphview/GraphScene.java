@@ -69,6 +69,7 @@ public class GraphScene extends javax.swing.JPanel{
     int sceneMode=0;
     Rect selectionRect=new Rect();
     
+    BaseShape sceneSelected=null;
     public static final int SCENE_MODE_NONE = 0;
     public static final int SCENE_MODE_SELECT = 1;
     public static final int SCENE_MODE_DRAG_SELECTED = 2;
@@ -142,7 +143,13 @@ public class GraphScene extends javax.swing.JPanel{
     
     private void formMouseDragged(java.awt.event.MouseEvent evt) {                                  
         updateMousePos(Vec2.fromPoint(evt.getLocationOnScreen()));
-        root.processEvent(ShapeMouseEvent.createMouseDrag(mouseState.LastBtn, mouseState.scenePos, mouseState.sceneDelta));
+        if(sceneSelected!=null)
+        {
+            setSceneMode(SCENE_MODE_DRAG_SELECTED);
+        }
+        else {
+            root.processEvent(ShapeMouseEvent.createMouseDrag(mouseState.LastBtn, mouseState.scenePos, mouseState.sceneDelta));
+        };
         processSceneMode();
         updateScene();
     }                                 
@@ -168,16 +175,20 @@ public class GraphScene extends javax.swing.JPanel{
     private void formMousePressed(java.awt.event.MouseEvent evt) {                                  
         mouseState.setBtn(evt.getButton(), 1);
         
-        int index=root.testChildIntersect(mouseState.scenePos);
+        BaseShape shape=root.getIntersectedChild(mouseState.scenePos);
         
-        if(index==-1)
+        if(shape==null)
         {
             if(mouseState.MouseBtnL==1)
                 setSceneMode(SCENE_MODE_SELECT);
             else if(mouseState.MouseBtnR==1)
                 setSceneMode(SCENE_MODE_OFFSET);
         }
-        else root.processEvent(ShapeMouseEvent.createMousePress(mouseState.LastBtn, mouseState.scenePos));
+        else 
+        {
+            sceneSelected=shape;
+            root.processEvent(ShapeMouseEvent.createMousePress(mouseState.LastBtn, mouseState.scenePos));
+        }
     }                                 
 
     private void formMouseReleased(java.awt.event.MouseEvent evt) {                                   
@@ -185,6 +196,7 @@ public class GraphScene extends javax.swing.JPanel{
         if(sceneMode==SCENE_MODE_SELECT && mouseState.LastBtn==1) endSceneMode();
         else if(sceneMode==SCENE_MODE_OFFSET && mouseState.LastBtn==3) endSceneMode();
         else root.processEvent(ShapeMouseEvent.createMouseRelease(mouseState.LastBtn, mouseState.scenePos));
+        sceneSelected=null;
     }                                  
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {              
@@ -262,6 +274,28 @@ public class GraphScene extends javax.swing.JPanel{
         {
             offset=offset.plus(mouseState.screenDelta);
             updateScene();
+        }
+        else if(sceneMode==SCENE_MODE_DRAG_SELECTED)
+        {
+            if(sceneSelected==null) 
+            {
+                setSceneMode(SCENE_MODE_NONE);
+                return;
+            }
+            
+            if(sceneSelected.parent==null)
+                sceneSelected.move(mouseState.sceneDelta);
+            else
+            {
+                for(int i=0;i<sceneSelected.parent.getNumChilds();i++)
+                {
+                    if(sceneSelected.parent.getChild(i)==null) continue;
+                    if(sceneSelected.parent.getChild(i).bSelected)
+                    {
+                        sceneSelected.parent.getChild(i).move(mouseState.sceneDelta);
+                    };
+                };
+            };
         };
     };
     

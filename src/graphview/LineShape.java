@@ -28,7 +28,6 @@ public class LineShape extends BaseShape {
         portNodeB=portB;
         bMoveable=false;
         bResizeable=false;
-        bUnbodied=true;
     };
     
     @Override
@@ -74,7 +73,7 @@ public class LineShape extends BaseShape {
         return points.get(index).getGlobalPosition();
     }
     public void setPoint(Vec2 pt, int index){
-        points.get(index).setGlobalPosition(pt);
+        points.get(index).setPosition(pt);
         update();
     };
     
@@ -96,7 +95,7 @@ public class LineShape extends BaseShape {
             if(portNodeB!=null) return getPortPointB();
         };
         
-        return points.get(index-offset).getGlobalPlacement().getCenter();
+        return points.get(index-offset).getGlobalRectangle().getCenter();
     }
     
     public int getNumPointsWithPort()
@@ -123,12 +122,12 @@ public class LineShape extends BaseShape {
         if(getNumPoints()==0) 
         {
             if(portNodeB!=null)
-                point=portNodeB.getGlobalPlacement().getCenter();
+                point=portNodeB.getGlobalRectangle().getCenter();
             else 
                 return new Vec2();
         }
         else
-            point=points.get(0).getGlobalPlacement().getCenter();
+            point=points.get(0).getGlobalRectangle().getCenter();
         
         if(portNodeA!=null)
             portA=portNodeA.getPortPoint(point);
@@ -143,12 +142,12 @@ public class LineShape extends BaseShape {
         if(getNumPoints()==0) 
         {
             if(portNodeA!=null)
-                point=portNodeA.getGlobalPlacement().getCenter();
+                point=portNodeA.getGlobalRectangle().getCenter();
             else 
                 return new Vec2();
         }
         else
-            point=points.get(points.size()-1).getGlobalPlacement().getCenter();
+            point=points.get(points.size()-1).getGlobalRectangle().getCenter();
         
         if(portNodeB!=null)
             portB=portNodeB.getPortPoint(point);
