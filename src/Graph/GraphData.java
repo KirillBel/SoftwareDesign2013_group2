@@ -247,6 +247,24 @@ public class GraphData {
             return null;
         } 
     }
+    
+    /**
+     * Функция для получения размера массива вершин
+     * @return Возвращает размер массива вершин
+     */
+    public int getSizeNodeArray()
+    {
+        return nodesArray.size();
+    }
+    
+    /**
+     * Функция для получения размера массива ребер
+     * @return Возвращает размер массива ребер
+     */
+    public int getSizeEdgeArray()
+    {
+        return edgesArray.size();
+    }
    
     /**
      * Функция для получения количества вершин графа
