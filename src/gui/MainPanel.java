@@ -20,11 +20,13 @@ import graphview.EllipseShape;
 import graphview.GraphMain;
 import graphview.TextShape;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 /**
@@ -47,11 +49,14 @@ public class MainPanel extends DockablePanel{
     Dockable structureDock;
     Dockable objectPropertiesDock;
     Dockable overviewDock;
+    
+    JFrame mainFrame;
      
     public MainPanel(JFrame frame,GraphMain graphMain_)
     {
         super(frame);
         graphMain=graphMain_;
+        mainFrame=frame;
         initUI();
         initScene();
     }
@@ -59,7 +64,7 @@ public class MainPanel extends DockablePanel{
     public void initUI()
     {
         
-        structure=new StructurePanel();
+        structure=new StructurePanel(graphMain, mainFrame);
         structureDock = new DefaultDockable("Structure", structure, "Structure", null, DockingMode.ALL - DockingMode.FLOAT);
         structureDock=addActions(structureDock);
         centerTabbedDock.addDockable(structureDock, new Position(1));
@@ -68,8 +73,14 @@ public class MainPanel extends DockablePanel{
         sceneDock=addActions(sceneDock);
         centerTabbedDock.addDockable(sceneDock, new Position(0));
         
+        Dimension texpPanelSize= new Dimension(100, 100) ;
         JTextArea textPanel1 = new JTextArea();
-        Dockable textPanelDock = new DefaultDockable("Text", textPanel1, "Text", null, DockingMode.ALL - DockingMode.FLOAT);
+        textPanel1.setMinimumSize(texpPanelSize);
+        textPanel1.setSize(texpPanelSize);
+        JScrollPane pane = new JScrollPane(textPanel1);
+       //pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        //pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        Dockable textPanelDock = new DefaultDockable("Text", pane, "Text", null, DockingMode.ALL - DockingMode.FLOAT);
         textPanelDock=addActions(textPanelDock);
         botLeftTabbedDock.addDockable(textPanelDock, new Position(1));
         
