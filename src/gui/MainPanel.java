@@ -154,16 +154,22 @@ public class MainPanel extends DockablePanel{
         ellipse.addChild(text2);
         ellipse.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
         
+        BaseShape ellipse2=new EllipseShape(new Vec2(40,40),100);
+        ellipse2.setPosition(new Vec2(100,100));
+        ellipse2.color=Color.PINK;
+        
+        
         LineShape line = new LineShape(shape,shape2);
-        line.insertPoint(dot,0);
+        line.insertPoint(new Vec2(200,-100),0);
         
         LineShape line2 = new LineShape(shape,ellipse);
         
         graphMain.getGraphScene().add(shape);
         graphMain.getGraphScene().add(shape2);
         graphMain.getGraphScene().add(line);
-        //graphMain.getGraphScene().add(ellipse);
-        //graphMain.getGraphScene().add(line2);
+        graphMain.getGraphScene().add(ellipse);
+        graphMain.getGraphScene().add(ellipse2);
+        graphMain.getGraphScene().add(line2);
         //graphMain.getGraphScene().add(text);
     };
     

@@ -58,6 +58,6 @@ public class TextShape extends BoxShape{
             g.setStroke(oldStroke);
             
         }
-        else g.drawRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+        //else g.drawRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
     }
 }

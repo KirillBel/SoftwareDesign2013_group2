@@ -76,8 +76,9 @@ public class GraphMain {
     {
         EllipseShape shape=new EllipseShape(pos,5);
         shape.color=color;
-        shape.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
+        shape.setContainerMode(BaseShape.CONTAIN_CHILDS);
         shape.addChild(new TextShape(txt));
+        shape.fitToChilds(true);
         graphScene.add(shape);
         return shape;
     };

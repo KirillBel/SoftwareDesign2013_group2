@@ -4,13 +4,16 @@
  */
 package graphview;
 
+import geometry.Intersect;
 import geometry.Rect;
 import geometry.Vec2;
 import graphevents.BaseEvent;
 import graphevents.ShapeEvents;
 import graphevents.ShapeMouseEvent;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.util.ArrayList;
 
 /**
@@ -23,19 +26,30 @@ public abstract class BaseShape  extends ShapeEvents{
     private Vec2 globalCoord=new Vec2();
     private Vec2 shapeSize=new Vec2();
     protected boolean bMoveable=true;
-    protected boolean bEquilateral=false;
     protected boolean bResizeable=true;
     protected BaseShape parent=null;
     protected boolean bSelected=false;
     protected int childIndex=-1;
     protected boolean bVisible=true;
     protected boolean bMouseIn=false;
+    protected boolean bHaveGrip=true;
     
     int containerMode=CONTAIN_DEFAULT;
     public float containerOffset=7;
     public static final int CONTAIN_DEFAULT = 0;
     public static final int CONTAIN_CHILDS_TO_NODE = 1;
     public static final int CONTAIN_NODE_TO_CHILDS = 2;
+    public static final int CONTAIN_CHILDS = 3;
+    
+    public static final int GRIP_NONE = 0;
+    public static final int GRIP_LEFT = 1;
+    public static final int GRIP_RIGHT = 2;
+    public static final int GRIP_TOP = 3;
+    public static final int GRIP_BOTTOM = 4;
+    public static final int GRIP_TOP_LEFT = 5;
+    public static final int GRIP_TOP_RIGHT = 6;
+    public static final int GRIP_BOTTOM_LEFT = 7;
+    public static final int GRIP_BOTTOM_RIGHT = 8;
     
     protected ArrayList<BaseShape> childs=new ArrayList<BaseShape>();
     protected ArrayList<Integer> selectedChilds=new ArrayList<Integer>();
@@ -91,6 +105,8 @@ public abstract class BaseShape  extends ShapeEvents{
     public void setSize(Vec2 size)
     {
         if(!bResizeable) return;
+        if(size.x<5) size.x=5;
+        if(size.y<5) size.y=5;
         shapeSize.set(onResize(shapeSize,size));
     };
     
@@ -118,15 +134,6 @@ public abstract class BaseShape  extends ShapeEvents{
     };
     
     protected Vec2 onResize(Vec2 oldSize, Vec2 newSize){
-        
-        if(bEquilateral)
-        {
-            if(newSize.x>newSize.y)
-                newSize=new Vec2(newSize.x,newSize.x);
-            else 
-                newSize=new Vec2(newSize.y,newSize.y);
-        };
-        
         return newSize;
     }
     
@@ -181,11 +188,13 @@ public abstract class BaseShape  extends ShapeEvents{
         BaseShape shape=null;
         for(int i=zbuffer.size()-1;i>=0;i--)
         {
-            if(!childs.get(zbuffer.get(i)).isIntersects(pt)) continue;
+            if(!childs.get(zbuffer.get(i)).isIntersects(pt) &&
+                childs.get(zbuffer.get(i)).isGripIntersect(pt)==GRIP_NONE) 
+                continue;
             shape=childs.get(zbuffer.get(i)).getIntersectedChild(pt);
             if(shape!=null) return shape;
         }
-        if(isIntersects(pt))
+        if(isIntersects(pt) || isGripIntersect(pt)!=GRIP_NONE)
             return this;
         return null;
     };
@@ -391,8 +400,28 @@ public abstract class BaseShape  extends ShapeEvents{
             {
                 childs.get(i).setCenterPosition(getSize().divide(2));
             };
+        }
+        else if(containerMode==CONTAIN_CHILDS)
+        {
+            for(int i=0;i<childs.size();i++)
+            {
+                childs.get(i).setCenterPosition(getSize().divide(2));
+            };
         };
     };
+    
+    public void fitToChilds(boolean bEquilateral)
+    {
+        Rect r=getChildsRect();
+        Vec2 size=r.getSize();
+        if(bEquilateral)
+        {
+            if(size.x>size.y) size.y=size.x;
+            else size.x=size.y; 
+        };
+        
+        setSize(size.plus(containerOffset*2));
+    }
     
     ///////////////////////////////END CONTAINER/////////////////////////////
     
@@ -520,6 +549,95 @@ public abstract class BaseShape  extends ShapeEvents{
     }
     /////////////////////////END EVENTS/////////////////////////////////////
     
+    //////////////////////GRIP//////////////////////////////////////////////
+    
+    public int isGripIntersect(Vec2 pt)
+    {
+        if(!bHaveGrip) return GRIP_NONE;
+        if(!bSelected) return GRIP_NONE;
+        //if(Intersect.rectangle_point(getLocalPlacement().getIncreased(10), 
+        //        pt)!=Intersect.INCLUSION) return GRIP_NONE;
+
+        Rect r=new Rect(-3,-3,3,3);
+        
+        r.setCenterPosition(getGlobalRectangle().getTopLeft());
+        if(Intersect.rectangle_point(r, pt)==Intersect.INCLUSION)
+            return GRIP_TOP_LEFT;
+        
+        r.setCenterPosition(getGlobalRectangle().getTopRight());
+        if(Intersect.rectangle_point(r, pt)==Intersect.INCLUSION)
+            return GRIP_TOP_RIGHT;
+        
+        r.setCenterPosition(getGlobalRectangle().getBottomLeft());
+        if(Intersect.rectangle_point(r, pt)==Intersect.INCLUSION)
+            return GRIP_BOTTOM_LEFT;
+        
+        r.setCenterPosition(getGlobalRectangle().getBottomRight());
+        if(Intersect.rectangle_point(r, pt)==Intersect.INCLUSION)
+            return GRIP_BOTTOM_RIGHT;
+            
+        if(Intersect.lineseg_point(getGlobalRectangle().getTopLeft(), 
+                getGlobalRectangle().getTopRight(),3, pt)==Intersect.INCLUSION) 
+            return GRIP_TOP;
+        if(Intersect.lineseg_point(getGlobalRectangle().getTopRight(), 
+                getGlobalRectangle().getBottomRight(),3, pt)==Intersect.INCLUSION) 
+            return GRIP_RIGHT;
+        if(Intersect.lineseg_point(getGlobalRectangle().getBottomRight(), 
+                getGlobalRectangle().getBottomLeft(),3, pt)==Intersect.INCLUSION) 
+            return GRIP_BOTTOM;
+        if(Intersect.lineseg_point(getGlobalRectangle().getBottomLeft(), 
+                getGlobalRectangle().getTopLeft(),3, pt)==Intersect.INCLUSION) 
+            return GRIP_LEFT;
+        return GRIP_NONE;
+    };
+    
+    public void drawGrip(Graphics2D g)
+    {
+        if(!bHaveGrip) return;
+        Rect globalPlace=getGlobalRectangle();
+        
+        g.setColor(Color.ORANGE);
+        
+        Stroke oldStroke=g.getStroke();
+        BasicStroke stroke=new BasicStroke(3);
+        g.setStroke(stroke);
+        g.drawRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+        g.setStroke(oldStroke);
+        
+        g.setColor(Color.BLACK);
+        g.drawRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+        
+        Rect r=new Rect(-3,-3,3,3);
+        r.setCenterPosition(getGlobalRectangle().getTopLeft());
+        g.fillRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
+        r.setCenterPosition(getGlobalRectangle().getTopRight());
+        g.fillRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
+        r.setCenterPosition(getGlobalRectangle().getBottomLeft());
+        g.fillRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
+        r.setCenterPosition(getGlobalRectangle().getBottomRight());
+        g.fillRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
+    };
+    
+    public void onGripDragged(int nGrip, Vec2 delta)
+    {
+        Rect r=getRectangle();
+        switch(nGrip)
+        {
+            case GRIP_TOP: r.top+=delta.y; break;
+            case GRIP_BOTTOM: r.bottom+=delta.y; break;
+            case GRIP_LEFT: r.left+=delta.x; break;
+            case GRIP_RIGHT: r.right+=delta.x; break;
+                
+            case GRIP_TOP_LEFT: r.top+=delta.y; r.left+=delta.x; break;
+            case GRIP_TOP_RIGHT: r.top+=delta.y; r.right+=delta.x; break;
+            case GRIP_BOTTOM_LEFT: r.bottom+=delta.y; r.left+=delta.x; break;
+            case GRIP_BOTTOM_RIGHT: r.bottom+=delta.y; r.right+=delta.x; break;
+        };
+        
+        setRectangle(r);
+    };
+    ///////////////////////END GRIP/////////////////////////////////////////
+    
     
     public void update()
     {
@@ -533,7 +651,8 @@ public abstract class BaseShape  extends ShapeEvents{
     
     public void draw(Graphics2D g)
     {
-        if(bMouseIn)
+        if(bSelected) drawGrip(g);
+        if(bMouseIn && false)
         {
             g.setColor(Color.green);
             Rect r=getGlobalRectangle().getReduced(10);

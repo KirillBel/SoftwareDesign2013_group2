@@ -8,8 +8,10 @@ import geometry.Intersect;
 import geometry.Rect;
 import geometry.Vec2;
 import graphevents.ShapeMouseEvent;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.util.ArrayList;
 
 /**
@@ -28,12 +30,13 @@ public class LineShape extends BaseShape {
         portNodeB=portB;
         bMoveable=false;
         bResizeable=false;
+        bHaveGrip=false;
     };
     
     @Override
     public void draw(Graphics2D g) {
         g.setColor(color);
-        if(bSelected) g.setColor(Color.red);
+        if(bSelected) g.setColor(Color.BLACK);
         
         Vec2 point=null;
         Vec2 point1=null;
@@ -41,7 +44,22 @@ public class LineShape extends BaseShape {
         {
             point=getPointWithPort(i);
             point1=getPointWithPort(i+1);
+            
+            if(bSelected)
+            {
+                Color c=g.getColor();
+                g.setColor(Color.ORANGE);
+                Stroke oldStroke=g.getStroke();
+                BasicStroke stroke=new BasicStroke(4);
+                g.setStroke(stroke);
+                g.drawLine((int)point.x, (int)point.y, (int)point1.x, (int)point1.y);
+                g.setStroke(oldStroke);
+                g.setColor(c);
+            };
+            
             g.drawLine((int)point.x, (int)point.y, (int)point1.x, (int)point1.y);
+            
+            
             if(i==0)
             {
                 g.fillOval((int)point.x-3, (int)point.y-3, 6, 6);
@@ -58,13 +76,9 @@ public class LineShape extends BaseShape {
         
     }
     
-    public void insertPoint(BaseShape shape, int index)
+    public void insertPoint(Vec2 pt, int index)
     {
-        for(int i=0;i<points.size();i++)
-        {
-            if(points.get(i)==shape) return;
-        };
-        
+        DotShape shape=new DotShape(pt,5);
         points.add(index, shape);
         addChild(shape);
     };

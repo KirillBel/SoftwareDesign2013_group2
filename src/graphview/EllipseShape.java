@@ -34,7 +34,6 @@ public class EllipseShape extends BaseShape{
     
     public EllipseShape(Vec2 position, float radius)
     {
-        bEquilateral=true;
         Rect r=new Rect(position.x-radius,position.y-radius,position.x+radius,position.y+radius);
         setRectangle(r);
         ell=new Ellipse2D.Float(r.left,r.top,r.getSize().x,r.getSize().y);
@@ -48,17 +47,8 @@ public class EllipseShape extends BaseShape{
         g.fillOval((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
         g.setColor(Color.black);
         
-        if(bSelected)
-        {
-            Stroke oldStroke=g.getStroke();
-            BasicStroke stroke=new BasicStroke(3,BasicStroke.CAP_BUTT,BasicStroke.JOIN_BEVEL,0,new float[]{9}, 0);
-            g.setStroke(stroke);
-            g.drawOval((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
-            g.setStroke(oldStroke);
-            
-        }
-        else g.drawOval((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
-        
+        g.drawOval((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+
         super.draw(g);
     }
     

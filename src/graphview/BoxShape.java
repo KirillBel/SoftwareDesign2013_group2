@@ -36,16 +36,7 @@ public class BoxShape extends BaseShape{
         g.fillRoundRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y,5,5);
         g.setColor(Color.black);
         
-        if(bSelected)
-        {
-            Stroke oldStroke=g.getStroke();
-            BasicStroke stroke=new BasicStroke(3,BasicStroke.CAP_BUTT,BasicStroke.JOIN_BEVEL,0,new float[]{9}, 0);
-            g.setStroke(stroke);
-            g.drawRoundRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y,5,5);
-            g.setStroke(oldStroke);
-            
-        }
-        else g.drawRoundRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y,5,5);
+        g.drawRoundRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y,5,5);
         
         super.draw(g);
     }
