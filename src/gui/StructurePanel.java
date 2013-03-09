@@ -4,12 +4,18 @@
  */
 package gui;
 
+import graph.GraphData;
+import graph.GraphEdge;
+import graph.GraphEdge.Direction;
+import graph.GraphNode;
 import graphview.GraphMain;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -18,7 +24,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneLayout;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -27,11 +36,14 @@ import javax.swing.table.DefaultTableModel;
 public class StructurePanel extends javax.swing.JPanel {
 
     private GraphMain graphMain;
+    private GraphData graphData;
     public DefaultTableModel modelNode;
     public DefaultTableModel modelEdge;
     
     public JTable tableNode;
     public JTable tableEdge;
+    
+    private ArrayList<TableCellEditor> editors = new ArrayList<TableCellEditor>();
     
     public TablePropertiesFrame propertiesFrame;
     
@@ -50,12 +62,12 @@ public class StructurePanel extends javax.swing.JPanel {
     }
 
     public void initLayout()
-    {
-        
+    {       
         jButton1.setSelected(true);
         tableNode=createNodeTable();
         tableEdge=createEdgeTable();
         jScrollPane1.setViewportView(tableNode);
+        updateNodes();
         
     } 
     
@@ -69,13 +81,36 @@ public class StructurePanel extends javax.swing.JPanel {
         };
         modelNode.addColumn("Node ID");
         modelNode.addColumn("Label");
-        modelNode.addColumn("Edges");
+        modelNode.addColumn("Edge's ID");
         modelNode.addColumn("Shape");
                     
         
-        JTable table = new JTable(modelNode);
+        JTable table = new JTable(modelNode)
+        {
+            //  Determine editor to be used by row
+            public TableCellEditor getCellEditor(int row, int column)
+            {               
+                if (column == 2)
+                    return editors.get(row);
+                else
+                    return super.getCellEditor(row, column);
+            }
+            
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == 0) {
+                    return false;
+                } else
+                    return true;}
+        };
 
         return table;
+    }
+    
+    public void updateScene()
+    {
+        updateNodes();
+        updateEdges();
     }
     
     private JTable createEdgeTable()
@@ -86,18 +121,115 @@ public class StructurePanel extends javax.swing.JPanel {
                 return true;  
             };     
         };
-        modelEdge.addColumn("From");
-        modelEdge.addColumn("To");
         modelEdge.addColumn("Edge ID");
+        modelEdge.addColumn("From");
+        modelEdge.addColumn("To");        
         modelEdge.addColumn("Direction");
         modelEdge.addColumn("Label");
+        modelEdge.addColumn("Shape");
          
         JTable table = new JTable(modelEdge);
 
         return table;
     }
    
-    /**
+    public void updateNodes()
+    {
+        editors.clear();
+        while(modelNode.getRowCount()>0)
+        {
+            modelNode.removeRow(0);
+        }
+        tableNode.setModel(modelNode);
+        graphData=graphMain.getGraphData();
+        for(int i=0;i<graphData.getSizeNodeArray();i++)
+        {
+            if(graphData.getElementOfNodesArray(i)!=null)
+            {
+                GraphNode node=graphData.getElementOfNodesArray(i);
+                JComboBox comboBox = new JComboBox();
+                for(int j=0; j<node.getSizeOfNodeEdgesIDArray();j++)
+                {
+                    comboBox.addItem(String.valueOf(node.getElementOfNodeEdgesIDArray(j)));
+                }
+                
+                if(node.getSizeOfNodeEdgesIDArray()>=0)
+                {
+                    Object[] rowData={
+                        node.getID(),
+                        "",
+                        String.valueOf(node.getElementOfNodeEdgesIDArray(0)),
+                        node.getShape()
+                    };
+                    modelNode.addRow(rowData);
+                }
+                else
+                {
+                    Object[] rowData={
+                        graphData.getElementOfNodesArray(i).getID(),
+                        "",
+                        null,
+                        graphData.getElementOfNodesArray(i).getShape()
+                    };
+                    modelNode.addRow(rowData);
+                }
+                
+                
+                
+                tableNode.setModel(modelNode);
+                //tableNode.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(comboBox));
+                DefaultCellEditor dce = new DefaultCellEditor( comboBox );
+                editors.add( dce );              
+    
+            }
+        }
+    }
+    
+    public void updateEdges()
+    {
+        String dir="";
+        while(modelEdge.getRowCount()>0)
+        {
+            modelEdge.removeRow(0);
+        }
+        tableEdge.setModel(modelEdge);
+        graphData=graphMain.getGraphData();
+        for(int i=0;i<graphData.getSizeEdgeArray();i++)
+        {
+            GraphEdge edge=graphData.getElementOfEdgesArray(i);
+            if(edge!=null)
+            {          
+                if(edge.getDirection()==Direction.BIDIR)
+                {
+                    dir="BIDIR";
+                }
+                else if(edge.getDirection()==Direction.IN)
+                {
+                    dir="IN";
+                }
+                else
+                {
+                    dir="OUT";
+                }
+                Object[] rowData={
+                        edge.getID(),
+                        edge.getFromID(),
+                        edge.getToID(),
+                        dir,
+                        "",
+                        edge.getShape()
+                };
+                
+                modelEdge.addRow(rowData);
+                
+                }     
+            
+                tableEdge.setModel(modelEdge);
+        }
+    }        
+    
+    
+      /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
@@ -127,6 +259,7 @@ public class StructurePanel extends javax.swing.JPanel {
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         jButton1.setText("Узлы");
+        jButton1.setFocusable(false);
         jButton1.setMinimumSize(new java.awt.Dimension(20, 20));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -135,6 +268,7 @@ public class StructurePanel extends javax.swing.JPanel {
         });
 
         jButton2.setText("Рёбра");
+        jButton2.setFocusable(false);
         jButton2.setMinimumSize(new java.awt.Dimension(20, 20));
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -143,6 +277,7 @@ public class StructurePanel extends javax.swing.JPanel {
         });
 
         jButton3.setText("Конфигурация");
+        jButton3.setFocusable(false);
         jButton3.setMinimumSize(new java.awt.Dimension(20, 20));
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -151,18 +286,23 @@ public class StructurePanel extends javax.swing.JPanel {
         });
 
         jButton4.setText("Добавить узел");
+        jButton4.setFocusable(false);
         jButton4.setMinimumSize(new java.awt.Dimension(20, 20));
 
         jButton5.setText("Добавить ребро");
+        jButton5.setFocusable(false);
         jButton5.setMinimumSize(new java.awt.Dimension(20, 20));
 
         jButton6.setText("Импорт");
+        jButton6.setFocusable(false);
         jButton6.setMinimumSize(new java.awt.Dimension(20, 20));
 
         jButton7.setText("Экспорт");
+        jButton7.setFocusable(false);
         jButton7.setMinimumSize(new java.awt.Dimension(20, 20));
 
         jButton8.setText("Поиск/Замена");
+        jButton8.setFocusable(false);
         jButton8.setMinimumSize(new java.awt.Dimension(20, 20));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -237,11 +377,16 @@ public class StructurePanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        jScrollPane1.setViewportView(tableNode);
+        jScrollPane1.setViewportView(tableNode);        
+        jButton1.setSelected(true);
+        jButton2.setSelected(false);
+        updateNodes();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         jScrollPane1.setViewportView(tableEdge);
+        jButton2.setSelected(true);
+        jButton1.setSelected(false);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed

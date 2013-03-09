@@ -304,6 +304,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             else JOptionPane.showMessageDialog(this, "Load OK!");
         }
+        mainPanel.structure.updateScene();
     }//GEN-LAST:event_jMenuItemFileOpenActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
