@@ -27,6 +27,19 @@
           <artifactId>javadocking</artifactId>
           <version>1.5.0</version>
       </dependency>
+      
+      <dependency>
+          <groupId>local-l2fprod-common-all</groupId>
+          <artifactId>l2fprod-common-all</artifactId>
+          <version>7.3</version>
+      </dependency>
+      
+      
+      <!--<dependency>
+          <groupId>com.l2fprod.common</groupId>
+          <artifactId>l2fprod-common-shared</artifactId>
+          <version>6.9.1</version>
+      </dependency>-->
 
   </dependencies>
 
@@ -120,7 +133,21 @@
                           <createChecksum>true</createChecksum>
                           <generatePom>true</generatePom>
                       </configuration>
-                  </execution>   
+                  </execution>
+                  <execution>                      
+                      <goals>
+                          <goal>install-file</goal>
+                      </goals>
+                      <configuration>
+                          <file>${basedir}/lib/local-l2fprod-common-all/l2fprod-common-all/7.3/l2fprod-common-all-7.3.jar</file>
+                          <groupId>local-l2fprod-common-all</groupId>
+                          <artifactId>l2fprod-common-all</artifactId>
+                          <version>7.3</version>
+                          <packaging>jar</packaging>
+                          <createChecksum>true</createChecksum>
+                          <generatePom>true</generatePom>
+                      </configuration>
+                  </execution>    
               </executions>
           </plugin>
           
