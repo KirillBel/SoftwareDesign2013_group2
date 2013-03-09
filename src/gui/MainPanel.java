@@ -19,6 +19,7 @@ import geometry.Vec2;
 import graphview.EllipseShape;
 import graphview.GraphMain;
 import graphview.TextShape;
+import gui.structurePanel.StructurePanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
