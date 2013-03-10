@@ -67,8 +67,8 @@ public abstract class BaseShape  extends ShapeEvents{
     
     /////////////////////PROPERTIES/////////////////////////////////////
     
-    public PropertyList getProperties(){
-        updateProperties(true);
+    public PropertyList getProperties(boolean bUpdate){
+        if(bUpdate) updateProperties(true);
         return properties;
     }
     
@@ -77,8 +77,8 @@ public abstract class BaseShape  extends ShapeEvents{
         if(bUpdateToProp)
         {
             properties.setValue("Color", color);
-            properties.setValue("Position", localCoord);
-            properties.setValue("Size", shapeSize);
+            properties.setValue("Position", getPosition());
+            properties.setValue("Size", getSize());
         }
         else
         {
@@ -111,7 +111,6 @@ public abstract class BaseShape  extends ShapeEvents{
         if(!bMoveable) return;
         localCoord.set(onMove(localCoord,coord));
         updateGlobalCoord();
-        updateProperties(true);
     };
     
     public void move(Vec2 v)
@@ -128,12 +127,12 @@ public abstract class BaseShape  extends ShapeEvents{
     
     public Vec2 getPosition()
     {
-        return localCoord;
+        return new Vec2(localCoord);
     };
     
     public Vec2 getGlobalPosition()
     {
-        return globalCoord;
+        return new Vec2(globalCoord);
     };
     
     public void setSize(Vec2 size)
@@ -142,12 +141,11 @@ public abstract class BaseShape  extends ShapeEvents{
         if(size.x<5) size.x=5;
         if(size.y<5) size.y=5;
         shapeSize.set(onResize(shapeSize,size));
-        updateProperties(true);
     };
     
     public Vec2 getSize()
     {
-        return shapeSize;
+        return new Vec2(shapeSize);
     };
     
     public void setRectangle(Rect r)
@@ -445,14 +443,18 @@ public abstract class BaseShape  extends ShapeEvents{
             
             for(int i=0;i<childs.size();i++)
             {
+                childs.get(i).bMoveable=true;
                 childs.get(i).setCenterPosition(getSize().divide(2));
+                childs.get(i).bMoveable=false;
             };
         }
         else if(containerMode==CONTAIN_CHILDS)
         {
             for(int i=0;i<childs.size();i++)
             {
+                childs.get(i).bMoveable=true;
                 childs.get(i).setCenterPosition(getSize().divide(2));
+                childs.get(i).bMoveable=false;
             };
         };
     };
@@ -682,6 +684,7 @@ public abstract class BaseShape  extends ShapeEvents{
         };
         
         setRectangle(r);
+        updateContainer();
     };
     ///////////////////////END GRIP/////////////////////////////////////////
     

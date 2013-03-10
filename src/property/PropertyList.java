@@ -9,6 +9,7 @@ import com.l2fprod.common.propertysheet.Property;
 import geometry.Rect;
 import geometry.Vec2;
 import java.awt.Color;
+import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -67,6 +68,16 @@ public class PropertyList {
         return (Float)((FloatProperty)get(name)).getValue();
     };
     
+    public Font getFont(String name)
+    {
+        return (Font)((FontProperty)get(name)).getValue();
+    };
+    
+    public String getString(String name)
+    {
+        return (String)((StringProperty)get(name)).getValue();
+    };
+    
     public void setValue(String name, Color value)
     {
         DefaultProperty prop=get(name);
@@ -104,6 +115,22 @@ public class PropertyList {
         DefaultProperty prop=get(name);
         if(prop==null) return;
         if(!prop.getClass().getSimpleName().equalsIgnoreCase("FloatProperty")) return;
+        get(name).setValue(value);
+    };
+    
+    public void setValue(String name, Font value)
+    {
+        DefaultProperty prop=get(name);
+        if(prop==null) return;
+        if(!prop.getClass().getSimpleName().equalsIgnoreCase("FontProperty")) return;
+        get(name).setValue(value);
+    };
+    
+    public void setValue(String name, String value)
+    {
+        DefaultProperty prop=get(name);
+        if(prop==null) return;
+        if(!prop.getClass().getSimpleName().equalsIgnoreCase("StringProperty")) return;
         get(name).setValue(value);
     };
     
@@ -191,15 +218,24 @@ public class PropertyList {
             PropertyChangeListener listener = new PropertyChangeListener() {
                 @Override
                 public void propertyChange(PropertyChangeEvent pce) {
-                    FloatProperty prop = (FloatProperty) pce.getSource();
+                    DefaultProperty prop = (DefaultProperty) pce.getSource();
+                    
+                    if(prop.getName()==getName())
+                    {
+                        getSubProperties()[0].setValue(getVal().left);
+                        getSubProperties()[1].setValue(getVal().right);
+                        getSubProperties()[0].setValue(getVal().top);
+                        getSubProperties()[1].setValue(getVal().bottom);
+                    };
+                    
                     if(prop.getName().equalsIgnoreCase("left"))
-                        getVal().left=prop.getVal();
+                        getVal().left=(float)prop.getValue();
                     if(prop.getName().equalsIgnoreCase("right"))
-                        getVal().right=prop.getVal();
+                        getVal().right=(float)prop.getValue();
                     if(prop.getName().equalsIgnoreCase("top"))
-                        getVal().top=prop.getVal();
+                        getVal().top=(float)prop.getValue();
                     if(prop.getName().equalsIgnoreCase("bottom"))
-                        getVal().bottom=prop.getVal();
+                        getVal().bottom=(float)prop.getValue();
                 }
             };
             addPropertyChangeListener(listener);
@@ -209,6 +245,30 @@ public class PropertyList {
         {
             return (Rect)getValue();
         };
+    }
+    
+    public static class FontProperty extends DefaultProperty{
+        public FontProperty(String name,String description, Font val)
+        {
+            setName(name);
+            setDisplayName(name);
+            setShortDescription(description);
+            setType(Font.class);
+            setValue(val);
+            setCategory("root");
+        }
+    }
+    
+    public static class StringProperty extends DefaultProperty{
+        public StringProperty(String name,String description, String val)
+        {
+            setName(name);
+            setDisplayName(name);
+            setShortDescription(description);
+            setType(String.class);
+            setValue(val);
+            setCategory("root");
+        }
     }
     
     public static class IntProperty extends DefaultProperty{

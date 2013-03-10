@@ -34,7 +34,7 @@ public class PropertyPanel extends PropertySheetPanel{
     public void fromShape(BaseShape shape)
     {
         selectedShape=shape;
-        fromList(selectedShape.getProperties());
+        fromList(selectedShape.getProperties(true));
     };
     
     public void clearProperties()

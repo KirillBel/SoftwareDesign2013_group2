@@ -17,6 +17,27 @@ public class ShapeEvents {
     protected boolean bReceiveMouseRelease=true;
     protected boolean bReceiveMouseMove=true;
     
+    public boolean isReceivedMouseClick() {
+        return bReceiveMouseClick;
+    }
+    
+    public boolean isReceivedMouseDrag() {
+        return bReceiveMouseDrag;
+    }
+    
+    public boolean isReceivedMousePress() {
+        return bReceiveMousePress;
+    }
+    
+    public boolean isReceivedMouseRelease() {
+        return bReceiveMouseRelease;
+    }
+    
+    public boolean isReceivedMouseMove() {
+        return bReceiveMouseMove;
+    }
+    
+    
     protected boolean testEvent(BaseEvent evt)
     {
         if(evt.getType()==BaseEvent.EVENT_TYPE_MOUSE)

@@ -153,6 +153,7 @@ public class GraphScene extends javax.swing.JPanel{
             if(objectProperties.getShape()!=null)
             {
                 objectProperties.getShape().updateProperties(false);
+                updateScene();
             };
         }
     };
