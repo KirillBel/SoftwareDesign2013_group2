@@ -36,7 +36,7 @@ public class GraphMain {
     {
         GraphNode node=graphData.createNode();
         node.setShape(shape);
-        graphScene.add(shape);
+        graphScene.addShape(shape);
         graphScene.updateScene();
         return node;
     };
@@ -45,7 +45,7 @@ public class GraphMain {
     {
         GraphEdge edge=graphData.createEdge(fromID, toID, dir);
         edge.setShape(shape);
-        graphScene.add(shape);
+        graphScene.addShape(shape);
         shape.setPortA(graphData.getElementOfNodesArray(fromID).getShape());
         shape.setPortB(graphData.getElementOfNodesArray(toID).getShape());
         graphScene.updateScene();
@@ -58,7 +58,7 @@ public class GraphMain {
         shape.color=color;
         shape.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
         shape.addChild(new TextShape(txt));
-        graphScene.add(shape);
+        graphScene.addShape(shape);
         return shape;
     };
     
@@ -68,7 +68,7 @@ public class GraphMain {
         shape.color=color;
         shape.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
         shape.addChild(new TextShape(txt));
-        graphScene.add(shape);
+        graphScene.addShape(shape);
         return shape;
     };
     
@@ -79,7 +79,7 @@ public class GraphMain {
         shape.setContainerMode(BaseShape.CONTAIN_CHILDS);
         shape.addChild(new TextShape(txt));
         shape.fitToChilds(true);
-        graphScene.add(shape);
+        graphScene.addShape(shape);
         return shape;
     };
     

@@ -29,6 +29,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import property.PropertyPanel;
 
 /**
  *
@@ -43,7 +44,6 @@ public class MainPanel extends DockablePanel{
     Dockable[] buttonDockables;
     
     StructurePanel structure;
-    ObjectPropertiesPanel objectProperties;
     OverviewPanel overview;
     
     Dockable sceneDock;
@@ -85,8 +85,7 @@ public class MainPanel extends DockablePanel{
         textPanelDock=addActions(textPanelDock);
         botLeftTabbedDock.addDockable(textPanelDock, new Position(1));
         
-        objectProperties=new ObjectPropertiesPanel();
-        objectPropertiesDock = new DefaultDockable("Object Properties", objectProperties, "Object Properties", null, DockingMode.ALL - DockingMode.FLOAT);
+        objectPropertiesDock = new DefaultDockable("Object Properties", graphMain.getGraphScene().objectProperties, "Object Properties", null, DockingMode.ALL - DockingMode.FLOAT);
         objectPropertiesDock=addActions(objectPropertiesDock);
         rightTabbedDock.addDockable(objectPropertiesDock, new Position(1));
         
@@ -165,12 +164,12 @@ public class MainPanel extends DockablePanel{
         
         LineShape line2 = new LineShape(shape,ellipse);
         
-        graphMain.getGraphScene().add(shape);
-        graphMain.getGraphScene().add(shape2);
-        graphMain.getGraphScene().add(line);
-        graphMain.getGraphScene().add(ellipse);
-        graphMain.getGraphScene().add(ellipse2);
-        graphMain.getGraphScene().add(line2);
+        graphMain.getGraphScene().addShape(shape);
+        graphMain.getGraphScene().addShape(shape2);
+        graphMain.getGraphScene().addShape(line);
+        graphMain.getGraphScene().addShape(ellipse);
+        graphMain.getGraphScene().addShape(ellipse2);
+        graphMain.getGraphScene().addShape(line2);
         //graphMain.getGraphScene().add(text);
     };
     
@@ -196,7 +195,7 @@ public class MainPanel extends DockablePanel{
             case "ObjectProperties":
                 closeAction = new DefaultDockableStateAction(objectPropertiesDock, DockableState.CLOSED);
                 restoreAction = new DefaultDockableStateAction(objectPropertiesDock, DockableState.NORMAL);
-                if (objectProperties.isDisplayable())
+                if (graphMain.getGraphScene().objectProperties.isDisplayable())
                 {
                     // Close the dockable.
                     closeAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Close"));

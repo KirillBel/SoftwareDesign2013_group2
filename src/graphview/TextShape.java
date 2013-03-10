@@ -38,7 +38,7 @@ public class TextShape extends BoxShape{
         //bResizeable=false;
         bReceiveMouseDrag=false;
         bReceiveMousePress=false;
-        bReceiveMouseClick=false;
+        //bReceiveMouseClick=false;
     };
     
     @Override
@@ -49,15 +49,6 @@ public class TextShape extends BoxShape{
         g.setColor(color);
         g.drawString(text, globalPlace.left, globalPlace.bottom-bounds.bottom);
         
-        if(bSelected)
-        {
-            Stroke oldStroke=g.getStroke();
-            BasicStroke stroke=new BasicStroke(2,BasicStroke.CAP_BUTT,BasicStroke.JOIN_BEVEL,0,new float[]{9}, 0);
-            g.setStroke(stroke);
-            g.drawRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
-            g.setStroke(oldStroke);
-            
-        }
-        //else g.drawRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+        if(bSelected) drawGrip(g);
     }
 }

@@ -225,4 +225,10 @@ public class Rect {
         r.convertToStd();;
         return r;
     };
+    
+    @Override
+    public String toString()
+    {
+        return String.format("[%G; %G; %G; %G]", left,right,top, bottom);
+    };
 }

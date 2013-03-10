@@ -175,4 +175,10 @@ public class Vec2 {
     {
         return new Vec2(A.x+(B.x-A.x)*c,A.y+(B.y-A.y)*c);
     };
+    
+    @Override
+    public String toString()
+    {
+        return String.format("[%G; %G]", x,y);
+    };
 }

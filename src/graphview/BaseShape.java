@@ -15,6 +15,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.util.ArrayList;
+import property.PropertyList;
 
 /**
  *
@@ -55,6 +56,38 @@ public abstract class BaseShape  extends ShapeEvents{
     protected ArrayList<Integer> selectedChilds=new ArrayList<Integer>();
     protected ArrayList<Integer> zbuffer=new ArrayList<Integer>();
     
+    PropertyList properties=new PropertyList();
+    
+    public BaseShape()
+    {
+        properties.add(new PropertyList.ColorProperty("Color", "Shape color", color));
+        properties.add(new PropertyList.Vec2Property("Position", "Shape position", localCoord));
+        properties.add(new PropertyList.Vec2Property("Size", "Shape size", shapeSize));
+    };
+    
+    /////////////////////PROPERTIES/////////////////////////////////////
+    
+    public PropertyList getProperties(){
+        updateProperties(true);
+        return properties;
+    }
+    
+    public void updateProperties(boolean bUpdateToProp)
+    {
+        if(bUpdateToProp)
+        {
+            properties.setValue("Color", color);
+            properties.setValue("Position", localCoord);
+            properties.setValue("Size", shapeSize);
+        }
+        else
+        {
+            color=properties.getColor("Color");
+        };
+    };
+    
+    ////////////////////END PROPERTIES//////////////////////////////////
+    
     
     /////////////////////MOVEMENT///////////////////////////////////////
     
@@ -78,6 +111,7 @@ public abstract class BaseShape  extends ShapeEvents{
         if(!bMoveable) return;
         localCoord.set(onMove(localCoord,coord));
         updateGlobalCoord();
+        updateProperties(true);
     };
     
     public void move(Vec2 v)
@@ -108,6 +142,7 @@ public abstract class BaseShape  extends ShapeEvents{
         if(size.x<5) size.x=5;
         if(size.y<5) size.y=5;
         shapeSize.set(onResize(shapeSize,size));
+        updateProperties(true);
     };
     
     public Vec2 getSize()
@@ -371,6 +406,18 @@ public abstract class BaseShape  extends ShapeEvents{
         update();
     };
     
+    public void clearAllSelection()
+    {
+        for(int i=0;i<childs.size();i++)
+        {
+            childs.get(i).bSelected=false;
+            childs.get(i).clearAllSelection();
+        };
+        selectedChilds.clear();
+        
+        update();
+    };
+    
     ////////////////////////END SELECTION_VISIBILITY//////////////////////
     
     /////////////////////////////CONTAINER////////////////////////////////
@@ -471,7 +518,7 @@ public abstract class BaseShape  extends ShapeEvents{
         if(evt.getButton()==1)
         {
             boolean bSel=bSelected;
-            clearSelection();
+            //clearSelection();
             setSelected(!bSel);
             return true;
         }
