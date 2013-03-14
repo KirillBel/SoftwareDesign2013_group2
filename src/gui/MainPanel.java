@@ -18,6 +18,7 @@ import com.javadocking.dockable.action.DefaultDockableStateAction;
 import geometry.Vec2;
 import graphview.EllipseShape;
 import graphview.GraphMain;
+import graphview.ImageShape;
 import graphview.TextShape;
 import gui.structurePanel.StructurePanel;
 import java.awt.Color;
@@ -133,10 +134,14 @@ public class MainPanel extends DockablePanel{
         BaseShape shape3=new BoxShape(15,15,100,100);
         shape3.color=Color.red;
         //shape.addChild(shape3);
+         
+        BaseShape imageShape=new ImageShape(400,200,200,200,"res/images/1647932-untitled3.jpg");
         
         BaseShape shape2=new BoxShape(0,0,100,100);
         shape2.color=Color.red;
         shape2.setPosition(new Vec2(300,10));
+        //shape2.addChild(imageShape);//program dies
+
         
         BaseShape dot=new EllipseShape(0,0,5,5);
         dot.move(new Vec2(200,-100));
@@ -163,13 +168,16 @@ public class MainPanel extends DockablePanel{
         line.insertPoint(new Vec2(200,-100),0);
         
         LineShape line2 = new LineShape(shape,ellipse);
+        LineShape line3 = new LineShape(shape2,imageShape);
         
         graphMain.getGraphScene().addShape(shape);
         graphMain.getGraphScene().addShape(shape2);
+        graphMain.getGraphScene().addShape(imageShape);
         graphMain.getGraphScene().addShape(line);
         graphMain.getGraphScene().addShape(ellipse);
         graphMain.getGraphScene().addShape(ellipse2);
         graphMain.getGraphScene().addShape(line2);
+        graphMain.getGraphScene().addShape(line3);
         //graphMain.getGraphScene().add(text);
     };
     
