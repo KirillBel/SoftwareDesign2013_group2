@@ -182,7 +182,7 @@ public class GraphScene extends javax.swing.JPanel{
         
         if(shape!=null)
         {
-            if(shape.bSelected)
+            if(shape.bSelected || (shape.parent!=null && shape.parent.bSelected))
             {
                 dragTarget=shape;
                 selectedGrip=dragTarget.isGripIntersect(mouseState.scenePos);
@@ -305,6 +305,14 @@ public class GraphScene extends javax.swing.JPanel{
                 dragTarget.move(mouseState.sceneDelta);
             else
             {
+                if(dragTarget.parent.getContainerMode()!=BaseShape.CONTAIN_DEFAULT &&
+                        dragTarget.parent!=root)
+                {
+                    dragTarget.setSelected(false);
+                    dragTarget=dragTarget.parent;
+                    dragTarget.setSelected(true);
+                }
+
                 for(int i=0;i<dragTarget.parent.getNumChilds();i++)
                 {
                     if(dragTarget.parent.getChild(i)==null) continue;
@@ -313,6 +321,7 @@ public class GraphScene extends javax.swing.JPanel{
                         dragTarget.parent.getChild(i).move(mouseState.sceneDelta);
                     };
                 };
+
             };
         }
         else if(sceneMode==SCENE_MODE_DRAG_GRIP)

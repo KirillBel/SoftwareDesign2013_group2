@@ -426,6 +426,11 @@ public abstract class BaseShape  extends ShapeEvents{
         updateContainer();
     };
     
+    public int getContainerMode()
+    {
+        return containerMode;
+    };
+    
     public void updateContainer()
     {
         if(containerMode==CONTAIN_CHILDS_TO_NODE)
@@ -546,15 +551,6 @@ public abstract class BaseShape  extends ShapeEvents{
     
     @Override
     public boolean onMouseDrag(ShapeMouseEvent evt){
-//        if(nMode==1)
-//        {
-//            if(parent!=null)
-//                parent.dragSelected(evt.getDelta());
-//        }
-//        else if(nMode==2)
-//        {
-//            dragSelected(evt.getDelta());
-//        };
         
         return true;
     }

@@ -131,11 +131,13 @@ public class MainPanel extends DockablePanel{
         BaseShape shape=new BoxShape(10,10,200,300);
         shape.color=Color.yellow;
         
-        BaseShape shape3=new BoxShape(15,15,100,100);
+        BaseShape shape3=new BoxShape(15,15,200,200);
         shape3.color=Color.red;
         //shape.addChild(shape3);
          
-        BaseShape imageShape=new ImageShape(400,200,200,200,"res/images/1647932-untitled3.jpg");
+        BaseShape imageShape=new ImageShape(0,0,100,100,"res/images/1647932-untitled3.jpg");
+        shape3.addChild(imageShape);
+        shape3.setContainerMode(BaseShape.CONTAIN_CHILDS_TO_NODE);
         
         BaseShape shape2=new BoxShape(0,0,100,100);
         shape2.color=Color.red;
@@ -168,16 +170,17 @@ public class MainPanel extends DockablePanel{
         line.insertPoint(new Vec2(200,-100),0);
         
         LineShape line2 = new LineShape(shape,ellipse);
-        LineShape line3 = new LineShape(shape2,imageShape);
+        //LineShape line3 = new LineShape(shape2,imageShape);
         
         graphMain.getGraphScene().addShape(shape);
         graphMain.getGraphScene().addShape(shape2);
-        graphMain.getGraphScene().addShape(imageShape);
+        //graphMain.getGraphScene().addShape(imageShape);
         graphMain.getGraphScene().addShape(line);
         graphMain.getGraphScene().addShape(ellipse);
         graphMain.getGraphScene().addShape(ellipse2);
         graphMain.getGraphScene().addShape(line2);
-        graphMain.getGraphScene().addShape(line3);
+        graphMain.getGraphScene().addShape(shape3);
+        //graphMain.getGraphScene().addShape(line3);
         //graphMain.getGraphScene().add(text);
     };
     
