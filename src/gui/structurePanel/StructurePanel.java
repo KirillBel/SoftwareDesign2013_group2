@@ -11,19 +11,27 @@ import graphview.shapes.NodeAspect;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneLayout;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
@@ -47,7 +55,14 @@ public class StructurePanel extends javax.swing.JPanel {
     public TablePropertiesFrame propertiesFrame;
     
     private JFrame mainFrame;
+    
+    private JPopupMenu jPopupMenuContextIndividual = null;
 
+    private JMenuItem jMenuItemDelete = null;
+    
+    ListSelectionModel SelectionModelNode;
+    
+    
     
     /**
      * Creates new form StructurePanel
@@ -82,11 +97,12 @@ public class StructurePanel extends javax.swing.JPanel {
         modelNode.addColumn("Label");
         modelNode.addColumn("Edge's ID");
         modelNode.addColumn("Shape");
-                    
         
-        JTable table = new JTable(modelNode)
+        //ListSelectionModel lm = new DefaultListSelectionModel();
+        //lm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        final JTable table = new JTable(modelNode)
         {
-            //  Determine editor to be used by row
             public TableCellEditor getCellEditor(int row, int column)
             {               
                 if (column == 2)
@@ -102,7 +118,60 @@ public class StructurePanel extends javax.swing.JPanel {
                 } else
                     return true;}
         };
+        
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
 
+                
+                                    
+                if (SwingUtilities.isLeftMouseButton(e)) 
+                {
+                    Point p = e.getPoint();
+                    int column = table.columnAtPoint(p);
+                    int row = table.rowAtPoint(p);
+                    if(column!=-1 && row!=-1) 
+                    {                             
+                        table.changeSelection(row, column, true, true);
+                    }               
+                }                
+                else if (SwingUtilities.isRightMouseButton(e))
+                {      
+                    Point p = e.getPoint();
+                    int column = table.columnAtPoint(p);
+                    int row = table.rowAtPoint(p);
+                    int god=table.getSelectedRowCount();
+                    boolean select=false;
+                    if(table.getSelectedRowCount()==0)
+                    {
+                        table.setColumnSelectionInterval(column, column);
+                        table.setRowSelectionInterval(row, row);
+                    }
+                    else
+                    {
+                        int[] selectedRows=table.getSelectedRows();
+                        for(int i=0; i<selectedRows.length; i++)
+                        {
+                            if(selectedRows[i]==row)                            
+                            {
+                                select=true;
+                            }
+                        }
+                        if(select==false)
+                        {
+                            table.clearSelection();
+                            table.setColumnSelectionInterval(column, column);
+                            table.setRowSelectionInterval(row, row);
+                        }                        
+                    }
+                    JPopupMenu jPopupMenu = getJPopupMenuContextIndividual();
+                    jPopupMenu.show(table, e.getX(), e.getY());
+                }
+                
+            }
+        });
+
+        //table.setSelectionModel(lm);
         return table;
     }
     
@@ -221,6 +290,26 @@ public class StructurePanel extends javax.swing.JPanel {
         }
     }        
     
+    	private JPopupMenu getJPopupMenuContextIndividual() {
+            
+		if (jPopupMenuContextIndividual == null) {
+                    jPopupMenuContextIndividual = new JPopupMenu();
+                    jPopupMenuContextIndividual.add(getJMenuItemDelete());
+		}
+                return jPopupMenuContextIndividual;
+        }
+        
+        private JMenuItem getJMenuItemDelete() {
+            if (jMenuItemDelete == null) {
+                jMenuItemDelete = new JMenuItem("Удалить");
+            }
+            jMenuItemDelete.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    System.out.println("actionPerformed()Удалить");                   
+                }
+            });            
+            return jMenuItemDelete;
+	}
     
       /**
      * This method is called from within the constructor to initialize the form.
@@ -239,8 +328,6 @@ public class StructurePanel extends javax.swing.JPanel {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -291,14 +378,6 @@ public class StructurePanel extends javax.swing.JPanel {
         jButton5.setFocusable(false);
         jButton5.setMinimumSize(new java.awt.Dimension(20, 20));
 
-        jButton6.setText("Импорт");
-        jButton6.setFocusable(false);
-        jButton6.setMinimumSize(new java.awt.Dimension(20, 20));
-
-        jButton7.setText("Экспорт");
-        jButton7.setFocusable(false);
-        jButton7.setMinimumSize(new java.awt.Dimension(20, 20));
-
         jButton8.setText("Поиск/Замена");
         jButton8.setFocusable(false);
         jButton8.setMinimumSize(new java.awt.Dimension(20, 20));
@@ -307,7 +386,7 @@ public class StructurePanel extends javax.swing.JPanel {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 13, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -325,29 +404,23 @@ public class StructurePanel extends javax.swing.JPanel {
                         .addComponent(jScrollPane1)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addContainerGap())
-                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                        .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                        .addGap(83, 83, 83)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -363,9 +436,7 @@ public class StructurePanel extends javax.swing.JPanel {
                                 .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -420,8 +491,6 @@ public class StructurePanel extends javax.swing.JPanel {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
