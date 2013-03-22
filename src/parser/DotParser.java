@@ -1,12 +1,11 @@
 package parser;
 
 import geometry.Vec2;
-import graph.GraphData;
-import graph.GraphEdge;
-import graph.GraphEdge.Direction;
-import graph.GraphNode;
-import graphview.GraphMain;
-import graphview.LineShape;
+import graphview.GraphEdge;
+import graphview.GraphNode;
+import graphview.GraphScene;
+import graphview.shapes.EdgeAspect;
+import graphview.shapes.LineShape;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +21,7 @@ public class DotParser
 {
     
     private Reader m_input;
-    private GraphMain graphMain = null;
+    private GraphScene scene = null;
     private ArrayList<NodeID> list = new ArrayList<NodeID>();
     private ArrayList<GraphEdge> listEdge = new ArrayList<GraphEdge>();
     private ArrayList<GraphNode> listNode = new ArrayList<GraphNode>();
@@ -32,10 +31,10 @@ public class DotParser
      * Конструктор для создания нового парсера
      * @param input - Входной файловый поток
      */
-    public DotParser(Reader input,GraphMain graphMain_)
+    public DotParser(Reader input,GraphScene scene_)
     {
         m_input = input;
-        graphMain=graphMain_;
+        scene=scene_;
     }
     
     /**
@@ -162,11 +161,11 @@ public class DotParser
         {
             if(list.get(i).nameNode.equalsIgnoreCase(name)) {
                 System.out.println("Повтор вершины "+list.get(i).nameNode);
-                return graphMain.getGraphData().getElementOfNodesArray(list.get(i).IDNode);
+                return scene.getNode(list.get(i).IDNode);
             }
         }
         
-        GraphNode node=graphMain.createCustomNode(graphMain.createTextCircle(new Vec2(0,0),name,Color.yellow));
+        GraphNode node=scene.createTextCircleNode(name, Color.yellow);
         NodeID nodeID=new NodeID(name, node.getID());
         list.add(nodeID);
         return node;
@@ -195,16 +194,16 @@ public class DotParser
                 tk.nextToken();
             }
             
-            Direction dir;
+            boolean dir;
             if(tk.ttype=='-')
             {
                 tk.nextToken();
                 if(tk.ttype=='>' && direction==true){
-                    dir=Direction.IN;
+                    dir=true;
                     tk.nextToken();
                 }
                 else if(tk.ttype=='-' && direction==false){
-                    dir=Direction.BIDIR;
+                    dir=false;
                     tk.nextToken();
                 }
                 else {
@@ -216,7 +215,7 @@ public class DotParser
             {
                 tk.nextToken();
                 if(tk.ttype=='-'){
-                    dir=Direction.OUT;
+                    dir=true;
                     tk.nextToken();
                 }
                 else return;
@@ -227,7 +226,7 @@ public class DotParser
                 GraphNode node2 = getNode(tk.sval);
                 System.out.println("Вершина: "+list.get(node2.getID()).nameNode+" (ID = "+list.get(node2.getID()).IDNode+")");
                 
-                GraphEdge edge = graphMain.createCustomEdge(node1.getID(), node2.getID(), dir, new LineShape(null,null));
+                GraphEdge edge = scene.createEdge(node1.getID(), node2.getID(), EdgeAspect.eEdgeAspectType.SIMPLE_LINE);
                 listEdge.add(edge);
                 System.out.println("ID ребра = "+edge.getID()+" Из вершины "+node1.getID()+" в вершину "+node2.getID());
                 edge(tk);
@@ -367,7 +366,7 @@ public class DotParser
   {
       for(int i=0; i<listEdge.size();i++){
           System.out.println("OPTION for edge "+listEdge.get(i).getID()); 
-          listEdge.get(i).getShape().color=color;
+          listEdge.get(i).getAspect().color=color;
       }
       return;
   }
@@ -380,7 +379,7 @@ public class DotParser
   {
       for(int i=0; i<listNode.size();i++){
           System.out.println("OPT for node "+listNode.get(i).getID()); 
-          listNode.get(i).getShape().color = color;
+          listNode.get(i).getAspect().color = color;
       }
       return;
       

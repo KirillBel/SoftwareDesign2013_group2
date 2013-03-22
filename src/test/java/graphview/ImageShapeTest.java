@@ -6,7 +6,7 @@ package test.java.graphview;
 
 import geometry.Rect;
 import geometry.Vec2;
-import graphview.ImageShape;
+import graphview.shapes.ImageShape;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;

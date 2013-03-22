@@ -2,60 +2,57 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package graphview;
+package graphview.shapes;
 
 import geometry.Intersect;
 import geometry.Rect;
 import geometry.Vec2;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Toolkit;
+import java.awt.Stroke;
 import java.util.ArrayList;
 
 /**
  *
- * @author IvanKhozyainov
+ * @author Kirill
  */
-public class ImageShape extends BaseShape {
-    
-    Image img1 = null;
-    public ImageShape(Rect rect,String imagePath)
+public class BoxShape extends NodeAspect{
+
+    public BoxShape(Rect rect)
     {
         setRectangle(rect);
-        img1 = Toolkit.getDefaultToolkit().getImage(imagePath);
-    };   
-    public ImageShape(Rect rect,Image img)
-    {
-        setRectangle(rect);
-        img1 = img;
-    };
-    public ImageShape(float posX,float posY, float sizeX, float sizeY,String imagePath)
-    {
-        setRectangle(new Rect(posX,posY,posX+sizeX,posY+sizeY));
-        img1 = Toolkit.getDefaultToolkit().getImage(imagePath);
+        this.aspectType=eNodeAspectType.BOX;
     };
     
-    public ImageShape(float posX,float posY, float sizeX, float sizeY,Image img)
+    public BoxShape(float posX,float posY, float sizeX, float sizeY)
     {
         setRectangle(new Rect(posX,posY,posX+sizeX,posY+sizeY));
-        img1 = img;
-    };    
+        this.aspectType=eNodeAspectType.BOX;
+    };
+    
     @Override
     public void draw(Graphics2D g) {
         Rect globalPlace=getGlobalRectangle();
-  
-        g.drawImage(img1, (int)globalPlace.left, (int)globalPlace.top,(int)globalPlace.getSize().x, (int)globalPlace.getSize().y,null); 
+        g.setColor(color);
+        g.fillRoundRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y,5,5);
+        g.setColor(Color.black);
+        
+        g.drawRoundRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y,5,5);
+        
         super.draw(g);
     }
-    //some useless stuff in this class (i think)
+
     @Override
     public boolean isIntersects(Vec2 pt) {
         return getGlobalRectangle().pointIn(pt);
     }
+    
     @Override
     public boolean isIntersects(Rect r) {
         return Intersect.rectangle_rectangle(getGlobalRectangle(), r)==Intersect.INCLUSION;
-    } 
+    }
+
     @Override
     public Vec2 getPortPoint(Vec2 from) {
         ArrayList<Vec2> array=new ArrayList();
@@ -76,5 +73,9 @@ public class ImageShape extends BaseShape {
         
         return array.get(minIndex);
     }
-}
 
+    @Override
+    public Rect getContainRect() {
+        return getGlobalRectangle().getReduced(5);
+    }
+}

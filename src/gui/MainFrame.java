@@ -13,7 +13,6 @@ import com.javadocking.dockable.DefaultDockable;
 import com.javadocking.dockable.Dockable;
 import com.javadocking.dockable.DockingMode;
 import com.javadocking.model.FloatDockModel;
-import graphview.GraphMain;
 import graphview.GraphScene;
 import java.awt.*;
 import java.awt.Graphics;
@@ -28,7 +27,7 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    GraphMain graphMain=null;
+    GraphScene scene=null;
     MainPanel mainPanel;
     Properties properties;
     
@@ -42,8 +41,8 @@ public class MainFrame extends javax.swing.JFrame {
     
     public void initUI()
     {
-        graphMain=new GraphMain();
-        mainPanel=new MainPanel(this,graphMain);
+        scene=new GraphScene();
+        mainPanel=new MainPanel(this,scene);
         add(mainPanel);
         
         properties=new Properties(this, true);
@@ -299,7 +298,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             
-            if(!graphMain.loadDot(file.getPath())) {
+            if(!scene.loadDot(file.getPath())) {
                 JOptionPane.showMessageDialog(this, "Load failed!");
             }
             else JOptionPane.showMessageDialog(this, "Load OK!");
@@ -332,8 +331,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem9ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        // TODO add your handling code here:
-        graphMain.applySimpleLayout();
+        scene.applySimpleLayout();
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     public static void setSkin(String str)

@@ -4,9 +4,20 @@
  */
 package graphview;
 
+import graphview.shapes.NodeAspect;
+import graphview.shapes.EdgeAspect;
+import graphview.shapes.EllipseShape;
+import graphview.shapes.BaseShape;
+import graphview.shapes.BoxShape;
+import graphview.shapes.LineShape;
+import graphview.shapes.ImageShape;
+import graphview.shapes.RootShape;
+import graphview.shapes.TextShape;
 import geometry.Rect;
 import geometry.Vec2;
 import graphevents.ShapeMouseEvent;
+import graphview.shapes.EdgeAspect.eEdgeAspectType;
+import graphview.shapes.NodeAspect.eNodeAspectType;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -19,8 +30,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import parser.DotParser;
 import property.PropertyPanel;
 
 /**
@@ -182,7 +198,7 @@ public class GraphScene extends javax.swing.JPanel{
         
         if(shape!=null)
         {
-            if(shape.bSelected || (shape.parent!=null && shape.parent.bSelected))
+            if(shape.isSelected() || (shape.getParent()!=null && shape.getParent().isSelected()))
             {
                 dragTarget=shape;
                 selectedGrip=dragTarget.isGripIntersect(mouseState.scenePos);
@@ -301,24 +317,24 @@ public class GraphScene extends javax.swing.JPanel{
                 return;
             }
             
-            if(dragTarget.parent==null)
+            if(dragTarget.getParent()==null)
                 dragTarget.move(mouseState.sceneDelta);
             else
             {
-                if(dragTarget.parent.getContainerMode()!=BaseShape.CONTAIN_DEFAULT &&
-                        dragTarget.parent!=root)
+                if(dragTarget.getParent().getContainerMode()!=BaseShape.CONTAIN_DEFAULT &&
+                        dragTarget.getParent()!=root)
                 {
                     dragTarget.setSelected(false);
-                    dragTarget=dragTarget.parent;
+                    dragTarget=dragTarget.getParent();
                     dragTarget.setSelected(true);
                 }
 
-                for(int i=0;i<dragTarget.parent.getNumChilds();i++)
+                for(int i=0;i<dragTarget.getParent().getNumChilds();i++)
                 {
-                    if(dragTarget.parent.getChild(i)==null) continue;
-                    if(dragTarget.parent.getChild(i).bSelected)
+                    if(dragTarget.getParent().getChild(i)==null) continue;
+                    if(dragTarget.getParent().getChild(i).isSelected())
                     {
-                        dragTarget.parent.getChild(i).move(mouseState.sceneDelta);
+                        dragTarget.getParent().getChild(i).move(mouseState.sceneDelta);
                     };
                 };
 
@@ -332,16 +348,16 @@ public class GraphScene extends javax.swing.JPanel{
                 return;
             }
             
-            if(dragTarget.parent==null)
+            if(dragTarget.getParent()==null)
                 dragTarget.move(mouseState.sceneDelta);
             else
             {
-                for(int i=0;i<dragTarget.parent.getNumChilds();i++)
+                for(int i=0;i<dragTarget.getParent().getNumChilds();i++)
                 {
-                    if(dragTarget.parent.getChild(i)==null) continue;
-                    if(dragTarget.parent.getChild(i).bSelected)
+                    if(dragTarget.getParent().getChild(i)==null) continue;
+                    if(dragTarget.getParent().getChild(i).isSelected())
                     {
-                        dragTarget.parent.getChild(i).onGripDragged(selectedGrip,mouseState.sceneDelta);
+                        dragTarget.getParent().getChild(i).onGripDragged(selectedGrip,mouseState.sceneDelta);
                     };
                 };
             };
@@ -466,5 +482,278 @@ public class GraphScene extends javax.swing.JPanel{
     {
         root.removeAllChilds();
     };
+    
+    public void removeShape(BaseShape shape)
+    {
+        if(shape==null) return;
+        if(shape==root) return;
+        if(shape.getParent()==null) return;
+        
+        shape.getParent().removeChild(shape.getIndex());
+    };
     //////////////////END SHAPES///////////////////////////////////////////////
+    
+    
+    /////////////////SHAPE CREATION////////////////////////////////////////////
+    
+    public static NodeAspect createNodeShape(eNodeAspectType shapeType, eNodeAspectType containmentType)
+    {
+        NodeAspect shape=createNodeShape(shapeType);
+        shape.addChild(createNodeShape(containmentType));
+        return shape;
+    };
+    
+    public static NodeAspect createNodeShape(eNodeAspectType shapeType)
+    {
+        switch(shapeType)
+        {
+            case BOX: return new BoxShape(new Rect(0,0,40,40));
+            case TEXT: return new TextShape("0");
+            case ELLIPSE: return new EllipseShape(new Rect(0,0,40,40));
+            case IMAGE: return new ImageShape(new Rect(0,0,40,40),"res/images/default.png");
+        }
+        return null;
+    };
+    
+    public static EdgeAspect createEdgeShape(eEdgeAspectType shapeType)
+    {
+        switch(shapeType)
+        {
+            case SIMPLE_LINE: return new LineShape(null,null);
+        }
+        return null;
+    };
+    
+    public GraphNode createTextCircleNode(String txt, Color col)
+    {
+        NodeAspect node=createNodeShape(eNodeAspectType.ELLIPSE,eNodeAspectType.TEXT);
+        node.color=col;
+        node.label=txt;
+        node.getChild(0).getProperties(true).setValue("Text", txt);
+        node.setContainerMode(BaseShape.CONTAIN_CHILDS);
+        node.fitToChilds(true);
+        return createNode(node);
+    };
+    ////////////////END SHAPE CREATION/////////////////////////////////////////
+    
+    /////////////////EDGES/NODES CREATION//////////////////////////////////////
+    private int nodeCount=0;
+    private int edgeCount=0;
+    private ArrayList<GraphNode> nodesArray = new ArrayList<GraphNode>();
+    private ArrayList<GraphEdge> edgesArray = new ArrayList<GraphEdge>();
+    
+    public GraphNode createNode(eNodeAspectType shapeType, eNodeAspectType containmentType)
+    {
+        GraphNode node=new GraphNode(nodesArray.size(),shapeType,containmentType);
+        nodesArray.add(node);
+        root.addChild(node.getAspect());
+        nodeCount++;
+        return node;
+    };
+    
+    public GraphNode createNode(NodeAspect shape)
+    {
+        GraphNode node=new GraphNode(nodesArray.size(),shape);
+        nodesArray.add(node);
+        root.addChild(node.getAspect());
+        nodeCount++;
+        return node;
+    };
+    
+    public GraphEdge createEdge(int from, int to, eEdgeAspectType shapeType)
+    {
+        if(!testNodeID(from)) {System.err.println("Cant create edge!"); return null;};
+        if(!testNodeID(to)) {System.err.println("Cant create edge!"); return null;};
+        
+        GraphEdge edge=new GraphEdge(nodesArray.size(),from,to,shapeType);
+        edgesArray.add(edge);
+        nodesArray.get(from).addEdge(edge.getID());
+        nodesArray.get(to).addEdge(edge.getID());
+        root.addChild(edge.getAspect());
+        edgeCount++;
+        edge.syncronize(this);
+        return edge;
+    };
+    
+    public GraphEdge createEdge(int from, int to, EdgeAspect shape)
+    {
+        if(!testNodeID(from)) {System.err.println("Cant create edge!"); return null;};
+        if(!testNodeID(to)) {System.err.println("Cant create edge!"); return null;};
+        
+        GraphEdge edge=new GraphEdge(nodesArray.size(),from,to,shape);
+        edgesArray.add(edge);
+        nodesArray.get(from).addEdge(edge.getID());
+        nodesArray.get(to).addEdge(edge.getID());
+        root.addChild(edge.getAspect());
+        edgeCount++;
+        edge.syncronize(this);
+        return edge;
+    };
+    
+    public void removeNode(int id)
+    {
+        if(!testNodeID(id)) return;
+        
+        GraphNode node=nodesArray.get(id);
+        
+        for(int i=0;i<node.getSizeOfNodeEdgesIDArray();i++)
+        {
+            int edgeID=node.getElementOfNodeEdgesIDArray(i);
+            removeEdge(edgeID);
+        }
+        
+        removeShape(node.getAspect());
+        nodesArray.remove(id);
+    };
+    
+    public void removeEdge(int id)
+    {
+        if(!testEdgeID(id)) return;
+        
+        GraphEdge edge=edgesArray.get(id);
+        
+        if(edge.getFromID()!=-1)
+        {
+            nodesArray.get(edge.getFromID()).deleteEdgeFromArray(id);
+        };
+        
+        if(edgesArray.get(id).getToID()!=-1)
+        {
+            nodesArray.get(edge.getToID()).deleteEdgeFromArray(id);
+        };
+        
+        removeShape(edge.getAspect());
+        edgesArray.remove(id);
+    };
+    
+    boolean testNodeID(int id)
+    {
+        if((id<0) || (id>=nodesArray.size())) return false;
+        if(nodesArray.get(id)==null) return false;
+        return true;
+    };
+    
+    boolean testEdgeID(int id)
+    {
+        if((id<0) || (id>=edgesArray.size())) return false;
+        if(edgesArray.get(id)==null) return false;
+        return true;
+    };
+    
+    public GraphNode getNode(int id)
+    {
+        if(!testNodeID(id)) return null;
+        return nodesArray.get(id);
+    };
+    
+    public GraphEdge getEdge(int id)
+    {
+        if(!testEdgeID(id)) return null;
+        return edgesArray.get(id);
+    };
+    
+    /**
+     * Функция для получения размера массива вершин
+     * @return Возвращает размер массива вершин
+     */
+    public int getSizeNodeArray()
+    {
+        return nodesArray.size();
+    }
+    
+    /**
+     * Функция для получения размера массива ребер
+     * @return Возвращает размер массива ребер
+     */
+    public int getSizeEdgeArray()
+    {
+        return edgesArray.size();
+    }
+   
+    /**
+     * Функция для получения количества вершин графа
+     * @return Возвращает количество вершин графа
+     */
+    public int getCountNodes()
+    {
+        return this.nodeCount;
+    }
+    
+    /**
+     * Функция для получения количества ребер графа
+     * @return Возвращает количество ребер графа
+     */
+    public int getCountEdges()
+    {
+        return this.edgeCount;
+    }
+
+    /**
+     * Функция для удаления всех ребер и вершин графа
+     */
+    public void removeAllItems()
+    {
+        nodeCount=0;
+        edgeCount=0;
+        this.edgesArray.clear();
+        this.nodesArray.clear();
+        removeAllShapes();
+    };
+    
+    public boolean loadDot(String filename){
+        removeAllItems();
+        Reader stream;
+        try {
+            stream = new FileReader(filename);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(GraphScene.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        
+        DotParser parser=new DotParser(stream,this);
+        boolean b=parser.parse();
+        updateScene();
+        applySimpleLayout();
+        return b;
+    }
+    
+    public void applySimpleLayout()
+    {
+        GraphNode Node = null;
+        int NodesPerLineCounter = 1;
+        int NodesPerColumnCounter = 1;
+        Vec2 DemencionsOfNode = new Vec2();
+        Vec2 MaxDemencions = new Vec2();
+        Vec2 tempPlacement = new Vec2();
+        BaseShape NodeShape = null;
+        int NodeCount = getCountNodes();
+        double tempNodesPerLine = Math.sqrt(NodeCount);
+        int NodesPerLine = (int) Math.round(tempNodesPerLine);
+        for (int i = 0; i<NodeCount; i++)
+        {
+            Node = getNode(i);
+            DemencionsOfNode = Node.getAspect().getGlobalRectangle().getSize();
+            MaxDemencions.x = Math.max(MaxDemencions.x, DemencionsOfNode.x);
+            MaxDemencions.y = Math.max(MaxDemencions.y, DemencionsOfNode.y);
+        }
+        for (int i = 0; i<NodeCount; i++)
+        {
+            Node = getNode(i);
+            tempPlacement.x = MaxDemencions.x*2*NodesPerLineCounter;
+            tempPlacement.y = MaxDemencions.y*2*NodesPerColumnCounter;
+            Node.getAspect().setPosition(tempPlacement);
+            if (NodesPerLineCounter == NodesPerLine)
+            {
+                NodesPerLineCounter = 1;
+                NodesPerColumnCounter++;
+            }
+            else
+            {
+                NodesPerLineCounter++;
+            }
+            
+        }
+        updateScene();
+    };
+    /////////////////END EDGES/NODES CREATION//////////////////////////////////
 }

@@ -4,11 +4,10 @@
  */
 package gui.structurePanel;
 
-import graph.GraphData;
-import graph.GraphEdge;
-import graph.GraphEdge.Direction;
-import graph.GraphNode;
-import graphview.GraphMain;
+import graphview.GraphEdge;
+import graphview.GraphNode;
+import graphview.GraphScene;
+import graphview.shapes.NodeAspect;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -36,8 +35,7 @@ import javax.swing.table.TableColumn;
  */
 public class StructurePanel extends javax.swing.JPanel {
 
-    private GraphMain graphMain;
-    private GraphData graphData;
+    private GraphScene scene;
     public DefaultTableModel modelNode;
     public DefaultTableModel modelEdge;
     
@@ -54,8 +52,8 @@ public class StructurePanel extends javax.swing.JPanel {
     /**
      * Creates new form StructurePanel
      */
-    public StructurePanel(GraphMain graphMain_, JFrame parent) {
-        graphMain=graphMain_;      
+    public StructurePanel( GraphScene scene_, JFrame parent) {
+        scene=scene_;      
         mainFrame=parent;
         initComponents();
         initLayout();
@@ -142,12 +140,11 @@ public class StructurePanel extends javax.swing.JPanel {
             modelNode.removeRow(0);
         }
         tableNode.setModel(modelNode);
-        graphData=graphMain.getGraphData();
-        for(int i=0;i<graphData.getSizeNodeArray();i++)
+        for(int i=0;i<scene.getSizeNodeArray();i++)
         {
-            if(graphData.getElementOfNodesArray(i)!=null)
+            if(scene.getNode(i)!=null)
             {
-                GraphNode node=graphData.getElementOfNodesArray(i);
+                GraphNode node=scene.getNode(i);
                 JComboBox comboBox = new JComboBox();
                 for(int j=0; j<node.getSizeOfNodeEdgesIDArray();j++)
                 {
@@ -160,17 +157,17 @@ public class StructurePanel extends javax.swing.JPanel {
                         node.getID(),
                         "",
                         String.valueOf(node.getElementOfNodeEdgesIDArray(0)),
-                        node.getShape()
+                        node.getAspect()
                     };
                     modelNode.addRow(rowData);
                 }
                 else
                 {
                     Object[] rowData={
-                        graphData.getElementOfNodesArray(i).getID(),
+                        scene.getNode(i).getID(),
                         "",
                         null,
-                        graphData.getElementOfNodesArray(i).getShape()
+                        scene.getNode(i).getAspect()
                     };
                     modelNode.addRow(rowData);
                 }
@@ -194,23 +191,18 @@ public class StructurePanel extends javax.swing.JPanel {
             modelEdge.removeRow(0);
         }
         tableEdge.setModel(modelEdge);
-        graphData=graphMain.getGraphData();
-        for(int i=0;i<graphData.getSizeEdgeArray();i++)
+        for(int i=0;i<scene.getSizeEdgeArray();i++)
         {
-            GraphEdge edge=graphData.getElementOfEdgesArray(i);
+            GraphEdge edge=scene.getEdge(i);
             if(edge!=null)
             {          
-                if(edge.getDirection()==Direction.BIDIR)
+                if(edge.isDirectional())
                 {
-                    dir="BIDIR";
-                }
-                else if(edge.getDirection()==Direction.IN)
-                {
-                    dir="IN";
+                    dir="Directional";
                 }
                 else
                 {
-                    dir="OUT";
+                    dir="None";
                 }
                 Object[] rowData={
                         edge.getID(),
@@ -218,7 +210,7 @@ public class StructurePanel extends javax.swing.JPanel {
                         edge.getToID(),
                         dir,
                         "",
-                        edge.getShape()
+                        edge.getAspect()
                 };
                 
                 modelEdge.addRow(rowData);
@@ -418,7 +410,7 @@ public class StructurePanel extends javax.swing.JPanel {
                                         null,
                                         null,
                                         "");
-         graphData.createNode();
+         scene.createNode(NodeAspect.eNodeAspectType.BOX, NodeAspect.eNodeAspectType.TEXT);
          updateNodes();
     }//GEN-LAST:event_jButton4ActionPerformed
 

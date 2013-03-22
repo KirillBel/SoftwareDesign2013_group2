@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package graphview;
+package graphview.shapes;
 
 import geometry.Intersect;
 import geometry.Rect;
@@ -18,19 +18,17 @@ import java.util.ArrayList;
  *
  * @author Kirill
  */
-public class LineShape extends BaseShape {
-
-    protected BaseShape portNodeA=null;
-    protected BaseShape portNodeB=null;
-    protected ArrayList<BaseShape> points=new ArrayList<BaseShape>(); 
+public class LineShape extends EdgeAspect {
     
-    public LineShape(BaseShape portA, BaseShape portB)
+    public LineShape(NodeAspect portA, NodeAspect portB)
     {
+        super();
         portNodeA=portA;
         portNodeB=portB;
         bMoveable=false;
         bResizeable=false;
         bHaveGrip=false;
+        this.aspectType=eEdgeAspectType.SIMPLE_LINE;
     };
     
     @Override
@@ -75,101 +73,7 @@ public class LineShape extends BaseShape {
         
         
     }
-    
-    public void insertPoint(Vec2 pt, int index)
-    {
-        DotShape shape=new DotShape(pt,5);
-        points.add(index, shape);
-        addChild(shape);
-    };
-    
-    public Vec2 getPoint(int index){
-        return points.get(index).getGlobalPosition();
-    }
-    public void setPoint(Vec2 pt, int index){
-        points.get(index).setPosition(pt);
-        update();
-    };
-    
-    public int getNumPoints()
-    {
-        return points.size();
-    };
-    
-    public Vec2 getPointWithPort(int index){
-        int offset=0;
-        if(portNodeA!=null) offset=1;
-        if(index==0) 
-        {
-            if(portNodeA!=null) return getPortPointA();
-        };
-        
-        if(index==(getNumPointsWithPort()-1)) 
-        {
-            if(portNodeB!=null) return getPortPointB();
-        };
-        
-        return points.get(index-offset).getGlobalRectangle().getCenter();
-    }
-    
-    public int getNumPointsWithPort()
-    {
-        int count=points.size();
-        if(portNodeA!=null) count++;
-        if(portNodeB!=null) count++;
-        return count;
-    };
-    
-    public void setPortA(BaseShape shape){
-        portNodeA=shape;
-        update();
-    }
-    public void setPortB(BaseShape shape){
-        portNodeB=shape;
-        update();
-    }
-    
-    public Vec2 getPortPointA(){
-        Vec2 point;
-        Vec2 portA;
-        
-        if(getNumPoints()==0) 
-        {
-            if(portNodeB!=null)
-                point=portNodeB.getGlobalRectangle().getCenter();
-            else 
-                return new Vec2();
-        }
-        else
-            point=points.get(0).getGlobalRectangle().getCenter();
-        
-        if(portNodeA!=null)
-            portA=portNodeA.getPortPoint(point);
-        else
-            portA=point;
-        return portA;
-    }
-    public Vec2 getPortPointB(){
-        Vec2 point;
-        Vec2 portB;
-        
-        if(getNumPoints()==0) 
-        {
-            if(portNodeA!=null)
-                point=portNodeA.getGlobalRectangle().getCenter();
-            else 
-                return new Vec2();
-        }
-        else
-            point=points.get(points.size()-1).getGlobalRectangle().getCenter();
-        
-        if(portNodeB!=null)
-            portB=portNodeB.getPortPoint(point);
-        else
-            portB=point;
-        return portB;
-    }
-    
+
     @Override
     public boolean onMouseClick(ShapeMouseEvent evt){
         if(evt.getButton()==1 && 

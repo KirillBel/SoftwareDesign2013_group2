@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package graphview;
+package graphview.shapes;
 
 import geometry.Intersect;
 import geometry.Rect;
@@ -14,7 +14,7 @@ import java.awt.Graphics2D;
  *
  * @author Kirill
  */
-public class DotShape extends BaseShape{
+public class DotShape extends NodeAspect{
 
     public DotShape(Vec2 pos, float size)
     {
@@ -55,6 +55,11 @@ public class DotShape extends BaseShape{
     @Override
     public Vec2 getPortPoint(Vec2 from) {
         return getGlobalRectangle().getCenter();
+    }
+
+    @Override
+    public Rect getContainRect() {
+        return getGlobalRectangle();
     }
     
 }

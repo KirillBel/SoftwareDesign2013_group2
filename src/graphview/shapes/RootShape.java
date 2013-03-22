@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package graphview;
+package graphview.shapes;
 
 import geometry.Rect;
 import geometry.Vec2;

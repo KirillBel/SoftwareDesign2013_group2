@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package graphview;
+package graphview.shapes;
 
 import geometry.Intersect;
 import geometry.Rect;
@@ -22,7 +22,6 @@ import property.PropertyList;
  * @author Kirill
  */
 public abstract class BaseShape  extends ShapeEvents{
-    public Color color=Color.black;
     private Vec2 localCoord=new Vec2();
     private Vec2 globalCoord=new Vec2();
     private Vec2 shapeSize=new Vec2();
@@ -60,9 +59,18 @@ public abstract class BaseShape  extends ShapeEvents{
     
     public BaseShape()
     {
-        properties.add(new PropertyList.ColorProperty("Color", "Shape color", color));
         properties.add(new PropertyList.Vec2Property("Position", "Shape position", localCoord));
         properties.add(new PropertyList.Vec2Property("Size", "Shape size", shapeSize));
+    };
+    
+    public BaseShape getParent()
+    {
+        return parent;
+    };
+    
+    public boolean isSelected()
+    {
+        return bSelected;
     };
     
     /////////////////////PROPERTIES/////////////////////////////////////
@@ -76,13 +84,13 @@ public abstract class BaseShape  extends ShapeEvents{
     {
         if(bUpdateToProp)
         {
-            properties.setValue("Color", color);
             properties.setValue("Position", getPosition());
             properties.setValue("Size", getSize());
         }
         else
         {
-            color=properties.getColor("Color");
+            setPosition(properties.getVec2("Position"));
+            setSize(properties.getVec2("Size"));
         };
     };
     
@@ -296,10 +304,23 @@ public abstract class BaseShape  extends ShapeEvents{
         update();
     }
     
+    public int getIndex()
+    {
+        return childIndex;
+    };
+    
     public void removeAllChilds()
     {
         zbuffer.clear();
         clearSelection();
+        
+        for(int i=0;i<childs.size();i++)
+        {
+            if(childs.get(i)!=null)
+            {
+                childs.get(i).removeAllChilds();
+            };
+        };
         childs.clear();
     };
     

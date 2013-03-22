@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package graphview;
+package graphview.shapes;
 
 import geometry.Rect;
 import geometry.Vec2;
@@ -39,6 +39,8 @@ public class TextShape extends BoxShape{
         bReceiveMouseDrag=false;
         bReceiveMousePress=false;
         //bReceiveMouseClick=false;
+        
+        this.aspectType=eNodeAspectType.TEXT;
     };
     
     public void updateTextBounds()
@@ -72,5 +74,10 @@ public class TextShape extends BoxShape{
         g.drawString(properties.getString("Text"), globalPlace.left, globalPlace.bottom-bounds.bottom);
         
         if(bSelected) drawGrip(g);
+    }
+    
+    @Override
+    public Rect getContainRect() {
+        return getGlobalRectangle();
     }
 }

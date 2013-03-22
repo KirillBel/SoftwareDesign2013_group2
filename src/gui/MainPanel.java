@@ -4,10 +4,10 @@
  */
 package gui;
 
-import graphview.BaseShape;
-import graphview.LineShape;
+import graphview.shapes.BaseShape;
+import graphview.shapes.LineShape;
 import graphview.GraphScene;
-import graphview.BoxShape;
+import graphview.shapes.BoxShape;
 import com.javadocking.dock.LineDock;
 import com.javadocking.dock.Position;
 import com.javadocking.dockable.DefaultDockable;
@@ -16,10 +16,10 @@ import com.javadocking.dockable.DockableState;
 import com.javadocking.dockable.DockingMode;
 import com.javadocking.dockable.action.DefaultDockableStateAction;
 import geometry.Vec2;
-import graphview.EllipseShape;
-import graphview.GraphMain;
-import graphview.ImageShape;
-import graphview.TextShape;
+import graphview.shapes.EllipseShape;
+import graphview.shapes.ImageShape;
+import graphview.shapes.NodeAspect;
+import graphview.shapes.TextShape;
 import gui.structurePanel.StructurePanel;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -41,7 +41,7 @@ public class MainPanel extends DockablePanel{
     private Action closeAction;
     private Action restoreAction;
     
-    GraphMain graphMain;
+    GraphScene scene;
     Dockable[] buttonDockables;
     
     StructurePanel structure;
@@ -54,10 +54,10 @@ public class MainPanel extends DockablePanel{
     
     JFrame mainFrame;
      
-    public MainPanel(JFrame frame,GraphMain graphMain_)
+    public MainPanel(JFrame frame,GraphScene scene_)
     {
         super(frame);
-        graphMain=graphMain_;
+        scene=scene_;
         mainFrame=frame;
         initUI();
         initScene();
@@ -66,12 +66,12 @@ public class MainPanel extends DockablePanel{
     public void initUI()
     {
         
-        structure=new StructurePanel(graphMain, mainFrame);
+        structure=new StructurePanel(scene, mainFrame);
         structureDock = new DefaultDockable("Structure", structure, "Structure", null, DockingMode.ALL - DockingMode.FLOAT);
         structureDock=addActions(structureDock);
         centerTabbedDock.addDockable(structureDock, new Position(1));
         
-        sceneDock = new DefaultDockable("Scene", graphMain.getGraphScene(), "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
+        sceneDock = new DefaultDockable("Scene", scene, "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
         sceneDock=addActions(sceneDock);
         centerTabbedDock.addDockable(sceneDock, new Position(0));
         
@@ -86,7 +86,7 @@ public class MainPanel extends DockablePanel{
         textPanelDock=addActions(textPanelDock);
         botLeftTabbedDock.addDockable(textPanelDock, new Position(1));
         
-        objectPropertiesDock = new DefaultDockable("Object Properties", graphMain.getGraphScene().objectProperties, "Object Properties", null, DockingMode.ALL - DockingMode.FLOAT);
+        objectPropertiesDock = new DefaultDockable("Object Properties", scene.objectProperties, "Object Properties", null, DockingMode.ALL - DockingMode.FLOAT);
         objectPropertiesDock=addActions(objectPropertiesDock);
         rightTabbedDock.addDockable(objectPropertiesDock, new Position(1));
         
@@ -128,24 +128,24 @@ public class MainPanel extends DockablePanel{
     
     public void initScene()
     {
-        BaseShape shape=new BoxShape(10,10,200,300);
+        NodeAspect shape=new BoxShape(10,10,200,300);
         shape.color=Color.yellow;
         
-        BaseShape shape3=new BoxShape(15,15,200,200);
+        NodeAspect shape3=new BoxShape(15,15,200,200);
         shape3.color=Color.red;
         //shape.addChild(shape3);
          
-        BaseShape imageShape=new ImageShape(0,0,100,100,"res/images/1647932-untitled3.jpg");
+        NodeAspect imageShape=new ImageShape(0,0,100,100,"res/images/default.png");
         shape3.addChild(imageShape);
         shape3.setContainerMode(BaseShape.CONTAIN_CHILDS_TO_NODE);
         
-        BaseShape shape2=new BoxShape(0,0,100,100);
+        NodeAspect shape2=new BoxShape(0,0,100,100);
         shape2.color=Color.red;
         shape2.setPosition(new Vec2(300,10));
         //shape2.addChild(imageShape);//program dies
 
         
-        BaseShape dot=new EllipseShape(0,0,5,5);
+        NodeAspect dot=new EllipseShape(0,0,5,5);
         dot.move(new Vec2(200,-100));
         dot.color=Color.black;
         
@@ -154,14 +154,14 @@ public class MainPanel extends DockablePanel{
         shape.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
         //shape.setContainerMode(BaseShape.CONTAIN_CHILDS_TO_NODE);
         
-        BaseShape ellipse=new EllipseShape(new Vec2(0,0),100);
+        NodeAspect ellipse=new EllipseShape(new Vec2(0,0),100);
         ellipse.setPosition(new Vec2(40,100));
         ellipse.color=Color.CYAN;
-        TextShape text2=new TextShape("QWERty");
+        NodeAspect text2=new TextShape("QWERty");
         ellipse.addChild(text2);
         ellipse.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
         
-        BaseShape ellipse2=new EllipseShape(new Vec2(40,40),100);
+        NodeAspect ellipse2=new EllipseShape(new Vec2(40,40),100);
         ellipse2.setPosition(new Vec2(100,100));
         ellipse2.color=Color.PINK;
         
@@ -172,14 +172,14 @@ public class MainPanel extends DockablePanel{
         LineShape line2 = new LineShape(shape,ellipse);
         //LineShape line3 = new LineShape(shape2,imageShape);
         
-        graphMain.getGraphScene().addShape(shape);
-        graphMain.getGraphScene().addShape(shape2);
+        scene.addShape(shape);
+        scene.addShape(shape2);
         //graphMain.getGraphScene().addShape(imageShape);
-        graphMain.getGraphScene().addShape(line);
-        graphMain.getGraphScene().addShape(ellipse);
-        graphMain.getGraphScene().addShape(ellipse2);
-        graphMain.getGraphScene().addShape(line2);
-        graphMain.getGraphScene().addShape(shape3);
+        scene.addShape(line);
+        scene.addShape(ellipse);
+        scene.addShape(ellipse2);
+        scene.addShape(line2);
+        scene.addShape(shape3);
         //graphMain.getGraphScene().addShape(line3);
         //graphMain.getGraphScene().add(text);
     };
@@ -192,7 +192,7 @@ public class MainPanel extends DockablePanel{
             case "Scene":
                 closeAction = new DefaultDockableStateAction(sceneDock, DockableState.CLOSED);
                 restoreAction = new DefaultDockableStateAction(sceneDock, DockableState.NORMAL);
-                if (graphMain.getGraphScene().isDisplayable())
+                if (scene.isDisplayable())
                 {
                     // Close the dockable.
                     closeAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Close"));
@@ -206,7 +206,7 @@ public class MainPanel extends DockablePanel{
             case "ObjectProperties":
                 closeAction = new DefaultDockableStateAction(objectPropertiesDock, DockableState.CLOSED);
                 restoreAction = new DefaultDockableStateAction(objectPropertiesDock, DockableState.NORMAL);
-                if (graphMain.getGraphScene().objectProperties.isDisplayable())
+                if (scene.objectProperties.isDisplayable())
                 {
                     // Close the dockable.
                     closeAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Close"));

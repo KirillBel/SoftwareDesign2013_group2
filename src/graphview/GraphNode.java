@@ -1,6 +1,7 @@
-package graph;
+package graphview;
 
-import graphview.BaseShape;
+import graphview.shapes.NodeAspect;
+import graphview.shapes.NodeAspect.eNodeAspectType;
 import java.util.ArrayList;
 
 /**
@@ -11,19 +12,23 @@ import java.util.ArrayList;
 public class GraphNode {
     
     private int nodeID;
-    BaseShape nodeShape=null;
-    private ArrayList<Integer> nodeEdgesIDArray;
+    NodeAspect nodeAspect=null;
+    private ArrayList<Integer> nodeEdgesIDArray=new ArrayList<Integer>();
    
     /**
      * Конструктор для создания новой вершины графа
      * @param ID - Уникалиный ID вершины
      */
-    public GraphNode(int ID)
+    public GraphNode(int ID, eNodeAspectType shapeType, eNodeAspectType containmentType)
     {
         this.nodeID=ID;
-        nodeEdgesIDArray=new ArrayList();
-        nodeEdgesIDArray.clear();
-        nodeShape=null;
+        nodeAspect=GraphScene.createNodeShape(shapeType, containmentType);
+    }
+    
+    public GraphNode(int ID, NodeAspect shape)
+    {
+        this.nodeID=ID;
+        nodeAspect=shape;
     }
     
     /**
@@ -75,7 +80,7 @@ public class GraphNode {
      */
     public boolean equals(GraphNode node)
     {
-        if(this.nodeID==node.getID() && this.nodeShape==node.getShape())
+        if(this.nodeID==node.getID() && this.nodeAspect==node.getAspect())
         {
             for(int i=0; i<this.nodeEdgesIDArray.size();i++)
             {
@@ -130,23 +135,13 @@ public class GraphNode {
     {
         return this.nodeEdgesIDArray.size();
     }
-    
-     /**
-     * Функция для задания фигуры ребра
-     * @param shape - Фигура ребра
-     */    
-     public void setShape(BaseShape shape)
-     {
-         this.nodeShape=shape;
-     }
      
      /**
      * Функция для получения фигуры ребра
      * @return  shape - Фигура ребра
      */
-     public BaseShape getShape()
+     public NodeAspect getAspect()
      {
-         BaseShape shape=this.nodeShape;
-         return shape;
+         return this.nodeAspect;
      }
 }

@@ -7,7 +7,7 @@ package property;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
-import graphview.BaseShape;
+import graphview.shapes.BaseShape;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 

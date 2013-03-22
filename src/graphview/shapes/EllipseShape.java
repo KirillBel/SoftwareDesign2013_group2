@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package graphview;
+package graphview.shapes;
 
 import geometry.Intersect;
 import geometry.Rect;
@@ -17,19 +17,21 @@ import java.awt.geom.Ellipse2D;
  *
  * @author Kirill
  */
-public class EllipseShape extends BaseShape{
+public class EllipseShape extends NodeAspect{
     Ellipse2D.Float ell=null;
     
     public EllipseShape(Rect rect)
     {
         setRectangle(rect);
         ell=new Ellipse2D.Float(rect.left,rect.top,rect.getSize().x,rect.getSize().y);
+        this.aspectType=eNodeAspectType.ELLIPSE;
     };
     
     public EllipseShape(float posX,float posY, float sizeX, float sizeY)
     {
         setRectangle(new Rect(posX,posY,posX+sizeX,posY+sizeY));
         ell=new Ellipse2D.Float(posX,posY,sizeX,sizeY);
+        this.aspectType=eNodeAspectType.ELLIPSE;
     };
     
     public EllipseShape(Vec2 position, float radius)
@@ -37,6 +39,7 @@ public class EllipseShape extends BaseShape{
         Rect r=new Rect(position.x-radius,position.y-radius,position.x+radius,position.y+radius);
         setRectangle(r);
         ell=new Ellipse2D.Float(r.left,r.top,r.getSize().x,r.getSize().y);
+        this.aspectType=eNodeAspectType.ELLIPSE;
         
     };
     
@@ -78,4 +81,8 @@ public class EllipseShape extends BaseShape{
         return v2;
     }
     
+    @Override
+    public Rect getContainRect() {
+        return getGlobalRectangle();
+    }
 }

@@ -1,6 +1,9 @@
-package graph;
+package graphview;
 
-import graphview.LineShape;
+import graphview.shapes.EdgeAspect;
+import graphview.shapes.EdgeAspect.eEdgeAspectType;
+import graphview.shapes.LineShape;
+import graphview.shapes.NodeAspect;
 
 /**
  * Ксласс для представления ребра графа
@@ -9,41 +12,35 @@ import graphview.LineShape;
  */
 public class GraphEdge {
     
-    public static enum Direction {IN, OUT, BIDIR};
-    private int edgeID;
-    private int fromID;
-    private int toID;
-    private Direction direct;    
-    private LineShape edgeShape=null;
+    private int edgeID=-1;
+    private int fromID=-1;
+    private int toID=-1;
+    private boolean bDirectional=false;
+    private EdgeAspect edgeAspect=null;
       
-    /**
-     * Конструктор для создания нового ребра графа без связи с вершинами
-     * @param ID - Уникалиный ID ребра
-     */
-    public GraphEdge(int ID)
-    {
-        this.edgeID=ID;
-        this.fromID=-1;
-        this.toID=-1;
-        this.direct=null;
-        edgeShape=null;
-    }    
     
     /**
      * Конструктор для создания нового ребра графа
      * @param ID - Уникалиный ID ребра
      * @param from - ID вершины из которой выходит ребро
      * @param to - ID вершины в которую попадает ребро
-     * @param dir - Направление ребра
+     * @param direction - Направление ребра
      */
-    public GraphEdge(int ID, int from, int to, Direction dir)
+    public GraphEdge(int ID, int from, int to,eEdgeAspectType shapeType)
     {
         this.edgeID=ID;
         this.fromID=from;
         this.toID=to;
-        this.direct=dir;
-        edgeShape=null;
+        edgeAspect=GraphScene.createEdgeShape(shapeType);
     }   
+    
+    public GraphEdge(int ID, int from, int to,EdgeAspect shape)
+    {
+        this.edgeID=ID;
+        this.fromID=from;
+        this.toID=to;
+        edgeAspect=shape;
+    }
     
     /**
      * Функция для получения ID данного ребра
@@ -59,10 +56,9 @@ public class GraphEdge {
      * Функция для получения направления данного ребра
      * @return Возвращает направление данного ребра
      */
-    public Direction getDirection()
+    public boolean isDirectional()
     {
-        Direction direct=this.direct;
-        return direct;
+        return bDirectional;
     }
     
     /**
@@ -92,12 +88,11 @@ public class GraphEdge {
      */
     public boolean equals(GraphEdge edge)
     {
-        if(
-                this.edgeID==edge.getID() &&
+        if(this.edgeID==edge.getID() &&
                 this.fromID==edge.getFromID() &&
                 this.toID==edge.toID &&
-                this.direct==edge.getDirection() &&
-                this.edgeShape==edge.getShape()
+                this.bDirectional==edge.isDirectional() &&
+                this.edgeAspect==edge.getAspect()
                 )
         {
             return  true;
@@ -108,50 +103,47 @@ public class GraphEdge {
         }
     }
     
-    /**
-     * Функция для задания нового ID вершины из которой выходит ребро
-     * @param newFromID - Новый ID вершины из которой выходит ребро
-     */
-    public void setFrom(int newFromID)
-    {
-        this.fromID=newFromID;
-    }
-    
-    /**
-     * Функция для задания нового ID вершины в которую попадает ребро
-     * @param newToID - Новый ID вершины в которую попадает ребро
-     */
-    public void setTo(int newToID)
-    {
-        this.toID=newToID;
-    }
+//    /**
+//     * Функция для задания нового ID вершины из которой выходит ребро
+//     * @param newFromID - Новый ID вершины из которой выходит ребро
+//     */
+//    public void setFrom(int newFromID)
+//    {
+//        this.fromID=newFromID;
+//    }
+//    
+//    /**
+//     * Функция для задания нового ID вершины в которую попадает ребро
+//     * @param newToID - Новый ID вершины в которую попадает ребро
+//     */
+//    public void setTo(int newToID)
+//    {
+//        this.toID=newToID;
+//    }
     
     /**
      * Функция для задания нового направления ребра
      * @param newDirection - Новое направление ребра
      */
-     public void setDirection(Direction newDirection)
+     public void setDirection(boolean newDirection)
      {
-         this.direct=newDirection;
-     }
-     
-     /**
-     * Функция для задания фигуры ребра
-     * @param shape - Фигура ребра
-     */
-     public void setShape(LineShape shape)
-     {
-         this.edgeShape=shape;
+         this.bDirectional=newDirection;
      }
      
      /**
      * Функция для получения фигуры ребра
      * @return  shape - Фигура ребра
      */
-     public LineShape getShape()
+     public EdgeAspect getAspect()
      {
-         LineShape shape=this.edgeShape;
-         return shape;
+         return this.edgeAspect;
      }
-
+     
+     public void syncronize(GraphScene scene)
+     {
+         NodeAspect n1=scene.getNode(fromID).getAspect();
+         NodeAspect n2=scene.getNode(toID).getAspect();
+         edgeAspect.setPortA(n1);
+         edgeAspect.setPortB(n2);
+     }
 }
