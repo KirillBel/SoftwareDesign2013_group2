@@ -179,4 +179,9 @@ public abstract class EdgeAspect extends BaseShape{
         };
         super.removeChild(index);
     };
+    
+    public eEdgeAspectType getAspectType()
+    {
+        return aspectType;
+    }
 }
