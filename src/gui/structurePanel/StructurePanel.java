@@ -56,7 +56,7 @@ public class StructurePanel extends javax.swing.JPanel {
     
     private JFrame mainFrame;
     
-    private JPopupMenu jPopupMenuContextIndividual = null;
+    private JPopupMenu getJPopupMenuNodeContextIndividual = null;
 
     private JMenuItem jMenuItemDelete = null;
     
@@ -292,20 +292,35 @@ public class StructurePanel extends javax.swing.JPanel {
     
     	private JPopupMenu getJPopupMenuContextIndividual() {
             
-		if (jPopupMenuContextIndividual == null) {
-                    jPopupMenuContextIndividual = new JPopupMenu();
-                    jPopupMenuContextIndividual.add(getJMenuItemDelete());
+		if (getJPopupMenuNodeContextIndividual == null) {
+                    getJPopupMenuNodeContextIndividual = new JPopupMenu();
+                    getJPopupMenuNodeContextIndividual.add(getJMenuNodeItemDelete());
 		}
-                return jPopupMenuContextIndividual;
+                return getJPopupMenuNodeContextIndividual;
         }
         
-        private JMenuItem getJMenuItemDelete() {
+        private JMenuItem getJMenuNodeItemDelete() {
             if (jMenuItemDelete == null) {
                 jMenuItemDelete = new JMenuItem("Удалить");
             }
             jMenuItemDelete.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
-                    System.out.println("actionPerformed()Удалить");                   
+                    int selectedRowsCount=tableNode.getSelectedRowCount();
+                    if(selectedRowsCount==0)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        int selectedRows[]=tableNode.getSelectedRows();  
+                        int nodeID;
+                        for(int i=0; i<selectedRowsCount; i++)
+                        {
+                            nodeID=(int) tableNode.getModel().getValueAt(selectedRows[i], 0);
+                            scene.removeNode(nodeID);                            
+                        }
+                        updateScene();
+                    }               
                 }
             });            
             return jMenuItemDelete;

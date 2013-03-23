@@ -89,6 +89,10 @@ public class GraphNode {
                     return false;
                 }  
             }
+            if(this.nodeAspect!=node.getAspect())
+            {
+                return false;
+            }
             return true;
         }
         else

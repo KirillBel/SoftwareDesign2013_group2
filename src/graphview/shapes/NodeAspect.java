@@ -155,5 +155,15 @@ public abstract class NodeAspect extends BaseShape{
     {
         updateContainer();
         super.update();
-    };
+    };   
+    
+    public eNodeAspectType getAspectType()
+    {
+        return aspectType;
+    }
+    
+    public eContainerType getContainerType()
+    {
+        return containerType;
+    }
 }
