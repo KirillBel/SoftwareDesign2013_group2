@@ -107,6 +107,11 @@ public abstract class NodeAspect extends BaseShape{
         return containerType;
     };
     
+    public eNodeAspectType getAspectType()
+    {
+        return aspectType;
+    }
+    
     public void updateContainer()
     {
         if(containerType==eContainerType.RESIZE_CHILDS_TO_PARENT)

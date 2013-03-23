@@ -83,7 +83,8 @@ public class ImageShape extends NodeAspect {
 
     @Override
     public Rect getContainRect() {
-        return getGlobalRectangle().getReduced(5);
+        Rect r=new Rect(0,0,getRectangle().getSize().x,getRectangle().getSize().y);
+        return r.getReduced(containerOffset);
     }
 }
 
