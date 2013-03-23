@@ -321,7 +321,7 @@ public class GraphScene extends javax.swing.JPanel{
                 dragTarget.move(mouseState.sceneDelta);
             else
             {
-                if(dragTarget.getParent().getContainerMode()!=BaseShape.CONTAIN_DEFAULT &&
+                if(//dragTarget.getParent().getContainerMode()!=BaseShape.CONTAIN_DEFAULT &&
                         dragTarget.getParent()!=root)
                 {
                     dragTarget.setSelected(false);
@@ -526,11 +526,10 @@ public class GraphScene extends javax.swing.JPanel{
     
     public GraphNode createTextCircleNode(String txt, Color col)
     {
-        NodeAspect node=createNodeShape(eNodeAspectType.ELLIPSE,eNodeAspectType.TEXT);
+        NodeAspect node=createNodeShape(eNodeAspectType.ELLIPSE);
+        node.createLabel(txt);
         node.color=col;
-        node.label=txt;
-        node.getChild(0).getProperties(true).setValue("Text", txt);
-        node.setContainerMode(BaseShape.CONTAIN_CHILDS);
+        node.setContainerMode(NodeAspect.eContainerType.RESIZE_CHILDS_TO_PARENT);
         node.fitToChilds(true);
         return createNode(node);
     };
@@ -565,7 +564,7 @@ public class GraphScene extends javax.swing.JPanel{
         if(!testNodeID(from)) {System.err.println("Cant create edge!"); return null;};
         if(!testNodeID(to)) {System.err.println("Cant create edge!"); return null;};
         
-        GraphEdge edge=new GraphEdge(nodesArray.size(),from,to,shapeType);
+        GraphEdge edge=new GraphEdge(edgesArray.size(),from,to,shapeType);
         edgesArray.add(edge);
         nodesArray.get(from).addEdge(edge.getID());
         nodesArray.get(to).addEdge(edge.getID());
@@ -580,7 +579,7 @@ public class GraphScene extends javax.swing.JPanel{
         if(!testNodeID(from)) {System.err.println("Cant create edge!"); return null;};
         if(!testNodeID(to)) {System.err.println("Cant create edge!"); return null;};
         
-        GraphEdge edge=new GraphEdge(nodesArray.size(),from,to,shape);
+        GraphEdge edge=new GraphEdge(edgesArray.size(),from,to,shape);
         edgesArray.add(edge);
         nodesArray.get(from).addEdge(edge.getID());
         nodesArray.get(to).addEdge(edge.getID());

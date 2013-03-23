@@ -34,13 +34,6 @@ public abstract class BaseShape  extends ShapeEvents{
     protected boolean bMouseIn=false;
     protected boolean bHaveGrip=true;
     
-    int containerMode=CONTAIN_DEFAULT;
-    public float containerOffset=7;
-    public static final int CONTAIN_DEFAULT = 0;
-    public static final int CONTAIN_CHILDS_TO_NODE = 1;
-    public static final int CONTAIN_NODE_TO_CHILDS = 2;
-    public static final int CONTAIN_CHILDS = 3;
-    
     public static final int GRIP_NONE = 0;
     public static final int GRIP_LEFT = 1;
     public static final int GRIP_RIGHT = 2;
@@ -240,12 +233,12 @@ public abstract class BaseShape  extends ShapeEvents{
         return null;
     };
     
-    public void addChild(BaseShape shape)
+    public int addChild(BaseShape shape)
     {
-        if(shape==null) return;
+        if(shape==null) return-1;
         for(int i=0;i<childs.size();i++)
         {
-            if(childs.get(i)==shape) return;
+            if(childs.get(i)==shape) return -1;
         };
         
         if(shape.parent!=null)
@@ -260,6 +253,7 @@ public abstract class BaseShape  extends ShapeEvents{
         
         addToZBuffer(shape.childIndex);
         update();
+        return shape.childIndex;
     };
     
     public Rect getChildsRect()
@@ -438,67 +432,6 @@ public abstract class BaseShape  extends ShapeEvents{
     };
     
     ////////////////////////END SELECTION_VISIBILITY//////////////////////
-    
-    /////////////////////////////CONTAINER////////////////////////////////
-    
-    public void setContainerMode(int mode)
-    {
-        containerMode=mode;
-        updateContainer();
-    };
-    
-    public int getContainerMode()
-    {
-        return containerMode;
-    };
-    
-    public void updateContainer()
-    {
-        if(containerMode==CONTAIN_CHILDS_TO_NODE)
-        {
-            Rect r=new Rect(0,0,getSize().x,getSize().y);
-            for(int i=0;i<childs.size();i++)
-            {
-                childs.get(i).setRectangle(r.getReduced(containerOffset));
-            };
-        }
-        else if(containerMode==CONTAIN_NODE_TO_CHILDS)
-        {
-            Rect r=getChildsRect();
-            setSize(r.getSize().plus(containerOffset));
-            
-            for(int i=0;i<childs.size();i++)
-            {
-                childs.get(i).bMoveable=true;
-                childs.get(i).setCenterPosition(getSize().divide(2));
-                childs.get(i).bMoveable=false;
-            };
-        }
-        else if(containerMode==CONTAIN_CHILDS)
-        {
-            for(int i=0;i<childs.size();i++)
-            {
-                childs.get(i).bMoveable=true;
-                childs.get(i).setCenterPosition(getSize().divide(2));
-                childs.get(i).bMoveable=false;
-            };
-        };
-    };
-    
-    public void fitToChilds(boolean bEquilateral)
-    {
-        Rect r=getChildsRect();
-        Vec2 size=r.getSize();
-        if(bEquilateral)
-        {
-            if(size.x>size.y) size.y=size.x;
-            else size.x=size.y; 
-        };
-        
-        setSize(size.plus(containerOffset*2));
-    }
-    
-    ///////////////////////////////END CONTAINER/////////////////////////////
     
     /////////////////////////////EVENTS/////////////////////////////////////
     public int testChildMouseEvent(Vec2 pt, BaseEvent evt)
@@ -701,7 +634,7 @@ public abstract class BaseShape  extends ShapeEvents{
         };
         
         setRectangle(r);
-        updateContainer();
+        update();
     };
     ///////////////////////END GRIP/////////////////////////////////////////
     
@@ -713,7 +646,6 @@ public abstract class BaseShape  extends ShapeEvents{
             if(childs.get(i)!=null) 
                 childs.get(i).update();
         };
-        updateContainer();
     };
     
     public void draw(Graphics2D g)

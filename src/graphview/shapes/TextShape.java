@@ -51,7 +51,7 @@ public class TextShape extends BoxShape{
         newSize.x=Math.max(newSize.x, bounds.getSize().x);
         newSize.y=Math.max(newSize.y, bounds.getSize().y);
         setSize(newSize);
-        if(parent!=null) parent.updateContainer();
+        if(parent!=null) ((NodeAspect) parent).updateContainer();
     };
     
     @Override

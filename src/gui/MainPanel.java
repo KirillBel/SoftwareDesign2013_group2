@@ -137,7 +137,7 @@ public class MainPanel extends DockablePanel{
          
         NodeAspect imageShape=new ImageShape(0,0,100,100,"res/images/default.png");
         shape3.addChild(imageShape);
-        shape3.setContainerMode(BaseShape.CONTAIN_CHILDS_TO_NODE);
+        shape3.setContainerMode(NodeAspect.eContainerType.RESIZE_CHILDS_TO_PARENT);
         
         NodeAspect shape2=new BoxShape(0,0,100,100);
         shape2.color=Color.red;
@@ -151,7 +151,7 @@ public class MainPanel extends DockablePanel{
         
         TextShape text=new TextShape("12345\n67890");
         shape.addChild(text);
-        shape.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
+        shape.setContainerMode(NodeAspect.eContainerType.RESIZE_PARENT_TO_CHILDS);
         //shape.setContainerMode(BaseShape.CONTAIN_CHILDS_TO_NODE);
         
         NodeAspect ellipse=new EllipseShape(new Vec2(0,0),100);
@@ -159,7 +159,7 @@ public class MainPanel extends DockablePanel{
         ellipse.color=Color.CYAN;
         NodeAspect text2=new TextShape("QWERty");
         ellipse.addChild(text2);
-        ellipse.setContainerMode(BaseShape.CONTAIN_NODE_TO_CHILDS);
+        ellipse.setContainerMode(NodeAspect.eContainerType.RESIZE_PARENT_TO_CHILDS);
         
         NodeAspect ellipse2=new EllipseShape(new Vec2(40,40),100);
         ellipse2.setPosition(new Vec2(100,100));
