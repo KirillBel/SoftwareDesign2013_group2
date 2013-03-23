@@ -595,9 +595,9 @@ public class GraphScene extends javax.swing.JPanel{
         
         GraphNode node=nodesArray.get(id);
         
-        for(int i=0;i<node.getSizeOfNodeEdgesIDArray();i++)
+        while(node.getSizeOfNodeEdgesIDArray()!=0)
         {
-            int edgeID=node.getElementOfNodeEdgesIDArray(i);
+            int edgeID=node.getElementOfNodeEdgesIDArray(0);
             removeEdge(edgeID);
         }
         
