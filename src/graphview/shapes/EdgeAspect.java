@@ -9,7 +9,6 @@ import geometry.Vec2;
 import graphview.GraphEdge;
 import java.awt.Color;
 import java.util.ArrayList;
-import property.PropertyList;
 
 /**
  *
@@ -47,29 +46,29 @@ public abstract class EdgeAspect extends BaseShape{
     
     public EdgeAspect()
     {
-        properties.add(new PropertyList.ColorProperty("Color", "Shape color", color));
-        properties.add(new PropertyList.StringProperty("Label", "Edge label", label));
-        properties.add(new PropertyList.StringProperty("Hint", "Edge hint", hint));
-        properties.add(new PropertyList.IntProperty("Width", "Edge width", width));
+//        properties.add(new PropertyList.ColorProperty("Color", "Shape color", color));
+//        properties.add(new PropertyList.StringProperty("Label", "Edge label", label));
+//        properties.add(new PropertyList.StringProperty("Hint", "Edge hint", hint));
+//        properties.add(new PropertyList.IntProperty("Width", "Edge width", width));
     };
     
     public void updateProperties(boolean bUpdateToProp)
     {
-        if(bUpdateToProp)
-        {
-            properties.setValue("Color", color);
-            properties.setValue("Label", label);
-            properties.setValue("Hint", hint);
-            properties.setValue("Width", width);
-        }
-        else
-        {
-            color=properties.getColor("Color");
-            label=properties.getString("Label");
-            hint=properties.getString("Hint");
-            width=properties.getInt("Width");
-        };
-        super.updateProperties(bUpdateToProp);
+//        if(bUpdateToProp)
+//        {
+//            properties.setValue("Color", color);
+//            properties.setValue("Label", label);
+//            properties.setValue("Hint", hint);
+//            properties.setValue("Width", width);
+//        }
+//        else
+//        {
+//            color=properties.getColor("Color");
+//            label=properties.getString("Label");
+//            hint=properties.getString("Hint");
+//            width=properties.getInt("Width");
+//        };
+//        super.updateProperties(bUpdateToProp);
     };
     
     

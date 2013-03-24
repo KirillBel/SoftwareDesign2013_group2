@@ -163,14 +163,18 @@ public class GraphScene extends javax.swing.JPanel{
         mouseState.sceneDelta=mouseState.screenDelta.divide(scale);
     };
 
+    boolean bIgnorePropListener=false;
     PropertyChangeListener listener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent pce) {
-            if(objectProperties.getShape()!=null)
+            if(bIgnorePropListener) return;
+            bIgnorePropListener=true;
+            if(objectProperties.getPropObject()!=null)
             {
-                objectProperties.getShape().updateProperties(false);
+                objectProperties.getPropObject().updateProperties(false);
                 updateScene();
             };
+            bIgnorePropListener=false;
         }
     };
     
@@ -239,7 +243,7 @@ public class GraphScene extends javax.swing.JPanel{
         
         BaseShape shape=root.getIntersectedChild(mouseState.scenePos);
         if(shape!=null)
-            objectProperties.fromShape(shape);
+            objectProperties.fromPropObject(shape);
         else 
             objectProperties.clearShape();
         

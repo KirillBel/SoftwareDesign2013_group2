@@ -10,7 +10,6 @@ import geometry.Vec2;
 import graphview.GraphNode;
 import graphview.GraphScene;
 import java.awt.Color;
-import property.PropertyList;
 
 /**
  *
@@ -47,24 +46,25 @@ public abstract class NodeAspect extends BaseShape{
     
     public NodeAspect()
     {
-        properties.add(new PropertyList.ColorProperty("Color", "Shape color", color));
-        properties.add(new PropertyList.StringProperty("Hint", "Node hint", hint));
+//        properties.add(new PropertyList.ColorProperty("Color", "Shape color", color));
+//        properties.add(new PropertyList.StringProperty("Hint", "Node hint", hint));
     };
     
-    public void updateProperties(boolean bUpdateToProp)
-    {
-        if(bUpdateToProp)
-        {
-            properties.setValue("Color", color);
-            properties.setValue("Hint", hint);
-        }
-        else
-        {
-            color=properties.getColor("Color");
-            hint=properties.getString("Hint");
-        };
-        super.updateProperties(bUpdateToProp);
-    };
+//    @Override
+//    public void updateProperties(boolean bUpdateToProp)
+//    {
+//        if(bUpdateToProp)
+//        {
+//            properties.setValue("Color", color);
+//            properties.setValue("Hint", hint);
+//        }
+//        else
+//        {
+//            color=properties.getColor("Color");
+//            hint=properties.getString("Hint");
+//        };
+//        super.updateProperties(bUpdateToProp);
+//    };
     
     public void createLabel(String str)
     {
@@ -76,15 +76,15 @@ public abstract class NodeAspect extends BaseShape{
     public String getLabel()
     {
         if(labelNode==-1) return "";
-        return childs.get(labelNode).getProperties(true).getString("Text");
+        return "";//childs.get(labelNode).getProperties(true).getString("Text");
     };
     
     public void setLabel(String txt)
     {
         if(labelNode==-1) return;
         
-        childs.get(labelNode).getProperties(true).setValue("Text", txt);
-        childs.get(labelNode).update();
+        //childs.get(labelNode).getProperties(true).setValue("Text", txt);
+        //childs.get(labelNode).update();
     };
     
     /////////////////////////////CONTAINER////////////////////////////////

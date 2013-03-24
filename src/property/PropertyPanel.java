@@ -17,7 +17,7 @@ import java.beans.PropertyChangeListener;
  */
 public class PropertyPanel extends PropertySheetPanel{
     
-    BaseShape selectedShape=null;
+    PropertyObject selectedObject=null;
     
     
     public PropertyPanel()
@@ -26,15 +26,10 @@ public class PropertyPanel extends PropertySheetPanel{
         setDescriptionVisible( true );
     };
     
-    public void fromList(PropertyList list)
+    public void fromPropObject(PropertyObject obj)
     {
-        setProperties(list.toArray());
-    };
-    
-    public void fromShape(BaseShape shape)
-    {
-        selectedShape=shape;
-        fromList(selectedShape.getProperties(true));
+        selectedObject=obj;
+        setProperties(obj.propToArray());
     };
     
     public void clearProperties()
@@ -44,12 +39,12 @@ public class PropertyPanel extends PropertySheetPanel{
     
     public void clearShape()
     {
-        selectedShape=null;
+        selectedObject=null;
         clearProperties();
     };
     
-    public BaseShape getShape()
+    public PropertyObject getPropObject()
     {
-        return selectedShape;
+        return selectedObject;
     };
 }

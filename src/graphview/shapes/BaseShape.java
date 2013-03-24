@@ -8,20 +8,22 @@ import geometry.Intersect;
 import geometry.Rect;
 import geometry.Vec2;
 import graphevents.BaseEvent;
-import graphevents.ShapeEvents;
 import graphevents.ShapeMouseEvent;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.util.ArrayList;
-import property.PropertyList;
+import property.PropertyObject;
 
 /**
  *
  * @author Kirill
  */
-public abstract class BaseShape  extends ShapeEvents{
+public abstract class BaseShape extends PropertyObject{
+    private Vec2Property localCoordProp=null;
+    private Vec2Property sizeProp=null;
+    
     private Vec2 localCoord=new Vec2();
     private Vec2 globalCoord=new Vec2();
     private Vec2 shapeSize=new Vec2();
@@ -48,12 +50,10 @@ public abstract class BaseShape  extends ShapeEvents{
     protected ArrayList<Integer> selectedChilds=new ArrayList<Integer>();
     protected ArrayList<Integer> zbuffer=new ArrayList<Integer>();
     
-    PropertyList properties=new PropertyList();
-    
     public BaseShape()
     {
-        properties.add(new PropertyList.Vec2Property("Position", "Shape position", localCoord));
-        properties.add(new PropertyList.Vec2Property("Size", "Shape size", shapeSize));
+        localCoordProp=propCreate("Position", new Vec2());
+        sizeProp=propCreate("Size", new Vec2());
     };
     
     public BaseShape getParent()
@@ -68,27 +68,22 @@ public abstract class BaseShape  extends ShapeEvents{
     
     /////////////////////PROPERTIES/////////////////////////////////////
     
-    public PropertyList getProperties(boolean bUpdate){
-        if(bUpdate) updateProperties(true);
-        return properties;
-    }
-    
+    @Override
     public void updateProperties(boolean bUpdateToProp)
     {
         if(bUpdateToProp)
         {
-            properties.setValue("Position", getPosition());
-            properties.setValue("Size", getSize());
+            localCoordProp.setProp(localCoord);
+            sizeProp.setProp(shapeSize);
         }
         else
         {
-            setPosition(properties.getVec2("Position"));
-            setSize(properties.getVec2("Size"));
+            setPosition(localCoordProp.getProp());
+            setSize(sizeProp.getProp());
         };
     };
     
     ////////////////////END PROPERTIES//////////////////////////////////
-    
     
     /////////////////////MOVEMENT///////////////////////////////////////
     
@@ -112,6 +107,7 @@ public abstract class BaseShape  extends ShapeEvents{
         if(!bMoveable) return;
         localCoord.set(onMove(localCoord,coord));
         updateGlobalCoord();
+        localCoordProp.setProp(localCoord);
     };
     
     public void move(Vec2 v)
@@ -142,6 +138,7 @@ public abstract class BaseShape  extends ShapeEvents{
         if(size.x<5) size.x=5;
         if(size.y<5) size.y=5;
         shapeSize.set(onResize(shapeSize,size));
+        sizeProp.setProp(shapeSize);
     };
     
     public Vec2 getSize()
@@ -434,6 +431,78 @@ public abstract class BaseShape  extends ShapeEvents{
     ////////////////////////END SELECTION_VISIBILITY//////////////////////
     
     /////////////////////////////EVENTS/////////////////////////////////////
+    protected boolean bReceiveMouseClick=true;
+    protected boolean bReceiveMouseDrag=true;
+    protected boolean bReceiveMousePress=true;
+    protected boolean bReceiveMouseRelease=true;
+    protected boolean bReceiveMouseMove=true;
+    
+    public boolean isReceivedMouseClick() {
+        return bReceiveMouseClick;
+    }
+    
+    public boolean isReceivedMouseDrag() {
+        return bReceiveMouseDrag;
+    }
+    
+    public boolean isReceivedMousePress() {
+        return bReceiveMousePress;
+    }
+    
+    public boolean isReceivedMouseRelease() {
+        return bReceiveMouseRelease;
+    }
+    
+    public boolean isReceivedMouseMove() {
+        return bReceiveMouseMove;
+    }
+    
+    
+    protected boolean testEvent(BaseEvent evt)
+    {
+        if(evt.getType()==BaseEvent.EVENT_TYPE_MOUSE)
+        {
+            ShapeMouseEvent mEvt=(ShapeMouseEvent)evt;
+            if(mEvt.getSubtype()==ShapeMouseEvent.CLICK && bReceiveMouseClick) 
+                return true;
+            if(mEvt.getSubtype()==ShapeMouseEvent.DRAG && bReceiveMouseDrag) 
+                return true;
+            if(mEvt.getSubtype()==ShapeMouseEvent.MOVE && bReceiveMouseMove) 
+                return true;
+            if(mEvt.getSubtype()==ShapeMouseEvent.PRESS && bReceiveMousePress) 
+                return true;
+            if(mEvt.getSubtype()==ShapeMouseEvent.RELEASE && bReceiveMouseRelease) 
+                return true;
+        };
+        return false;
+    }
+    
+    
+    public boolean processEvent(BaseEvent evt)
+    {
+        switch(evt.getType())
+        {
+            case BaseEvent.EVENT_TYPE_MOUSE: 
+                return processMouseEvent((ShapeMouseEvent)evt);
+        };
+        return false;
+    };
+    
+    protected boolean processMouseEventBase(ShapeMouseEvent evt)
+    {
+        boolean bRet=false;
+        switch(evt.getSubtype())
+        {
+            case ShapeMouseEvent.CLICK:     bRet=onMouseClick(evt); break;
+            case ShapeMouseEvent.DRAG:      bRet=onMouseDrag(evt); break;
+            case ShapeMouseEvent.MOVE:      bRet=onMouseMove(evt); break;
+            case ShapeMouseEvent.PRESS:     bRet=onMousePress(evt); break;
+            case ShapeMouseEvent.RELEASE:   bRet=onMouseRelease(evt); break;
+            default: return false;
+        };
+        return bRet;
+    };
+    
     public int testChildMouseEvent(Vec2 pt, BaseEvent evt)
     {
         for(int i=zbuffer.size()-1;i>=0;i--)
@@ -456,7 +525,6 @@ public abstract class BaseShape  extends ShapeEvents{
         };
     };
     
-    @Override
     protected boolean processMouseEvent(ShapeMouseEvent evt)
     {
         int numChild=testChildMouseEvent(evt.getPosition(),evt);
@@ -464,17 +532,16 @@ public abstract class BaseShape  extends ShapeEvents{
         if(numChild!=-1) 
         {
             if(!childs.get(numChild).processEvent(evt))
-                return super.processMouseEvent(evt);
+                return processMouseEventBase(evt);
         }
         else
         {
-            return super.processMouseEvent(evt);
+            return processMouseEventBase(evt);
         };
 
         return false;
     };
     
-    @Override
     public boolean onMouseClick(ShapeMouseEvent evt){
         if(evt.getButton()==1)
         {
@@ -487,7 +554,6 @@ public abstract class BaseShape  extends ShapeEvents{
     }
     
     int nMode=0;
-    @Override
     public boolean onMousePress(ShapeMouseEvent evt){
         if(evt.getButton()==1 && bSelected) 
         {
@@ -497,20 +563,17 @@ public abstract class BaseShape  extends ShapeEvents{
         return false;
     }
     
-    @Override
     public boolean onMouseRelease(ShapeMouseEvent evt){
         nMode=0;
         return false;
     }
     
-    @Override
     public boolean onMouseDrag(ShapeMouseEvent evt){
         
         return true;
     }
    
     Vec2 debugMouseMove=new Vec2();
-    @Override
     public boolean onMouseMove(ShapeMouseEvent evt){
         debugMouseMove=toGlobal(evt.getPosition());
         
@@ -521,7 +584,6 @@ public abstract class BaseShape  extends ShapeEvents{
         return true;
     }
     
-    @Override
     public boolean onMouseIn(ShapeMouseEvent evt){
         bMouseIn=true;
         for(int i=0;i<childs.size();i++)
@@ -534,7 +596,6 @@ public abstract class BaseShape  extends ShapeEvents{
         return true;
     }
     
-    @Override
     public boolean onMouseOut(ShapeMouseEvent evt){
         bMouseIn=false;
         for(int i=0;i<childs.size();i++)
