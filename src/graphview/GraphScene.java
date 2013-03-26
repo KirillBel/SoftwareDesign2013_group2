@@ -77,6 +77,8 @@ class MouseState{
     };
 }
 
+
+
 public class GraphScene extends javax.swing.JPanel{
     Vec2 frameSize=new Vec2(1,1);
     Vec2 offset=new Vec2();
@@ -371,7 +373,7 @@ public class GraphScene extends javax.swing.JPanel{
                 dragTarget.move(mouseState.sceneDelta);
             else
             {
-                if(//dragTarget.getParent().getContainerMode()!=BaseShape.CONTAIN_DEFAULT &&
+                if(dragTarget.getParent().getShapeAspect()==BaseShape.eShapeAspect.NODE &&
                         dragTarget.getParent()!=root)
                 {
                     dragTarget.setSelected(false);

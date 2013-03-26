@@ -154,6 +154,12 @@ public abstract class NodeAspect extends BaseShape{
     public abstract Rect getContainRect();
     ///////////////////////////////END CONTAINER/////////////////////////////
     
+    @Override
+    public eShapeAspect getShapeAspect()
+    {
+        return eShapeAspect.NODE;
+    }
+    
     public void update()
     {
         updateContainer();

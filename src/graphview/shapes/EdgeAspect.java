@@ -205,4 +205,10 @@ public abstract class EdgeAspect extends BaseShape{
     {
         return aspectType;
     }
+    
+    @Override
+    public eShapeAspect getShapeAspect()
+    {
+        return eShapeAspect.EDGE;
+    }
 }

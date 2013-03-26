@@ -20,6 +20,8 @@ import property.PropertyObject;
  *
  * @author Kirill
  */
+
+
 public abstract class BaseShape extends PropertyObject{
     private Vec2Property localCoordProp=null;
     private Vec2Property sizeProp=null;
@@ -37,6 +39,13 @@ public abstract class BaseShape extends PropertyObject{
     protected boolean bHaveGrip=true;
     
     public boolean bDebugDrawBBox = true;
+    
+    public enum eShapeAspect
+    {
+        DEFAULT,
+        NODE,
+        EDGE
+    };
     
     public static final int GRIP_NONE = 0;
     public static final int GRIP_LEFT = 1;
@@ -66,6 +75,11 @@ public abstract class BaseShape extends PropertyObject{
     public boolean isSelected()
     {
         return bSelected;
+    };
+    
+    public eShapeAspect getShapeAspect()
+    {
+        return eShapeAspect.DEFAULT;
     };
     
     /////////////////////PROPERTIES/////////////////////////////////////
