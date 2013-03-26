@@ -36,7 +36,7 @@ public class DotShape extends NodeAspect{
             Rect r=globalPlace.getIncreased(globalPlace.getSize().x/4);
             g.fillOval((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
         };
-        g.setColor(color);
+        g.setColor(color.getProp());
         g.fillOval((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
         
         super.draw(g);

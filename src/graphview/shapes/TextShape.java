@@ -19,20 +19,19 @@ import java.awt.font.FontRenderContext;
 public class TextShape extends BoxShape{
     FontRenderContext frc=new FontRenderContext(null, true,true);
     Rect bounds=null;
-
+    
+    FontProperty fontProp=null;
+    StringProperty textProp=null;
+    
     public TextShape(String text_)
     {
         super(0,0,10,10);
         
-//        getProperties(false).add(new PropertyList.FontProperty("Font", "Shape font", 
-//                new Font("Arial",Font.PLAIN,20)));
-//        getProperties(false).add(new PropertyList.StringProperty("Text", "Shape text", 
-//                new String(text_)));
-       
+        textProp=propCreate("Text", new String(text_));
+        fontProp=propCreate("Font", new Font("Arial",Font.PLAIN,15));  
         
         updateTextBounds();
-        
-        
+
         //bMoveable=false;
         //bResizeable=false;
         bReceiveMouseDrag=false;
@@ -42,35 +41,38 @@ public class TextShape extends BoxShape{
         this.aspectType=eNodeAspectType.TEXT;
     };
     
-    public void updateTextBounds()
+    public void updateProperties(boolean bUpdateToProp)
     {
-        //bounds=Rect.fromRectangle2D(properties.getFont("Font").
-        //        getStringBounds(properties.getString("Text"), frc));
-//        Vec2 newSize=getSize();
-//        newSize.x=Math.max(newSize.x, bounds.getSize().x);
-//        newSize.y=Math.max(newSize.y, bounds.getSize().y);
-//        setSize(newSize);
-//        if(parent!=null) ((NodeAspect) parent).updateContainer();
+        if(!bUpdateToProp) updateTextBounds();
+        super.updateProperties(bUpdateToProp);
     };
     
-//    @Override
-//     public void updateProperties(boolean bUpdateToProp)
-//     {
-//         if(bUpdateToProp==false) 
-//         {
-//             updateTextBounds();
-//         }
-//         super.updateProperties(bUpdateToProp);
-//     };
+    public String getText()
+    {
+        return new String(textProp.getProp());
+    };
+    
+    public void setText(String txt)
+    {
+        textProp.setProp(txt);
+    };
+    
+    public void updateTextBounds()
+    {
+        bounds=Rect.fromRectangle2D(fontProp.getProp().
+                getStringBounds(textProp.getProp(), frc));
+        setSize(bounds.getSize());
+        if(parent!=null) ((NodeAspect) parent).updateContainer();
+    };
     
     @Override
     public void draw(Graphics2D g) {
-        //g.setFont(properties.getFont("Font"));
+        g.setFont(fontProp.getProp());
         
         
         Rect globalPlace=getGlobalRectangle();
-        g.setColor(color);
-        //g.drawString(properties.getString("Text"), globalPlace.left, globalPlace.bottom-bounds.bottom);
+        g.setColor(color.getProp());
+        g.drawString(textProp.getProp(), globalPlace.left, globalPlace.bottom-bounds.bottom);
         
         if(bSelected) drawGrip(g);
     }

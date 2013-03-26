@@ -81,10 +81,10 @@ public class GraphScene extends javax.swing.JPanel{
     Vec2 frameSize=new Vec2(1,1);
     Vec2 offset=new Vec2();
     Vec2 scale=new Vec2(1,1);
-    Font font=new Font("Arial",Font.PLAIN,20);
     BaseShape root=new RootShape();
     MouseState mouseState=new MouseState();
     Rect selectionRect=new Rect();
+    Font sceneFont= new Font("Arial",Font.PLAIN,13);
     
     int sceneMode=0;
     public static final int SCENE_MODE_NONE = 0;
@@ -254,19 +254,65 @@ public class GraphScene extends javax.swing.JPanel{
     
     private void formMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {                                     
         if(evt.getWheelRotation()>0) {
-            scale=scale.multiply(0.8f);
+            zoom(0.8f);
         }
         else if(evt.getWheelRotation()<0) {
-            scale=scale.multiply(1.2f);
+            zoom(1.2f);
         }
-        updateScene();
     }
     
     private void formComponentResized(java.awt.event.ComponentEvent evt) {              
         frameSize=new Vec2(this.getSize().width,this.getSize().height);
         updateScene();
-    }                                     
+    }
+    
+    public void zoom(float mult)
+    {
+        mouseState.scenePos=fromScreen(mouseState.screenPos);
+        Rect screen = getScreenRect();
+        Vec2 prevPos=mouseState.scenePos;
+        scale=scale.multiply(mult);
+        mouseState.scenePos=fromScreen(mouseState.screenPos);
+        Vec2 delta=mouseState.scenePos.minus(prevPos);
+        offset=offset.plus(delta.multiply(scale));
+        mouseState.scenePos=fromScreen(mouseState.screenPos);
+        updateScene();
+    };
+    
+    void setSceneRect(Rect r)
+    {
+        Rect prev=getSceneRect();
+        Rect screen=getScreenRect();
+        
+        Vec2 newScale=new Vec2(screen.getSize().x/r.getSize().x,screen.getSize().y/r.getSize().y);
+        if(newScale.x<newScale.y) newScale.y=newScale.x;
+        else if(newScale.x>newScale.y) newScale.x=newScale.y;
+        
+        Vec2 newOffset=r.getTopLeft().multiply(-1);
+        newOffset=newOffset.multiply(newScale);
+        
+        offset.set(newOffset);
+        scale.set(newScale);
+        mouseState.scenePos=fromScreen(mouseState.screenPos);
+        updateScene();
+    };
+    
+    public void fitScene()
+    {
+        setSceneRect(root.getChildsRect().getIncreased(10));
+    };
 
+    Rect getScreenRect()
+    {
+        Rect r=new Rect();
+        r=Rect.fromRectangle2D(getBounds());
+        return r;
+    };
+    
+    Rect getSceneRect()
+    {
+        return fromScreen(getScreenRect());
+    };
 
     /////////////////END MESSAGES//////////////////////////////////////////////
     
@@ -385,10 +431,9 @@ public class GraphScene extends javax.swing.JPanel{
     }
     
     public void draw(Graphics2D g){
-        g.translate(offset.x, offset.y);
-        g.scale(scale.x, scale.y);
+        setSceneDrawMode(g);
         
-        g.setFont(font);
+        g.setFont(sceneFont);
 
         drawGrid(g,new Vec2(100,100));
         root.draw(g);
@@ -399,7 +444,33 @@ public class GraphScene extends javax.swing.JPanel{
             Rect r=selectionRect.getConvertedToStd();
             g.drawRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
         }
+        
+        Rect r=new Rect(mouseState.scenePos.x-5,mouseState.scenePos.y-5,mouseState.scenePos.x+5,mouseState.scenePos.y+5);
+        g.drawRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
+        
+        setScreenDrawMode(g);
+        Rect screen=getSceneRect();
+        g.drawString(String.format("scale: %.2f, %.2f", scale.x,scale.y), 0, 20);
+        g.drawString(String.format("offset: %.2f, %.2f", offset.x,offset.y), 0, 40);
+        g.drawString(String.format("mouseScreen: %.2f, %.2f", mouseState.screenPos.x,mouseState.screenPos.y), 0, 60);
+        g.drawString(String.format("mouseScene: %.2f, %.2f", mouseState.scenePos.x,mouseState.scenePos.y), 0, 80);
     }
+    
+    public void setScreenDrawMode(Graphics2D g)
+    {
+        AffineTransform tr=new AffineTransform();
+        tr.translate(0,0);
+        tr.scale(1,1);
+        g.setTransform(tr);
+    };
+    
+    public void setSceneDrawMode(Graphics2D g)
+    {
+        AffineTransform tr=new AffineTransform();
+        tr.translate(offset.x, offset.y);
+        tr.scale(scale.x, scale.y);
+        g.setTransform(tr);
+    };
     
     public void drawGrid(Graphics2D g, Vec2 gridSize)
     {
@@ -419,12 +490,16 @@ public class GraphScene extends javax.swing.JPanel{
         
         for(float i=startX;i<=frameRect.right;i+=gridSize.x)
         {
+            if(((int)i)==0) g.setColor(Color.red);
             g.drawLine((int)i, (int)frameRect.top, (int)i, (int)frameRect.bottom);
+            if(((int)i)==0) g.setColor(Color.lightGray);
         };
         
         for(float i=startY;i<=frameRect.bottom;i+=gridSize.y)
         {
+            if(((int)i)==0) g.setColor(Color.red);
             g.drawLine((int)frameRect.left, (int)i, (int)frameRect.right, (int)i);
+            if(((int)i)==0) g.setColor(Color.lightGray);
         };
         g.setStroke(oldStroke);
     };
@@ -532,8 +607,8 @@ public class GraphScene extends javax.swing.JPanel{
     {
         NodeAspect node=createNodeShape(eNodeAspectType.ELLIPSE);
         node.createLabel(txt);
-        node.color=col;
-        node.setContainerMode(NodeAspect.eContainerType.RESIZE_CHILDS_TO_PARENT);
+        node.setColor(col);
+        node.setContainerMode(NodeAspect.eContainerType.RESIZE_PARENT_TO_CHILDS_EQUI);
         node.fitToChilds(true);
         return createNode(node);
     };

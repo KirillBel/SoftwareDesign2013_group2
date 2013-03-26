@@ -4,6 +4,7 @@
  */
 package graphview.shapes;
 
+import geometry.Rect;
 import graphview.shapes.BaseShape;
 import geometry.Vec2;
 import graphview.GraphEdge;
@@ -69,6 +70,27 @@ public abstract class EdgeAspect extends BaseShape{
 //            width=properties.getInt("Width");
 //        };
 //        super.updateProperties(bUpdateToProp);
+    };
+    
+    @Override
+    public Rect getBoundingRect()
+    {
+        Rect r=this.getChildsRect();
+        Vec2 pA=getPortPointA();
+        Vec2 pB=getPortPointB();
+        
+        if(portNodeA!=null)
+        {
+            if(r.getSquare()==0) r.set(pA.x,pA.y,pA.x,pA.y);
+            else r.add(pA);
+        };
+        
+        if(portNodeB!=null)
+        {
+            if(r.getSquare()==0) r.set(pB.x,pB.y,pB.x,pB.y);
+            else r.add(pB);
+        };
+        return r;
     };
     
     

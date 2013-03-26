@@ -379,7 +379,7 @@ public class DotParser
   {
       for(int i=0; i<listNode.size();i++){
           System.out.println("OPT for node "+listNode.get(i).getID()); 
-          listNode.get(i).getAspect().color = color;
+          listNode.get(i).getAspect().setColor(color);
       }
       return;
       

@@ -46,7 +46,7 @@ public class EllipseShape extends NodeAspect{
     @Override
     public void draw(Graphics2D g) {
         Rect globalPlace=getGlobalRectangle();
-        g.setColor(color);
+        g.setColor(color.getProp());
         g.fillOval((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
         g.setColor(Color.black);
         

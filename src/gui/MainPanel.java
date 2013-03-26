@@ -129,10 +129,10 @@ public class MainPanel extends DockablePanel{
     public void initScene()
     {
         NodeAspect shape=new BoxShape(10,10,200,300);
-        shape.color=Color.yellow;
+        shape.setColor(Color.yellow);
         
         NodeAspect shape3=new BoxShape(15,15,200,200);
-        shape3.color=Color.red;
+        shape3.setColor(Color.red);
         //shape.addChild(shape3);
          
         NodeAspect imageShape=new ImageShape(0,0,100,100,"res/images/default.png");
@@ -140,14 +140,14 @@ public class MainPanel extends DockablePanel{
         shape3.setContainerMode(NodeAspect.eContainerType.RESIZE_CHILDS_TO_PARENT);
         
         NodeAspect shape2=new BoxShape(0,0,100,100);
-        shape2.color=Color.red;
+        shape2.setColor(Color.red);
         shape2.setPosition(new Vec2(300,10));
         //shape2.addChild(imageShape);//program dies
 
         
         NodeAspect dot=new EllipseShape(0,0,5,5);
         dot.move(new Vec2(200,-100));
-        dot.color=Color.black;
+        dot.setColor(Color.black);
         
         TextShape text=new TextShape("12345\n67890");
         shape.addChild(text);
@@ -156,14 +156,15 @@ public class MainPanel extends DockablePanel{
         
         NodeAspect ellipse=new EllipseShape(new Vec2(0,0),100);
         ellipse.setPosition(new Vec2(40,100));
-        ellipse.color=Color.CYAN;
+        ellipse.setColor(Color.CYAN);
         NodeAspect text2=new TextShape("QWERty");
         ellipse.addChild(text2);
         ellipse.setContainerMode(NodeAspect.eContainerType.RESIZE_PARENT_TO_CHILDS);
         
         NodeAspect ellipse2=new EllipseShape(new Vec2(40,40),100);
         ellipse2.setPosition(new Vec2(100,100));
-        ellipse2.color=Color.PINK;
+        ellipse2.setColor(Color.PINK);
+        //ellipse2.bDebugDrawBBox=true;
         
         
         LineShape line = new LineShape(shape,shape2);

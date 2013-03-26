@@ -36,6 +36,8 @@ public abstract class BaseShape extends PropertyObject{
     protected boolean bMouseIn=false;
     protected boolean bHaveGrip=true;
     
+    public boolean bDebugDrawBBox = true;
+    
     public static final int GRIP_NONE = 0;
     public static final int GRIP_LEFT = 1;
     public static final int GRIP_RIGHT = 2;
@@ -198,8 +200,9 @@ public abstract class BaseShape extends PropertyObject{
     
     public Rect getBoundingRect()
     {
-        Rect r=getRectangle();
-        r.add(this.getChildsRect());
+        Rect r=getGlobalRectangle();
+        Rect childs=this.getChildsRect();
+        if(childs.getSquare()!=0) r.add(childs);
         return r;
     };
     
@@ -256,9 +259,16 @@ public abstract class BaseShape extends PropertyObject{
     public Rect getChildsRect()
     {
         Rect r=new Rect();
+        boolean bFirst=true;
         for(int i=0;i<childs.size();i++)
         {
-            if(i==0) r.set(childs.get(i).getBoundingRect());
+            if(childs.get(i)==null) continue;
+            
+            if(bFirst) 
+            {
+                r.set(childs.get(i).getBoundingRect());
+                bFirst=false;
+            }
             else r.add(childs.get(i).getBoundingRect());
         };
         return r;
@@ -719,12 +729,23 @@ public abstract class BaseShape extends PropertyObject{
             g.fillRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
         };
         
+        
+        
         //g.setColor(Color.blue);
         //g.fillRect((int)debugMouseMove.x-5, (int)debugMouseMove.y-5, 10, 10);
         for(int i=0;i<zbuffer.size();i++)
         {
             if(childs.get(zbuffer.get(i))!=null) 
                 childs.get(zbuffer.get(i)).draw(g);
+        };
+        
+        if(bDebugDrawBBox)
+        {
+             Rect r=getBoundingRect();
+             g.setColor(Color.red);
+             g.drawRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
+             g.setColor(Color.black);
+             g.drawRect((int)r.left+1, (int)r.top+1, (int)r.getSize().x+1, (int)r.getSize().y+1);
         };
     };
     

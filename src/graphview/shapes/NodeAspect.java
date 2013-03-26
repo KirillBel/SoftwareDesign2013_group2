@@ -10,6 +10,7 @@ import geometry.Vec2;
 import graphview.GraphNode;
 import graphview.GraphScene;
 import java.awt.Color;
+import java.awt.Font;
 
 /**
  *
@@ -23,6 +24,7 @@ public abstract class NodeAspect extends BaseShape{
     {
         DEFAULT,
         RESIZE_PARENT_TO_CHILDS,
+        RESIZE_PARENT_TO_CHILDS_EQUI,
         RESIZE_CHILDS_TO_PARENT,
     };
 
@@ -34,9 +36,9 @@ public abstract class NodeAspect extends BaseShape{
         IMAGE
     };
 
+    ColorProperty color=null;
+    StringProperty hint=null;
 
-    public Color color;
-    public String hint;
     int labelNode=-1;
     GraphNode graphParent;
     eNodeAspectType aspectType;
@@ -46,25 +48,19 @@ public abstract class NodeAspect extends BaseShape{
     
     public NodeAspect()
     {
-//        properties.add(new PropertyList.ColorProperty("Color", "Shape color", color));
-//        properties.add(new PropertyList.StringProperty("Hint", "Node hint", hint));
+        color=propCreate("Color", Color.BLACK);
+        hint=propCreate("Hint", "none");  
     };
     
-//    @Override
-//    public void updateProperties(boolean bUpdateToProp)
-//    {
-//        if(bUpdateToProp)
-//        {
-//            properties.setValue("Color", color);
-//            properties.setValue("Hint", hint);
-//        }
-//        else
-//        {
-//            color=properties.getColor("Color");
-//            hint=properties.getString("Hint");
-//        };
-//        super.updateProperties(bUpdateToProp);
-//    };
+    public Color getColor()
+    {
+        return color.getProp();
+    };
+    
+    public void setColor(Color val)
+    {
+        color.setProp(val);
+    };
     
     public void createLabel(String str)
     {
@@ -76,15 +72,15 @@ public abstract class NodeAspect extends BaseShape{
     public String getLabel()
     {
         if(labelNode==-1) return "";
-        return "";//childs.get(labelNode).getProperties(true).getString("Text");
+        return ((TextShape)childs.get(labelNode)).getText();
     };
     
     public void setLabel(String txt)
     {
         if(labelNode==-1) return;
         
-        //childs.get(labelNode).getProperties(true).setValue("Text", txt);
-        //childs.get(labelNode).update();
+        ((TextShape)childs.get(labelNode)).setText(txt);
+        ((TextShape)childs.get(labelNode)).update();
     };
     
     /////////////////////////////CONTAINER////////////////////////////////
@@ -121,9 +117,16 @@ public abstract class NodeAspect extends BaseShape{
                 childs.get(i).setRectangle(getContainRect());
             };
         }
-        else if(containerType==eContainerType.RESIZE_PARENT_TO_CHILDS)
+        else if(containerType==eContainerType.RESIZE_PARENT_TO_CHILDS || 
+                containerType==eContainerType.RESIZE_PARENT_TO_CHILDS_EQUI)
         {
             Rect r=getChildsRect();
+            if(containerType==eContainerType.RESIZE_PARENT_TO_CHILDS_EQUI)
+            {
+                if(r.getSize().x>r.getSize().y) r.setSize(new Vec2(r.getSize().x,r.getSize().x));
+                else if(r.getSize().x<r.getSize().y) r.setSize(new Vec2(r.getSize().y,r.getSize().y));
+            };
+            
             setSize(r.getSize().plus(containerOffset));
             
             for(int i=0;i<childs.size();i++)
