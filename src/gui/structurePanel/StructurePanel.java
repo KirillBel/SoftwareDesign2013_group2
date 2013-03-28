@@ -29,9 +29,12 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.SwingUtilities;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
@@ -50,7 +53,7 @@ public class StructurePanel extends javax.swing.JPanel {
     public JTable tableNode;
     public JTable tableEdge;
     
-    private ArrayList<TableCellEditor> editors = new ArrayList<TableCellEditor>();
+    //private ArrayList<TableCellEditor> editors = new ArrayList<TableCellEditor>();
     
     public TablePropertiesFrame propertiesFrame;
     
@@ -95,21 +98,21 @@ public class StructurePanel extends javax.swing.JPanel {
         };
         modelNode.addColumn("Node ID");
         modelNode.addColumn("Label");
-        modelNode.addColumn("Edge's ID");
-        modelNode.addColumn("Shape");
+       // modelNode.addColumn("Edge's ID");
+       // modelNode.addColumn("Shape");
         
         //ListSelectionModel lm = new DefaultListSelectionModel();
         //lm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         final JTable table = new JTable(modelNode)
         {
-            public TableCellEditor getCellEditor(int row, int column)
+           /* public TableCellEditor getCellEditor(int row, int column)
             {               
                 if (column == 2)
                     return editors.get(row);
                 else
                     return super.getCellEditor(row, column);
-            }
+            }*/
             
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -121,10 +124,7 @@ public class StructurePanel extends javax.swing.JPanel {
         
         table.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-
-                
-                                    
+            public void mouseClicked(MouseEvent e) {                                                   
                 if (SwingUtilities.isLeftMouseButton(e)) 
                 {
                     Point p = e.getPoint();
@@ -166,10 +166,33 @@ public class StructurePanel extends javax.swing.JPanel {
                     }
                     JPopupMenu jPopupMenu = getJPopupMenuContextIndividual();
                     jPopupMenu.show(table, e.getX(), e.getY());
-                }
-                
+                }               
             }
         });
+        TableColumn column = table.getColumnModel().getColumn(1);
+        column.setCellEditor(new DefaultCellEditor(new JTextField()));
+        column.getCellEditor().addCellEditorListener(new CellEditorListener()
+        {
+            int row;
+            String label;
+            int ID;
+            
+            public void editingCanceled(ChangeEvent e)                
+            {
+                row = table.getSelectedRow();
+                ID=(int)table.getModel().getValueAt(row, 0);
+                label=(String)table.getModel().getValueAt(row, 1);
+                scene.getNode(ID).getAspect().setLabel(label);
+            }
+            public void editingStopped(ChangeEvent e) 
+            {                
+                row = table.getSelectedRow();
+                ID=(int)table.getModel().getValueAt(row, 0);
+                label=(String)table.getModel().getValueAt(row, 1);
+                scene.getNode(ID).getAspect().setLabel(label);
+            }
+        }
+                );
 
         //table.setSelectionModel(lm);
         return table;
@@ -203,7 +226,7 @@ public class StructurePanel extends javax.swing.JPanel {
    
     public void updateNodes()
     {
-        editors.clear();
+        //editors.clear();
         while(modelNode.getRowCount()>0)
         {
             modelNode.removeRow(0);
@@ -214,39 +237,40 @@ public class StructurePanel extends javax.swing.JPanel {
             if(scene.getNode(i)!=null)
             {
                 GraphNode node=scene.getNode(i);
-                JComboBox comboBox = new JComboBox();
-                for(int j=0; j<node.getSizeOfNodeEdgesIDArray();j++)
-                {
-                    comboBox.addItem(String.valueOf(node.getElementOfNodeEdgesIDArray(j)));
-                }
+//                JComboBox comboBox = new JComboBox();
+//                for(int j=0; j<node.getSizeOfNodeEdgesIDArray();j++)
+//                {
+//                    comboBox.addItem(String.valueOf(node.getElementOfNodeEdgesIDArray(j)));
+//                }
                 
-                if(node.getSizeOfNodeEdgesIDArray()>0)
-                {
-                    Object[] rowData={
-                        node.getID(),
-                        "",
-                        String.valueOf(node.getElementOfNodeEdgesIDArray(0)),
-                        node.getAspect()
-                    };
-                    modelNode.addRow(rowData);
-                }
-                else
-                {
+//                if(node.getSizeOfNodeEdgesIDArray()>0)
+//                {
+//                    Object[] rowData={
+//                        node.getID(),
+//                        "",
+//                        String.valueOf(node.getElementOfNodeEdgesIDArray(0)),
+//                        node.getAspect()
+//                    };
+//                    modelNode.addRow(rowData);
+//                }
+//                else
+//                {
                     Object[] rowData={
                         scene.getNode(i).getID(),
-                        "",
-                        null,
-                        scene.getNode(i).getAspect()
+                        scene.getNode(i).getAspect().getLabel()
+//                        "",
+//                        null,
+//                        scene.getNode(i).getAspect()
                     };
                     modelNode.addRow(rowData);
-                }
+//                }
                 
                 
                 
                 tableNode.setModel(modelNode);
                 //tableNode.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(comboBox));
-                DefaultCellEditor dce = new DefaultCellEditor( comboBox );
-                editors.add( dce );              
+//                DefaultCellEditor dce = new DefaultCellEditor( comboBox );
+//                editors.add( dce );              
     
             }
         }
