@@ -27,6 +27,11 @@ public abstract class BaseLayout {
         if(base==next && pathLen!=0) return list;
         boolean bFirst=true;
         
+        for(int i=0;i<list.size();i++)
+        {
+            if(list.get(i)==next.getID()) return null;
+        };
+        
         list.add(next.getID());
         for(int i=0;i<next.getSizeOfNodeEdgesIDArray();i++)
         {
