@@ -55,6 +55,7 @@ public class TextShape extends BoxShape{
     public void setText(String txt)
     {
         textProp.setProp(txt);
+        updateTextBounds();
     };
     
     public void updateTextBounds()
