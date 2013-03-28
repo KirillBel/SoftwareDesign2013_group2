@@ -57,13 +57,16 @@ public abstract class BaseLayout {
         nodeArr=recurseTestNodeCyclic(nodeArr,Node,Node,Node,-1);
         boolean ret=(nodeArr!=null);
         
-        System.out.println(String.format("\n\n\nCycled: %s\nCycle nodes:", Boolean.valueOf(ret)));
-        
-        for(int i=0;i<nodeArr.size();i++)
+        System.out.println(String.format("\n\n\nCycled: %s", Boolean.valueOf(ret)));
+        if (ret == true)
         {
-            System.out.println(String.format("%s",scene.getNode(nodeArr.get(i)).getAspect().getLabel()));
-        };
+            System.out.println("\nCycle nodes:");
+            for(int i=0;i<nodeArr.size();i++)
+            {
+                System.out.println(String.format("%s",scene.getNode(nodeArr.get(i)).getAspect().getLabel()));
+            }
+        }
         
-        return false;
+        return ret;
     };
 }
