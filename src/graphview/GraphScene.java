@@ -794,13 +794,14 @@ public class GraphScene extends javax.swing.JPanel{
         DotParser parser=new DotParser(stream,this);
         boolean b=parser.parse();
         updateScene();
-        //applySimpleLayout();
-        applyTestLayout();
+        applySimpleLayout();
+        //applyTestLayout();
         return b;
     }
     
     public void applySimpleLayout()
     {
+        //removeAllItems();
         GraphNode Node = null;
         int NodesPerLineCounter = 1;
         int NodesPerColumnCounter = 1;
@@ -838,8 +839,9 @@ public class GraphScene extends javax.swing.JPanel{
         updateScene();
     };
     
-    void applyTestLayout()
+    public void applyTestLayout()
     {
+        //removeAllItems();
         HierarchicalLayout layout=new HierarchicalLayout();
         layout.applyLayout(this);
         updateScene();

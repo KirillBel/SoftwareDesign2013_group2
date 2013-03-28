@@ -4,9 +4,11 @@
  */
 package graphview.layouts;
 
+import geometry.Vec2;
 import graphview.GraphNode;
 import graphview.GraphScene;
 import java.util.ArrayList;
+import graphview.GraphNode;
 
 /**
  *
@@ -14,22 +16,27 @@ import java.util.ArrayList;
  */
 public class HierarchicalLayout extends BaseLayout{
     //int nodeID;
-    int nodeCount;
+    
 
     @Override
-    public void applyLayout(GraphScene scene_) {
+    public void applyLayout(GraphScene scene_) 
+    {
         scene=scene_;
+        GraphNode placeNode = null;
+        int nodeCount;
+        int maxArrsize;
         int id=-1;
         boolean r=calculateCyclicMetric(0);
+        
+        Vec2 tempPlacement = new Vec2();
+        Vec2 MaxDemencions = new Vec2();
+        Vec2 DemencionsOfNode = new Vec2();
         //My code
         nodeCount = scene.getSizeNodeArray();
-        //GraphNode Node = scene.getNode(nodeID);
-        
+  
         //В maxArr будет записан максимальный путь
         ArrayList<Integer> maxArr = new ArrayList<Integer>();
         ArrayList<Integer> nodeArr=new ArrayList<Integer>();
-        //maxArr = null;
-        //nodeArr=recurseTestNodeCyclic(nodeArr,Node,Node,Node,-1);
         
         
         System.out.println("Test of the node finder\n");
@@ -55,10 +62,34 @@ public class HierarchicalLayout extends BaseLayout{
                 {
                         System.out.println(String.format("maxArr %s",scene.getNode(maxArr.get(k)).getAspect().getLabel()));
                 };
-                //ArrayList<String> list1 = new ArrayList<String>(list0);
             }
         }
-       
+        System.out.println("\n Final maxArray: \n");
+        for(int k=0;k<maxArr.size();k++)
+        {
+                System.out.println(String.format("maxArr %s",scene.getNode(maxArr.get(k)).getAspect().getLabel()));
+        };
+        
+        //Начало процесса расстановки
+        
+        //Рассчёт максимальных размеров нода
+        int NodeCount = scene.getCountNodes();
+        for (int i = 0; i<NodeCount; i++)
+        {
+            placeNode = scene.getNode(i);
+            DemencionsOfNode = placeNode.getAspect().getGlobalRectangle().getSize();
+            MaxDemencions.x = Math.max(MaxDemencions.x, DemencionsOfNode.x);
+            MaxDemencions.y = Math.max(MaxDemencions.y, DemencionsOfNode.y);
+        }
+        maxArrsize = maxArr.size();
+        //Расстановка самого длинного пути по вертикали
+        for(int i =0; i<maxArrsize-1; i++)
+        {
+            placeNode = scene.getNode(nodeArr.get(i));
+            tempPlacement.y = MaxDemencions.y*2*(i+1);
+            placeNode.getAspect().setPosition(tempPlacement);
+        }
+        //scene.updateUI();
         //End (My code)
         
     }
