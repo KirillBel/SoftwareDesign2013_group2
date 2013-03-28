@@ -14,6 +14,7 @@ public class GraphNode {
     private int nodeID;
     NodeAspect nodeAspect=null;
     private ArrayList<Integer> nodeEdgesIDArray=new ArrayList<Integer>();
+    public Object userData=null;
    
     /**
      * Конструктор для создания новой вершины графа

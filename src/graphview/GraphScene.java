@@ -16,6 +16,7 @@ import graphview.shapes.TextShape;
 import geometry.Rect;
 import geometry.Vec2;
 import graphevents.ShapeMouseEvent;
+import graphview.layouts.HierarchicalLayout;
 import graphview.shapes.EdgeAspect.eEdgeAspectType;
 import graphview.shapes.NodeAspect.eNodeAspectType;
 import java.awt.BasicStroke;
@@ -793,7 +794,8 @@ public class GraphScene extends javax.swing.JPanel{
         DotParser parser=new DotParser(stream,this);
         boolean b=parser.parse();
         updateScene();
-        applySimpleLayout();
+        //applySimpleLayout();
+        applyTestLayout();
         return b;
     }
     
@@ -833,6 +835,13 @@ public class GraphScene extends javax.swing.JPanel{
             }
             
         }
+        updateScene();
+    };
+    
+    void applyTestLayout()
+    {
+        HierarchicalLayout layout=new HierarchicalLayout();
+        layout.applyLayout(this);
         updateScene();
     };
     /////////////////END EDGES/NODES CREATION//////////////////////////////////

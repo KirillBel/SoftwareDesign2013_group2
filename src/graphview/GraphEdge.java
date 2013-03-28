@@ -17,7 +17,7 @@ public class GraphEdge {
     private int toID=-1;
     private boolean bDirectional=false;
     private EdgeAspect edgeAspect=null;
-      
+    public Object userData=null;  
     
     /**
      * Конструктор для создания нового ребра графа
