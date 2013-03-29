@@ -10,17 +10,29 @@ import graphview.GraphScene;
 import graphview.shapes.NodeAspect;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.CellEditor;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListSelectionModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -29,12 +41,14 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.plaf.basic.BasicOptionPaneUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
@@ -65,6 +79,14 @@ public class StructurePanel extends javax.swing.JPanel {
     
     ListSelectionModel SelectionModelNode;
     
+    JDialog textDialog=null;
+    
+    Point editingCell=new Point();
+    
+    JTextArea textField=new JTextArea();
+    
+    Point cellToEdit=new Point();
+    
     
     
     /**
@@ -73,9 +95,10 @@ public class StructurePanel extends javax.swing.JPanel {
     public StructurePanel( GraphScene scene_, JFrame parent) {
         scene=scene_;      
         mainFrame=parent;
-        initComponents();
-        initLayout();
         propertiesFrame=new TablePropertiesFrame(parent, true);
+        initComponents();
+        initLayout();      
+        initTextDialog();
     }
 
     public void initLayout()
@@ -85,8 +108,85 @@ public class StructurePanel extends javax.swing.JPanel {
         tableEdge=createEdgeTable();
         jScrollPane1.setViewportView(tableNode);
         updateNodes();
-        
+               
     } 
+    
+    public void initTextDialog()
+    {
+        Dimension texpPanelSize= new Dimension(300, 300) ;
+        textDialog=new JDialog(mainFrame,"Text", true);
+        
+        textDialog.setSize((int)texpPanelSize.getWidth(), (int)texpPanelSize.getHeight()+100 );   
+        textField.setMinimumSize(texpPanelSize);
+        textField.setSize(texpPanelSize);   
+        Font myFront=textField.getFont();
+        Font newFront=new Font(myFront.getName(), myFront.getStyle(),myFront.getSize()+5 );
+        textField.setFont(newFront);
+        JScrollPane textScrollPanel = new JScrollPane(textField);
+        textScrollPanel.setSize(texpPanelSize);
+        JPanel textPanel=new JPanel();
+        textPanel.add(textScrollPanel);
+        textPanel.setSize((int)texpPanelSize.getWidth(), (int)texpPanelSize.getHeight()-200 );  
+        textPanel.setLayout(new BorderLayout());
+        JButton enter = new JButton("Enter");
+        enter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(jButton1.isSelected())
+                {
+                    String label=textField.getText();
+                    int ID=(int)tableNode.getModel().getValueAt((int)editingCell.getX(), 0);
+                    scene.getNode(ID).getAspect().setLabel(label);            
+                    textDialog.setVisible(false);
+//                    tableNode.getModel().setValueAt(textField.getText(), (int)editingCell.getX(), (int)editingCell.getY());
+//                    tableNode.getCellEditor().stopCellEditing();
+//                    tableNode.setEnabled(false);
+                    updateScene();
+                }
+               
+            }
+        });
+
+        JButton cancel = new JButton("Cancel");
+        cancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textField.setText("");
+                textDialog.setVisible(false);
+            }
+        });
+        textPanel.add(enter,BorderLayout.PAGE_START);
+        textPanel.add(cancel,BorderLayout.PAGE_END);
+ 
+        
+        textDialog.setLayout(new BorderLayout());
+        textDialog.add(textScrollPanel);
+        textDialog.add(textPanel,BorderLayout.AFTER_LAST_LINE);
+        
+       // textDialog.setResizable(false);
+    }    
+    
+    public void startEdit()
+    {
+        int row=tableNode.getSelectedRow();
+        int col=tableNode.getSelectedColumn();
+        editingCell.x=row;
+        editingCell.y=col;
+        String data=(String)tableNode.getModel().getValueAt(row, col);
+        textField.setText(data);
+        textDialog.setLocation(
+                mainFrame.getLocationOnScreen().x+
+                mainFrame.getWidth()/2-
+                textDialog.getWidth()/2,
+                mainFrame.getLocationOnScreen().y+
+                mainFrame.getHeight()/2-
+                textDialog.getHeight()/2 
+                );  
+        textDialog.setVisible(true);
+        
+    }
+    
+ 
     
     private JTable createNodeTable()
     {
@@ -116,10 +216,20 @@ public class StructurePanel extends javax.swing.JPanel {
             
             @Override
             public boolean isCellEditable(int row, int column) {
-                if (column == 0) {
+                if (column == 0 || column == 1) {
                     return false;
                 } else
                     return true;}
+        
+//        
+//        @Override
+//        
+//        public boolean isEditing()
+//        {
+//            System.out.printf("%d\t%d\n",selectionModel.getMinSelectionIndex(),columnModel.getSelectionModel().getMinSelectionIndex());
+//            return cellEditor != null;
+//        }
+                
         };
         
         table.addMouseListener(new MouseAdapter() {
@@ -133,7 +243,23 @@ public class StructurePanel extends javax.swing.JPanel {
                     if(column!=-1 && row!=-1) 
                     {                             
                         table.changeSelection(row, column, true, true);
-                    }               
+                    }   
+                    if(table.getSelectedColumnCount()==1)
+                    {
+                        if(column== (int)cellToEdit.getX() && row== (int)cellToEdit.getY() && column==1 )
+                        {
+                            cellToEdit.x=0;
+                            cellToEdit.y=0;
+                            startEdit();
+                        }
+                        else
+                        {
+                            cellToEdit.x=column;
+                            cellToEdit.y=row;
+                        }
+                    }
+                    
+                    
                 }                
                 else if (SwingUtilities.isRightMouseButton(e))
                 {      
@@ -169,6 +295,35 @@ public class StructurePanel extends javax.swing.JPanel {
                 }               
             }
         });
+//        table.addPropertyChangeListener(new PropertyChangeListener() 
+//        {
+//
+//            @Override
+//            public void propertyChange(PropertyChangeEvent evt) {
+//                if ("tableCellEditor".equals(evt.getPropertyName()))
+//		{
+//			if (table.isEditing())
+//                        {                            
+//                            int row=table.getSelectedRow();
+//                            int col=table.getSelectedColumn();
+//                            editingCell.x=row;
+//                            editingCell.y=col;
+//                            String data=(String)table.getModel().getValueAt(row, col);
+//                            textField.setText(data);
+//                            textDialog.setLocation(
+//                                    mainFrame.getLocationOnScreen().x+
+//                                    mainFrame.getWidth()/2-
+//                                    textDialog.getWidth()/2,
+//                                    mainFrame.getLocationOnScreen().y+
+//                                    mainFrame.getHeight()/2-
+//                                    textDialog.getHeight()/2 
+//                                    );  
+//                            textDialog.setVisible(true);
+//                        }
+//		}
+//            }
+//        });
+
         TableColumn column = table.getColumnModel().getColumn(1);
         column.setCellEditor(new DefaultCellEditor(new JTextField()));
         column.getCellEditor().addCellEditorListener(new CellEditorListener()
@@ -176,7 +331,7 @@ public class StructurePanel extends javax.swing.JPanel {
             int row;
             String label;
             int ID;
-            
+            @Override
             public void editingCanceled(ChangeEvent e)                
             {
                 row = table.getSelectedRow();
@@ -184,6 +339,7 @@ public class StructurePanel extends javax.swing.JPanel {
                 label=(String)table.getModel().getValueAt(row, 1);
                 scene.getNode(ID).getAspect().setLabel(label);
             }
+            @Override
             public void editingStopped(ChangeEvent e) 
             {                
                 row = table.getSelectedRow();
@@ -420,6 +576,11 @@ public class StructurePanel extends javax.swing.JPanel {
         jButton8.setText("Поиск/Замена");
         jButton8.setFocusable(false);
         jButton8.setMinimumSize(new java.awt.Dimension(20, 20));
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -523,6 +684,17 @@ public class StructurePanel extends javax.swing.JPanel {
          scene.createNode(NodeAspect.eNodeAspectType.BOX, NodeAspect.eNodeAspectType.TEXT);
          updateNodes();
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        if(textDialog.isVisible())
+        {
+            textDialog.setVisible(false);
+        }
+        else
+        {
+            textDialog.setVisible(true);
+        }
+    }//GEN-LAST:event_jButton8ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
