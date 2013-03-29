@@ -18,6 +18,8 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -82,11 +84,12 @@ public class StructurePanel extends javax.swing.JPanel {
 
     private JMenuItem jMenuItemDelete = null;
     
-private ListSelectionModel SelectionModelNode;
+//    private ListSelectionModel SelectionModelNode;
     
     private JDialog textDialog=null;
     
-    private Point editingCell=new Point();
+    private Point editingNodeCell=new Point();
+    private Point editingEdgeCell=new Point();
     
     private JTextArea textField=new JTextArea();
     
@@ -121,15 +124,51 @@ private ListSelectionModel SelectionModelNode;
         tableNode=createNodeTable();
         tableEdge=createEdgeTable();
         jScrollPane1.setViewportView(tableNode);
-        updateNodes();
-        nodeCreate=new nodeCreateDialog(mainFrame, true);
-        comboBoxDir.addItem("True");
-        comboBoxDir.addItem("False");
+        updateNodes();        
+        initBox();
                
     } 
     
-    public void initTextDialog()
+    private void initBox()
     {
+        comboBoxDir.addItem("True");
+        comboBoxDir.addItem("False");
+        comboBoxDir.addItemListener(new ItemListener()
+        {
+            @Override
+            public void itemStateChanged(ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED) {                    
+                    Object item = event.getItem();
+                    int row=-1;
+                    int col=-1;
+                    row=(int) editingEdgeCell.getX();
+                    col=(int) editingEdgeCell.getY();
+                    if((String)tableEdge.getModel().getValueAt(row,col)!=(String)item)
+                    {
+                        
+                        int edgeId=(Integer)tableEdge.getModel().getValueAt(row, 0);
+                        boolean dir=false;
+    
+                        if((String)item=="True")
+                        {
+                            dir=true;
+                        }
+                        else
+                        {
+                            dir=false;
+                        }
+                        scene.getEdge(edgeId).setDirection(dir);
+                    }                 
+                }
+            }  
+        });
+    }
+        
+    
+    private void initTextDialog()
+    {
+        nodeCreate=new nodeCreateDialog(mainFrame, true);
+        
         Dimension texpPanelSize= new Dimension(300, 300) ;
         textDialog=new JDialog(mainFrame,"Text", true);
         
@@ -152,12 +191,20 @@ private ListSelectionModel SelectionModelNode;
                 if(jButton1.isSelected())
                 {
                     String label=textField.getText();
-                    int ID=(int)tableNode.getModel().getValueAt((int)editingCell.getX(), 0);
+                    int ID=(int)tableNode.getModel().getValueAt((int)editingNodeCell.getX(), 0);
                     scene.getNode(ID).getAspect().setLabel(label);            
                     textDialog.setVisible(false);
 //                    tableNode.getModel().setValueAt(textField.getText(), (int)editingCell.getX(), (int)editingCell.getY());
 //                    tableNode.getCellEditor().stopCellEditing();
 //                    tableNode.setEnabled(false);
+                    updateScene();
+                }
+                else
+                {
+                    String label=textField.getText();
+                    int ID=(int)tableEdge.getModel().getValueAt((int)editingNodeCell.getX(), 0);
+                    scene.getEdge(ID).getAspect().setLabel(label);            
+                    textDialog.setVisible(false);
                     updateScene();
                 }
                
@@ -180,17 +227,13 @@ private ListSelectionModel SelectionModelNode;
         textDialog.add(textScrollPanel);
         textDialog.add(textPanel,BorderLayout.AFTER_LAST_LINE);
         
+         
+        
        // textDialog.setResizable(false);
     }    
     
     public void startEdit()
     {
-        int row=tableNode.getSelectedRow();
-        int col=tableNode.getSelectedColumn();
-        editingCell.x=row;
-        editingCell.y=col;
-        String data=(String)tableNode.getModel().getValueAt(row, col);
-        textField.setText(data);
         textDialog.setLocation(
                 mainFrame.getLocationOnScreen().x+
                 mainFrame.getWidth()/2-
@@ -198,8 +241,32 @@ private ListSelectionModel SelectionModelNode;
                 mainFrame.getLocationOnScreen().y+
                 mainFrame.getHeight()/2-
                 textDialog.getHeight()/2 
-                );  
-        textDialog.setVisible(true);
+                );
+        int row;
+        int col;
+        if(jButton1.isSelected())
+        {
+            row=tableNode.getSelectedRow();
+            col=tableNode.getSelectedColumn();
+            editingNodeCell.x=row;
+            editingNodeCell.y=col;
+            String data=(String)tableNode.getModel().getValueAt(row, col);
+            textField.setText(data);
+
+            textDialog.setVisible(true);
+        }
+        else
+        {
+            row=tableEdge.getSelectedRow();
+            col=tableEdge.getSelectedColumn();
+            editingEdgeCell.x=row;
+            editingEdgeCell.y=col;
+            String data=(String)tableEdge.getModel().getValueAt(row, col);
+            textField.setText(data);
+
+            textDialog.setVisible(true);
+        }
+       
         
     }
     
@@ -402,6 +469,8 @@ private ListSelectionModel SelectionModelNode;
             @Override
             public TableCellEditor getCellEditor(int row, int column)
             {        
+                editingEdgeCell.x=row;
+                editingEdgeCell.y=column;
                 int edgeId=-1;
                 DefaultCellEditor dce;
                 if (column == 1 )
@@ -458,8 +527,11 @@ private ListSelectionModel SelectionModelNode;
                 {
                     return true;
                 }
-            }
+            }         
         };
+        
+            
+       
         
         table.addMouseListener(new MouseAdapter() {
             @Override
@@ -525,7 +597,46 @@ private ListSelectionModel SelectionModelNode;
                 }               
             }
         });
-
+        
+      
+        
+//        table.addPropertyChangeListener(new PropertyChangeListener() 
+//        {
+//
+//            @Override
+//            public void propertyChange(PropertyChangeEvent evt) {
+//                if ("tableCellEditor".equals(evt.getPropertyName()))
+//		{
+//                    int row;
+//                    int col;
+//			if (table.isEditing())
+//                        {                            
+//                            row=(int) editingEdgeCell.getX();
+//                            col=(int) editingEdgeCell.getY();
+//
+//                            JComboBox myCombo=(JComboBox)table.getEditorComponent();
+//                            if(col==3)
+//                            {                   
+//                                boolean dir=false;
+//                                int ID=-1;            
+//                                ID=(int)table.getModel().getValueAt(row, 0);
+//                                String lol=(String)table.getModel().getValueAt(row, 3);
+//                                if((String)table.getModel().getValueAt(row, 3)=="True")
+//                                {
+//                                    dir=true;
+//                                }
+//                                else
+//                                {
+//                                    dir=false;
+//                                }
+//                                scene.getEdge(ID).setDirection(dir);
+//                                dir=false;
+//                            }
+//                        }                       
+//                }          
+//            };
+// });
+        
         return table;
     }
    
@@ -584,8 +695,7 @@ private ListSelectionModel SelectionModelNode;
     public void updateEdges()
     {
 //        editors.clear();
-        comboBoxDir.removeAll();
-        comboBoxNodesId.removeAll();
+        comboBoxNodesId=new JComboBox();
         String dir="";        
         while(modelEdge.getRowCount()>0)
         {
@@ -598,6 +708,34 @@ private ListSelectionModel SelectionModelNode;
                 comboBoxNodesId.addItem(String.valueOf(scene.getNode(j).getID()));
             }                          
         }
+        
+        comboBoxNodesId.addItemListener(new ItemListener()
+        {
+            @Override
+            public void itemStateChanged(ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED) {                    
+                    Object item = event.getItem();
+                    int row=-1;
+                    int col=-1;
+                    row=(int) editingEdgeCell.getX();
+                    col=(int) editingEdgeCell.getY();
+                    if(!String.valueOf(tableEdge.getModel().getValueAt(row,col)).equals((String)item))
+                    {            
+                        //Раскомментить, когда киря решит проблему с setFrom и setTo
+                        int edgeId=(Integer)tableEdge.getModel().getValueAt(row, 0);
+                        if(col==1)
+                        {
+                            //scene.getEdge(edgeId).setFrom(Integer.valueOf((String)item));
+                        }
+                        else if(col==2)
+                        {
+                            //scene.getEdge(edgeId).setTo(Integer.valueOf((String)item));
+                        }      
+
+                    }    
+                }
+            }  
+        });
         
         
         
