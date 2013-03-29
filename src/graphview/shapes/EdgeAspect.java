@@ -34,7 +34,7 @@ public abstract class EdgeAspect extends BaseShape{
 
     public Color color;
     public String hint;
-    public String label;
+    public String label="";
     GraphEdge graphParent;
     eEdgeAspectType aspectType;
     public int width;
@@ -213,12 +213,11 @@ public abstract class EdgeAspect extends BaseShape{
     }
     
     public String getLabel()
-    {
-        label="";
+    {        
         return label;
     }
     
-    public void setString(String str)
+    public void setLabel(String str)
     {
         label=str;
     }
