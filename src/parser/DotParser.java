@@ -366,7 +366,7 @@ public class DotParser
   {
       for(int i=0; i<listEdge.size();i++){
           System.out.println("OPTION for edge "+listEdge.get(i).getID()); 
-          listEdge.get(i).getAspect().color=color;
+          listEdge.get(i).getAspect().setColor(color);
       }
       return;
   }

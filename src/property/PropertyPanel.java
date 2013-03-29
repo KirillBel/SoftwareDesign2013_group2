@@ -24,6 +24,10 @@ public class PropertyPanel extends PropertySheetPanel{
     {
         setMode( PropertySheet.VIEW_AS_FLAT_LIST );
         setDescriptionVisible( true );
+        
+        getEditorRegistry().registerEditor(IconStringArray.IconStringElem.class, IconStringPropertyEditor.class);
+        getRendererRegistry().registerRenderer(IconStringArray.IconStringElem.class, IconStringCellRenderer.class);
+        //getRendererRegistry().registerRenderer(IconStringArray.class, IconStringCellRenderer.class);
     };
     
     public void fromPropObject(PropertyObject obj)

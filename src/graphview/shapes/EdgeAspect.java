@@ -10,6 +10,7 @@ import geometry.Vec2;
 import graphview.GraphEdge;
 import java.awt.Color;
 import java.util.ArrayList;
+import property.IconStringArray;
 
 /**
  *
@@ -32,14 +33,15 @@ public abstract class EdgeAspect extends BaseShape{
         DASHDOT
     };
 
-    public Color color;
-    public String hint;
-    public String label="";
+    ColorProperty color=null;
+    StringProperty hint=null;
+    StringProperty label=null;
+    IntProperty width=null;
+    IconStringProperty lineStyle=null;
+    
     GraphEdge graphParent;
     eEdgeAspectType aspectType;
-    public int width;
     public boolean bDirectional;
-    public eLineStyle lineStyle;
     
     NodeAspect portNodeA;
     NodeAspect portNodeB;
@@ -47,10 +49,18 @@ public abstract class EdgeAspect extends BaseShape{
     
     public EdgeAspect()
     {
-//        properties.add(new PropertyList.ColorProperty("Color", "Shape color", color));
-//        properties.add(new PropertyList.StringProperty("Label", "Edge label", label));
-//        properties.add(new PropertyList.StringProperty("Hint", "Edge hint", hint));
-//        properties.add(new PropertyList.IntProperty("Width", "Edge width", width));
+        color=propCreate("Color", Color.BLACK);
+        hint=propCreate("Hint", "none");  
+        label=propCreate("Label", "none");
+        width=propCreate("Width", 1);
+        
+        IconStringArray ls=new IconStringArray();
+        ls.add(eLineStyle.SOLID, "Solid", null);
+        ls.add(eLineStyle.DOT, "Dot", null);
+        ls.add(eLineStyle.DASH, "Dash", null);
+        ls.add(eLineStyle.DASHDOT, "Dash-Dot", null);
+        
+        lineStyle=propCreate("Line style",ls);
     };
     
     public void updateProperties(boolean bUpdateToProp)
@@ -214,11 +224,21 @@ public abstract class EdgeAspect extends BaseShape{
     
     public String getLabel()
     {        
-        return label;
+        return label.getProp();
     }
     
     public void setLabel(String str)
     {
-        label=str;
+        label.setProp(str);
+    }
+    
+    public Color getColor()
+    {        
+        return color.getProp();
+    }
+    
+    public void setColor(Color val)
+    {
+        color.setProp(val);
     }
 }

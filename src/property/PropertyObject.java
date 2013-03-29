@@ -71,6 +71,13 @@ public class PropertyObject {
          return prop;
      };
      
+      public IconStringProperty propCreate(String name,IconStringArray value)
+     {
+         IconStringProperty prop=new IconStringProperty(name,value);
+         properties.add(prop);
+         return prop;
+     };
+     
      ////////////////////////////////////////////////////////
      
     public int propGetCount()
@@ -310,6 +317,27 @@ public class PropertyObject {
         };
         
         public void setProp(float val)
+        {
+            setValue(val);
+        };
+    }
+    
+    public static class IconStringProperty extends BaseProperty{
+        public IconStringProperty(String name,IconStringArray val)
+        {
+            setName(name);
+            setDisplayName(name);
+            setType(IconStringArray.IconStringElem.class);
+            setValue(val.getSelected());
+            setCategory("root");
+        }
+        
+        public IconStringArray.IconStringElem getProp()
+        {
+            return (IconStringArray.IconStringElem)getValue();
+        };
+        
+        public void setProp(IconStringArray.IconStringElem val)
         {
             setValue(val);
         };

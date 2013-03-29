@@ -33,7 +33,7 @@ public class LineShape extends EdgeAspect {
     
     @Override
     public void draw(Graphics2D g) {
-        g.setColor(color);
+        g.setColor(color.getProp());
         if(bSelected) g.setColor(Color.BLACK);
         
         Vec2 point=null;
@@ -70,8 +70,6 @@ public class LineShape extends EdgeAspect {
         
         super.draw(g);
         return;
-        
-        
     }
 
     @Override
