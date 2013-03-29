@@ -848,5 +848,31 @@ public class GraphScene extends javax.swing.JPanel{
         layout.applyLayout(this);
         updateScene();
     };
+    
+    public boolean setFromEdge(int edgeID, int fromID)
+    {
+        if(edgesArray.get(edgeID).setFrom(fromID, this))
+        {          
+            return true;                     
+        }
+        else
+        {
+            return false;
+        }
+        
+    }
+    
+        public boolean setToEdge(int edgeID, int toID)
+    {
+        if(edgesArray.get(edgeID).setTo(toID, this))
+        {          
+            return true;                     
+        }
+        else
+        {
+            return false;
+        }
+        
+    }
     /////////////////END EDGES/NODES CREATION//////////////////////////////////
 }

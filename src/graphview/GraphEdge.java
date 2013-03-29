@@ -103,23 +103,45 @@ public class GraphEdge {
         }
     }
     
-//    /**
-//     * Функция для задания нового ID вершины из которой выходит ребро
-//     * @param newFromID - Новый ID вершины из которой выходит ребро
-//     */
-//    public void setFrom(int newFromID)
-//    {
-//        this.fromID=newFromID;
-//    }
-//    
-//    /**
-//     * Функция для задания нового ID вершины в которую попадает ребро
-//     * @param newToID - Новый ID вершины в которую попадает ребро
-//     */
-//    public void setTo(int newToID)
-//    {
-//        this.toID=newToID;
-//    }
+    /**
+     * Функция для задания нового ID вершины из которой выходит ребро
+     * @param newFromID - Новый ID вершины из которой выходит ребро
+     */
+    public boolean setFrom(int newFromID, GraphScene scene)
+    {        
+        if(newFromID<0) return false;
+        if(this!=scene.getEdge(this.edgeID))return false;
+        if(newFromID>=scene.getSizeNodeArray())return false;
+        if(scene.getNode(newFromID)!=null)
+        {
+            scene.getNode(this.fromID).deleteEdgeFromArray(this.edgeID);
+            scene.getNode(newFromID).addEdge(this.edgeID);
+            this.fromID=newFromID; 
+            syncronize(scene);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Функция для задания нового ID вершины в которую попадает ребро
+     * @param newToID - Новый ID вершины в которую попадает ребро
+     */
+    public boolean setTo(int newToID, GraphScene scene)
+    {
+        if(newToID<0) return false;
+        if(this!=scene.getEdge(this.edgeID)) return false;
+        if(newToID>=scene.getSizeNodeArray()) return false;
+        if(scene.getNode(newToID)!=null)
+        {
+            scene.getNode(this.toID).deleteEdgeFromArray(this.edgeID);
+            scene.getNode(newToID).addEdge(this.edgeID);
+            this.toID=newToID;
+            syncronize(scene);
+            return true;
+        }   
+        return false;             
+    }
     
     /**
      * Функция для задания нового направления ребра
