@@ -685,6 +685,7 @@ public class GraphScene extends javax.swing.JPanel{
         
         removeShape(node.getAspect());
         nodesArray.set(id,null);
+        nodeCount--;
     };
     
     public void removeEdge(int id)
@@ -705,6 +706,7 @@ public class GraphScene extends javax.swing.JPanel{
         
         removeShape(edge.getAspect());
         edgesArray.set(id,null);
+        edgeCount--;
     };
     
     boolean testNodeID(int id)

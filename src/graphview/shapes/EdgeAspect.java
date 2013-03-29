@@ -211,4 +211,15 @@ public abstract class EdgeAspect extends BaseShape{
     {
         return eShapeAspect.EDGE;
     }
+    
+    public String getLabel()
+    {
+        label="";
+        return label;
+    }
+    
+    public void setString(String str)
+    {
+        label=str;
+    }
 }
