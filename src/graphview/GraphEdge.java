@@ -103,23 +103,45 @@ public class GraphEdge {
         }
     }
     
-//    /**
-//     * Функция для задания нового ID вершины из которой выходит ребро
-//     * @param newFromID - Новый ID вершины из которой выходит ребро
-//     */
-//    public void setFrom(int newFromID)
-//    {
-//        this.fromID=newFromID;
-//    }
-//    
-//    /**
-//     * Функция для задания нового ID вершины в которую попадает ребро
-//     * @param newToID - Новый ID вершины в которую попадает ребро
-//     */
-//    public void setTo(int newToID)
-//    {
-//        this.toID=newToID;
-//    }
+    /**
+     * Функция для задания нового ID вершины из которой выходит ребро
+     * @param newFromID - Новый ID вершины из которой выходит ребро
+     */
+    public boolean setFrom(int newFromID, GraphScene scene)
+    {        
+        if(this==scene.getEdge(this.edgeID))
+        {
+            if(scene.getSizeNodeArray()>newFromID )
+            {
+                if(scene.getNode(newFromID)!=null)
+                {
+                    this.fromID=newFromID;
+                    return true;
+                }
+            }              
+        }
+        return false;
+    }
+    
+    /**
+     * Функция для задания нового ID вершины в которую попадает ребро
+     * @param newToID - Новый ID вершины в которую попадает ребро
+     */
+    public boolean setTo(int newToID, GraphScene scene)
+    {
+        if(this==scene.getEdge(this.edgeID))
+        {
+            if(scene.getSizeNodeArray()>newToID )
+            {
+                if(scene.getNode(newToID)!=null)
+                {
+                    this.toID=newToID;
+                    return true;
+                }
+            }              
+        }
+        return false;
+    }
     
     /**
      * Функция для задания нового направления ребра
