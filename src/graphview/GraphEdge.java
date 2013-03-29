@@ -109,16 +109,16 @@ public class GraphEdge {
      */
     public boolean setFrom(int newFromID, GraphScene scene)
     {        
-        if(this==scene.getEdge(this.edgeID))
+        if(newFromID<0) return false;
+        if(this!=scene.getEdge(this.edgeID))return false;
+        if(newFromID>=scene.getSizeNodeArray())return false;
+        if(scene.getNode(newFromID)!=null)
         {
-            if(scene.getSizeNodeArray()>newFromID )
-            {
-                if(scene.getNode(newFromID)!=null)
-                {
-                    this.fromID=newFromID;
-                    return true;
-                }
-            }              
+            scene.getNode(this.fromID).deleteEdgeFromArray(this.edgeID);
+            scene.getNode(newFromID).addEdge(this.edgeID);
+            this.fromID=newFromID; 
+            syncronize(scene);
+            return true;
         }
         return false;
     }
@@ -129,18 +129,18 @@ public class GraphEdge {
      */
     public boolean setTo(int newToID, GraphScene scene)
     {
-        if(this==scene.getEdge(this.edgeID))
+        if(newToID<0) return false;
+        if(this!=scene.getEdge(this.edgeID)) return false;
+        if(newToID>=scene.getSizeNodeArray()) return false;
+        if(scene.getNode(newToID)!=null)
         {
-            if(scene.getSizeNodeArray()>newToID )
-            {
-                if(scene.getNode(newToID)!=null)
-                {
-                    this.toID=newToID;
-                    return true;
-                }
-            }              
-        }
-        return false;
+            scene.getNode(this.toID).deleteEdgeFromArray(this.edgeID);
+            scene.getNode(newToID).addEdge(this.edgeID);
+            this.toID=newToID;
+            syncronize(scene);
+            return true;
+        }   
+        return false;             
     }
     
     /**
