@@ -67,25 +67,39 @@ public class StructurePanel extends javax.swing.JPanel {
     public JTable tableNode;
     public JTable tableEdge;
     
-    //private ArrayList<TableCellEditor> editors = new ArrayList<TableCellEditor>();
-    
+//    private ArrayList<TableCellEditor> editors = new ArrayList<TableCellEditor>();
+//    private ArrayList<TableCellEditor> editorsTo = new ArrayList<TableCellEditor>();
+//    private ArrayList<TableCellEditor> editorsDir = new ArrayList<TableCellEditor>();
+//    
     public TablePropertiesFrame propertiesFrame;
     
     private JFrame mainFrame;
     
-    private JPopupMenu getJPopupMenuNodeContextIndividual = null;
+    private JPopupMenu getJPopupMenuNodeIndividual = null;
+    private JPopupMenu getJPopupMenuNodeMany = null;
+    private JPopupMenu getJPopupMenuEdgeIndividual = null;
+    private JPopupMenu getJPopupMenuEdgeMany = null;
 
     private JMenuItem jMenuItemDelete = null;
     
-    ListSelectionModel SelectionModelNode;
+private ListSelectionModel SelectionModelNode;
     
-    JDialog textDialog=null;
+    private JDialog textDialog=null;
     
-    Point editingCell=new Point();
+    private Point editingCell=new Point();
     
-    JTextArea textField=new JTextArea();
+    private JTextArea textField=new JTextArea();
     
-    Point cellToEdit=new Point();
+    private Point cellNodeToEdit=new Point();
+    private Point cellEdgeToEdit=new Point();
+    
+    private nodeCreateDialog nodeCreate=null;
+    
+//    private ArrayList<Integer> arraySelectedNode=new ArrayList<Integer>();
+    
+    private JComboBox comboBoxNodesId = new JComboBox();
+    private JComboBox comboBoxDir = new JComboBox();
+    
     
     
     
@@ -108,6 +122,9 @@ public class StructurePanel extends javax.swing.JPanel {
         tableEdge=createEdgeTable();
         jScrollPane1.setViewportView(tableNode);
         updateNodes();
+        nodeCreate=new nodeCreateDialog(mainFrame, true);
+        comboBoxDir.addItem("True");
+        comboBoxDir.addItem("False");
                
     } 
     
@@ -216,10 +233,15 @@ public class StructurePanel extends javax.swing.JPanel {
             
             @Override
             public boolean isCellEditable(int row, int column) {
-                if (column == 0 || column == 1) {
-                    return false;
-                } else
-                    return true;}
+                if (column == 0 || column == 1)
+                {
+                    return false;                    
+                }
+                else
+                {
+                    return true;
+                }
+            }
         
 //        
 //        @Override
@@ -241,21 +263,23 @@ public class StructurePanel extends javax.swing.JPanel {
                     int column = table.columnAtPoint(p);
                     int row = table.rowAtPoint(p);
                     if(column!=-1 && row!=-1) 
-                    {                             
-                        table.changeSelection(row, column, true, true);
-                    }   
+                    { 
+                        table.changeSelection(row, column, true, true);                                  
+                    }  
+                    
+                   
                     if(table.getSelectedColumnCount()==1)
                     {
-                        if(column== (int)cellToEdit.getX() && row== (int)cellToEdit.getY() && column==1 )
+                        if(column== (int)cellNodeToEdit.getX() && row== (int)cellNodeToEdit.getY() && column==1 )
                         {
-                            cellToEdit.x=0;
-                            cellToEdit.y=0;
+                            cellNodeToEdit.x=0;
+                            cellNodeToEdit.y=0;
                             startEdit();
                         }
                         else
                         {
-                            cellToEdit.x=column;
-                            cellToEdit.y=row;
+                            cellNodeToEdit.x=column;
+                            cellNodeToEdit.y=row;
                         }
                     }
                     
@@ -266,7 +290,6 @@ public class StructurePanel extends javax.swing.JPanel {
                     Point p = e.getPoint();
                     int column = table.columnAtPoint(p);
                     int row = table.rowAtPoint(p);
-                    int god=table.getSelectedRowCount();
                     boolean select=false;
                     if(table.getSelectedRowCount()==0)
                     {
@@ -290,7 +313,7 @@ public class StructurePanel extends javax.swing.JPanel {
                             table.setRowSelectionInterval(row, row);
                         }                        
                     }
-                    JPopupMenu jPopupMenu = getJPopupMenuContextIndividual();
+                    JPopupMenu jPopupMenu = getJPopupMenu();
                     jPopupMenu.show(table, e.getX(), e.getY());
                 }               
             }
@@ -324,31 +347,31 @@ public class StructurePanel extends javax.swing.JPanel {
 //            }
 //        });
 
-        TableColumn column = table.getColumnModel().getColumn(1);
-        column.setCellEditor(new DefaultCellEditor(new JTextField()));
-        column.getCellEditor().addCellEditorListener(new CellEditorListener()
-        {
-            int row;
-            String label;
-            int ID;
-            @Override
-            public void editingCanceled(ChangeEvent e)                
-            {
-                row = table.getSelectedRow();
-                ID=(int)table.getModel().getValueAt(row, 0);
-                label=(String)table.getModel().getValueAt(row, 1);
-                scene.getNode(ID).getAspect().setLabel(label);
-            }
-            @Override
-            public void editingStopped(ChangeEvent e) 
-            {                
-                row = table.getSelectedRow();
-                ID=(int)table.getModel().getValueAt(row, 0);
-                label=(String)table.getModel().getValueAt(row, 1);
-                scene.getNode(ID).getAspect().setLabel(label);
-            }
-        }
-                );
+//        TableColumn column = table.getColumnModel().getColumn(1);
+//        column.setCellEditor(new DefaultCellEditor(new JTextField()));
+//        column.getCellEditor().addCellEditorListener(new CellEditorListener()
+//        {
+//            int row;
+//            String label;
+//            int ID;
+//            @Override
+//            public void editingCanceled(ChangeEvent e)                
+//            {
+//                row = table.getSelectedRow();
+//                ID=(int)table.getModel().getValueAt(row, 0);
+//                label=(String)table.getModel().getValueAt(row, 1);
+//                scene.getNode(ID).getAspect().setLabel(label);
+//            }
+//            @Override
+//            public void editingStopped(ChangeEvent e) 
+//            {                
+//                row = table.getSelectedRow();
+//                ID=(int)table.getModel().getValueAt(row, 0);
+//                label=(String)table.getModel().getValueAt(row, 1);
+//                scene.getNode(ID).getAspect().setLabel(label);
+//            }
+//        }
+//                );
 
         //table.setSelectionModel(lm);
         return table;
@@ -371,11 +394,137 @@ public class StructurePanel extends javax.swing.JPanel {
         modelEdge.addColumn("Edge ID");
         modelEdge.addColumn("From");
         modelEdge.addColumn("To");        
-        modelEdge.addColumn("Direction");
+        modelEdge.addColumn("Bdirectional");
         modelEdge.addColumn("Label");
-        modelEdge.addColumn("Shape");
          
-        JTable table = new JTable(modelEdge);
+        final JTable table = new JTable(modelEdge)
+        {
+            @Override
+            public TableCellEditor getCellEditor(int row, int column)
+            {        
+                int edgeId=-1;
+                DefaultCellEditor dce;
+                if (column == 1 )
+                {
+                    edgeId=(Integer)tableEdge.getModel().getValueAt(row, 0);
+                    comboBoxNodesId.setSelectedItem((Integer.toString(scene.getEdge(edgeId).getFromID())));
+                    tableEdge.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(comboBoxNodesId));
+                    dce = new DefaultCellEditor( comboBoxNodesId );                    
+                    return dce;
+                }
+                else if(column == 2)
+                {
+                    edgeId=(Integer)tableEdge.getModel().getValueAt(row, 0);
+                    comboBoxNodesId.setSelectedItem(Integer.toString(scene.getEdge(edgeId).getToID()));
+                    tableEdge.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(comboBoxNodesId));
+                    dce = new DefaultCellEditor( comboBoxNodesId );  
+                    return dce; 
+                }
+                else if(column == 3)
+                {
+                    edgeId=(Integer)tableEdge.getModel().getValueAt(row, 0);
+                    if(scene.getEdge(edgeId).isDirectional())
+                    {
+                        comboBoxDir.setSelectedItem("True");
+                    }
+                    else
+                    {
+                        comboBoxDir.setSelectedItem("False");
+                    }
+                    tableEdge.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(comboBoxDir));
+                    dce = new DefaultCellEditor( comboBoxDir );  
+                    return dce;
+                }
+//                tableEdge.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(comboBoxNodesId));
+//                tableEdge.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(comboBoxNodesId));
+//                tableEdge.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(comboBoxDir));
+//                DefaultCellEditor dce = new DefaultCellEditor( comboBoxNodesId );
+//                editors.add( dce ); 
+//                dce = new DefaultCellEditor( comboBoxDir );
+//                editors.add( dce );
+                else
+                {
+                    return super.getCellEditor(row, column);
+                }
+            }
+            
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == 0 || column == 4)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        };
+        
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {                                                   
+                if (SwingUtilities.isLeftMouseButton(e)) 
+                {
+                    Point p = e.getPoint();
+                    int column = table.columnAtPoint(p);
+                    int row = table.rowAtPoint(p);
+                    if(column!=-1 && row!=-1) 
+                    { 
+                        table.changeSelection(row, column, true, true);                                  
+                    }  
+                    
+                   
+                    if(table.getSelectedColumnCount()==1)
+                    {
+                        if(column== (int)cellEdgeToEdit.getX() && row== (int)cellEdgeToEdit.getY() && column==4 )
+                        {
+                            cellEdgeToEdit.x=0;
+                            cellEdgeToEdit.y=0;
+                            startEdit();
+                        }
+                        else
+                        {
+                            cellEdgeToEdit.x=column;
+                            cellEdgeToEdit.y=row;
+                        }
+                    }
+                    
+                    
+                }                
+                else if (SwingUtilities.isRightMouseButton(e))
+                {      
+                    Point p = e.getPoint();
+                    int column = table.columnAtPoint(p);
+                    int row = table.rowAtPoint(p);
+                    boolean select=false;
+                    if(table.getSelectedRowCount()==0)
+                    {
+                        table.setColumnSelectionInterval(column, column);
+                        table.setRowSelectionInterval(row, row);
+                    }
+                    else
+                    {
+                        int[] selectedRows=table.getSelectedRows();
+                        for(int i=0; i<selectedRows.length; i++)
+                        {
+                            if(selectedRows[i]==row)                            
+                            {
+                                select=true;
+                            }
+                        }
+                        if(select==false)
+                        {
+                            table.clearSelection();
+                            table.setColumnSelectionInterval(column, column);
+                            table.setRowSelectionInterval(row, row);
+                        }                        
+                    }         
+                        JPopupMenu jPopupMenu = getJPopupMenu();
+                        jPopupMenu.show(table, e.getX(), e.getY());                                    
+                }               
+            }
+        });
 
         return table;
     }
@@ -392,7 +541,7 @@ public class StructurePanel extends javax.swing.JPanel {
         {
             if(scene.getNode(i)!=null)
             {
-                GraphNode node=scene.getNode(i);
+
 //                JComboBox comboBox = new JComboBox();
 //                for(int j=0; j<node.getSizeOfNodeEdgesIDArray();j++)
 //                {
@@ -434,51 +583,101 @@ public class StructurePanel extends javax.swing.JPanel {
     
     public void updateEdges()
     {
-        String dir="";
+//        editors.clear();
+        comboBoxDir.removeAll();
+        comboBoxNodesId.removeAll();
+        String dir="";        
         while(modelEdge.getRowCount()>0)
         {
             modelEdge.removeRow(0);
         }
+        for(int j=0; j<scene.getSizeNodeArray();j++)
+        {
+            if(scene.getNode(j)!=null)
+            {
+                comboBoxNodesId.addItem(String.valueOf(scene.getNode(j).getID()));
+            }                          
+        }
+        
+        
+        
         tableEdge.setModel(modelEdge);
         for(int i=0;i<scene.getSizeEdgeArray();i++)
         {
             GraphEdge edge=scene.getEdge(i);
             if(edge!=null)
-            {          
+            {  
+                
                 if(edge.isDirectional())
                 {
-                    dir="Directional";
+                    dir="True";
                 }
                 else
                 {
-                    dir="None";
+                    dir="False";
                 }
                 Object[] rowData={
                         edge.getID(),
                         edge.getFromID(),
                         edge.getToID(),
                         dir,
-                        "",
-                        edge.getAspect()
+                        edge.getAspect().getLabel()
                 };
                 
                 modelEdge.addRow(rowData);
                 
                 }     
             
-                tableEdge.setModel(modelEdge);
+                tableEdge.setModel(modelEdge);  
+                
         }
     }        
     
-    	private JPopupMenu getJPopupMenuContextIndividual() {
-            
-		if (getJPopupMenuNodeContextIndividual == null) {
-                    getJPopupMenuNodeContextIndividual = new JPopupMenu();
-                    getJPopupMenuNodeContextIndividual.add(getJMenuNodeItemDelete());
-		}
-                return getJPopupMenuNodeContextIndividual;
+    	private JPopupMenu getJPopupMenu() {
+            if(jButton1.isSelected())
+            {
+                if(tableNode.getSelectedColumnCount()==1)
+                {
+                    if (getJPopupMenuNodeIndividual == null)
+                    {
+                        getJPopupMenuNodeIndividual = new JPopupMenu();
+                        getJPopupMenuNodeIndividual.add(getJMenuNodeItemDelete());
+                    }
+                    return getJPopupMenuNodeIndividual;
+                }
+                else
+                {
+                    if (getJPopupMenuNodeMany == null)
+                    {
+                        getJPopupMenuNodeMany = new JPopupMenu();
+                        getJPopupMenuNodeMany.add(getJMenuNodeItemDelete());
+                    }
+                    return getJPopupMenuNodeMany;
+                }		
+            }
+            else
+            {
+               if(tableEdge.getSelectedColumnCount()==1)
+                {
+                    if (getJPopupMenuEdgeIndividual == null)
+                    {
+                        getJPopupMenuEdgeIndividual = new JPopupMenu();
+                        getJPopupMenuEdgeIndividual.add(getJMenuNodeItemDelete());
+                    }
+                    return getJPopupMenuEdgeIndividual;
+                }
+                else
+                {
+                    if (getJPopupMenuEdgeMany == null)
+                    {
+                        getJPopupMenuEdgeMany = new JPopupMenu();
+                        getJPopupMenuEdgeMany.add(getJMenuNodeItemDelete());
+                    }
+                    return getJPopupMenuEdgeMany;
+                } 
+            }
         }
-        
+
         private JMenuItem getJMenuNodeItemDelete() {
             if (jMenuItemDelete == null) {
                 jMenuItemDelete = new JMenuItem("Удалить");
@@ -673,16 +872,25 @@ public class StructurePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-         String s = (String)JOptionPane.showInputDialog(
-                                        mainFrame,
-                                        "Введите название",
-                                        "Добавить узел",
-                                        JOptionPane.PLAIN_MESSAGE,
-                                        null,
-                                        null,
-                                        "");
-         scene.createNode(NodeAspect.eNodeAspectType.BOX, NodeAspect.eNodeAspectType.TEXT);
-         updateNodes();
+         
+        nodeCreate.setLocation(
+                mainFrame.getLocationOnScreen().x+
+                mainFrame.getWidth()/2-
+                nodeCreate.getWidth()/2,
+                mainFrame.getLocationOnScreen().y+
+                mainFrame.getHeight()/2-
+                nodeCreate.getHeight()/2 
+                ); 
+        nodeCreate.setVisible(true);
+        if(nodeCreate.getNice())
+        {
+            String s = nodeCreate.getMyText();
+            scene.createNode(NodeAspect.eNodeAspectType.BOX, NodeAspect.eNodeAspectType.TEXT);
+            scene.getNode(scene.getCountNodes()-1).getAspect().createLabel(s);
+            updateNodes();
+        }
+        nodeCreate.clearData();
+        
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
