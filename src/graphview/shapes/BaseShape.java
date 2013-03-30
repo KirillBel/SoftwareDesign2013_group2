@@ -38,7 +38,7 @@ public abstract class BaseShape extends PropertyObject{
     protected boolean bMouseIn=false;
     protected boolean bHaveGrip=true;
     
-    public boolean bDebugDrawBBox = true;
+    public boolean bDebugDrawBBox = false;
     
     public enum eShapeAspect
     {
@@ -216,7 +216,9 @@ public abstract class BaseShape extends PropertyObject{
     {
         Rect r=getGlobalRectangle();
         Rect childs=this.getChildsRect();
-        if(childs.getSquare()!=0) r.add(childs);
+        
+        if(r.getSquare()==0) r.set(childs);
+        else if(childs.getSquare()!=0) r.add(childs);
         return r;
     };
     
