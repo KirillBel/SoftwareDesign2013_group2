@@ -10,6 +10,7 @@ import geometry.Vec2;
 import graphview.GraphEdge;
 import java.awt.Color;
 import java.util.ArrayList;
+import javax.swing.ImageIcon;
 import property.IconStringArray;
 
 /**
@@ -55,10 +56,10 @@ public abstract class EdgeAspect extends BaseShape{
         width=propCreate("Width", 1);
         
         IconStringArray ls=new IconStringArray();
-        ls.add(eLineStyle.SOLID, "Solid", null);
-        ls.add(eLineStyle.DOT, "Dot", null);
-        ls.add(eLineStyle.DASH, "Dash", null);
-        ls.add(eLineStyle.DASHDOT, "Dash-Dot", null);
+        ls.add(eLineStyle.SOLID, "Solid", new ImageIcon("res/images/lines/line_solid.png"));
+        ls.add(eLineStyle.DOT, "Dot", new ImageIcon("res/images/lines/line_dot.png"));
+        ls.add(eLineStyle.DASH, "Dash", new ImageIcon("res/images/lines/line_dash.png"));
+        ls.add(eLineStyle.DASHDOT, "Dash-Dot", new ImageIcon("res/images/lines/line_dash_dot.png"));
         
         lineStyle=propCreate("Line style",ls);
     };
