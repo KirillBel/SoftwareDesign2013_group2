@@ -7,6 +7,7 @@ package gui.structurePanel;
 import graphview.GraphEdge;
 import graphview.GraphNode;
 import graphview.GraphScene;
+import graphview.shapes.EdgeAspect;
 import graphview.shapes.NodeAspect;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -102,6 +103,7 @@ public class StructurePanel extends javax.swing.JPanel {
     private Point cellEdgeToEdit=new Point();
     
     private nodeCreateDialog nodeCreate=null;
+    private edgeCreateDialog edgeCreate=null;
     
 //    private ArrayList<Integer> arraySelectedNode=new ArrayList<Integer>();
     
@@ -149,6 +151,7 @@ public class StructurePanel extends javax.swing.JPanel {
         mainFrame=parent;
         propertiesFrame=new TablePropertiesFrame(parent, true);
         initComponents();
+        initCreate();
         initLayout();      
         initTextDialog();
     }
@@ -156,6 +159,7 @@ public class StructurePanel extends javax.swing.JPanel {
     public void initLayout()
     {       
         jButton1.setSelected(true);
+        jButton5.setEnabled(false);
         tableNode=createNodeTable();
         tableEdge=createEdgeTable();
         jScrollPane1.setViewportView(tableNode);
@@ -163,6 +167,12 @@ public class StructurePanel extends javax.swing.JPanel {
         initBox();
                
     } 
+    
+    private void initCreate()
+    {
+        nodeCreate=new nodeCreateDialog(mainFrame, true);
+        edgeCreate=new edgeCreateDialog(mainFrame, true);
+    }
     
     private void initBox()
     {
@@ -201,9 +211,7 @@ public class StructurePanel extends javax.swing.JPanel {
         
     
     private void initTextDialog()
-    {
-        nodeCreate=new nodeCreateDialog(mainFrame, true);
-        
+    {   
         Dimension texpPanelSize= new Dimension(300, 300) ;
         textDialog=new JDialog(mainFrame,"Text", true);
         
@@ -892,15 +900,9 @@ public class StructurePanel extends javax.swing.JPanel {
         }
     }
     
-    public void updateEdges()
+    private void updateComboBox()
     {
-//        editors.clear();
         comboBoxNodesId=new JComboBox();
-        String dir="";        
-        while(modelEdge.getRowCount()>0)
-        {
-            modelEdge.removeRow(0);
-        }
         for(int j=0; j<scene.getSizeNodeArray();j++)
         {
             if(scene.getNode(j)!=null)
@@ -908,6 +910,26 @@ public class StructurePanel extends javax.swing.JPanel {
                 comboBoxNodesId.addItem(String.valueOf(scene.getNode(j).getID())+" - "+scene.getNode(j).getAspect().getLabel());
             }                          
         }
+        if(comboBoxNodesId.getItemCount()<1)
+        {
+            jButton5.setEnabled(false);
+        }
+        else
+        {
+            jButton5.setEnabled(true);
+        }
+    }
+    
+    
+    public void updateEdges()
+    {
+//        editors.clear();
+        updateComboBox();
+        String dir="";        
+        while(modelEdge.getRowCount()>0)
+        {
+            modelEdge.removeRow(0);
+        }        
         
         comboBoxNodesId.addItemListener(new ItemListener()
         {
@@ -1067,6 +1089,7 @@ public class StructurePanel extends javax.swing.JPanel {
                             scene.removeNode(nodeID);                            
                         }
                         updateTables();
+                        
                     }               
                 }
             });            
@@ -1167,6 +1190,11 @@ public class StructurePanel extends javax.swing.JPanel {
         jButton5.setText("Добавить ребро");
         jButton5.setFocusable(false);
         jButton5.setMinimumSize(new java.awt.Dimension(20, 20));
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton8.setText("Поиск/Замена");
         jButton8.setFocusable(false);
@@ -1286,6 +1314,7 @@ public class StructurePanel extends javax.swing.JPanel {
             updateNodes();
         }
         nodeCreate.clearData();
+        updateComboBox();
         
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -1299,6 +1328,32 @@ public class StructurePanel extends javax.swing.JPanel {
             textDialog.setVisible(true);
         }
     }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        updateComboBox();
+        edgeCreate.setComboBox(comboBoxNodesId);
+        edgeCreate.setLocation(
+                mainFrame.getLocationOnScreen().x+
+                mainFrame.getWidth()/2-
+                edgeCreate.getWidth()/2,
+                mainFrame.getLocationOnScreen().y+
+                mainFrame.getHeight()/2-
+                edgeCreate.getHeight()/2 
+                );  
+        edgeCreate.setVisible(true);
+        if(edgeCreate.getNice())
+        {
+            scene.createEdge(Integer.valueOf(edgeCreate.getFrom()),
+                    Integer.valueOf(edgeCreate.getTo()),
+                    EdgeAspect.eEdgeAspectType.SIMPLE_LINE);
+            if(edgeCreate.getCheckBox())
+            {
+                scene.getEdge(scene.getSizeEdgeArray()-1).setDirection(true);                        
+            }
+            scene.getEdge(scene.getSizeEdgeArray()-1).getAspect().setLabel(edgeCreate.getMyText());
+        }
+        edgeCreate.clearData();
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
