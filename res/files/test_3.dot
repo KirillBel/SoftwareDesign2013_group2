@@ -1,0 +1,10 @@
+graph gr{
+	a, b;
+	a--b;
+	node[color=red];
+	edge[color=green];
+	c--d;
+	b--d[color=blue];
+	c--b;
+	b[color = green];
+}
