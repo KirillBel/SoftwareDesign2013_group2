@@ -48,14 +48,18 @@ public class LineShape extends EdgeAspect {
                 Color c=g.getColor();
                 g.setColor(Color.ORANGE);
                 Stroke oldStroke=g.getStroke();
-                BasicStroke stroke=new BasicStroke(4);
+                BasicStroke stroke=createStroke(width.getProp()+3);
                 g.setStroke(stroke);
                 g.drawLine((int)point.x, (int)point.y, (int)point1.x, (int)point1.y);
                 g.setStroke(oldStroke);
                 g.setColor(c);
             };
             
+            Stroke oldStroke=g.getStroke();
+            BasicStroke stroke=getLineStroke();
+            g.setStroke(stroke);
             g.drawLine((int)point.x, (int)point.y, (int)point1.x, (int)point1.y);
+            g.setStroke(oldStroke);
             
             
             if(i==0)

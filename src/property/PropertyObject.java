@@ -323,6 +323,8 @@ public class PropertyObject {
     }
     
     public static class IconStringProperty extends BaseProperty{
+        IconStringArray array=null;
+        
         public IconStringProperty(String name,IconStringArray val)
         {
             setName(name);
@@ -330,6 +332,7 @@ public class PropertyObject {
             setType(IconStringArray.IconStringElem.class);
             setValue(val.getSelected());
             setCategory("root");
+            array=val;
         }
         
         public IconStringArray.IconStringElem getProp()
@@ -340,6 +343,11 @@ public class PropertyObject {
         public void setProp(IconStringArray.IconStringElem val)
         {
             setValue(val);
+        };
+        
+        public void setProp(Object id)
+        {
+            setValue(array.find(id));
         };
     }
 }

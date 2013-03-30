@@ -8,6 +8,7 @@ import geometry.Rect;
 import graphview.shapes.BaseShape;
 import geometry.Vec2;
 import graphview.GraphEdge;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
@@ -64,23 +65,28 @@ public abstract class EdgeAspect extends BaseShape{
         lineStyle=propCreate("Line style",ls);
     };
     
-    public void updateProperties(boolean bUpdateToProp)
+    protected BasicStroke getLineStroke()
     {
-//        if(bUpdateToProp)
-//        {
-//            properties.setValue("Color", color);
-//            properties.setValue("Label", label);
-//            properties.setValue("Hint", hint);
-//            properties.setValue("Width", width);
-//        }
-//        else
-//        {
-//            color=properties.getColor("Color");
-//            label=properties.getString("Label");
-//            hint=properties.getString("Hint");
-//            width=properties.getInt("Width");
-//        };
-//        super.updateProperties(bUpdateToProp);
+        float strokeArr[]=null;
+        float mult=width.getProp();
+        
+        switch(getLineStyle())
+        {
+            case DOT: strokeArr=new float[]{ 1.0f, 3.0f }; break;
+            case DASH: strokeArr=new float[]{ 5.0f, 5.0f }; break;
+            case DASHDOT: strokeArr=new float[] { 5.0f, 3.0f, 1.0f, 3.0f }; break;
+            case SOLID: break;
+        };
+        
+        if(strokeArr!=null)
+            for(int i=0;i<strokeArr.length;i++) strokeArr[i]*=mult;
+        
+        return new BasicStroke(width.getProp(),BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER,10.0f,strokeArr,0.0f);
+    };
+    
+    protected BasicStroke createStroke(int width)
+    {
+        return new BasicStroke(width,BasicStroke.CAP_ROUND,BasicStroke.JOIN_ROUND);
     };
     
     @Override
@@ -241,5 +247,15 @@ public abstract class EdgeAspect extends BaseShape{
     public void setColor(Color val)
     {
         color.setProp(val);
+    }
+    
+    public eLineStyle getLineStyle()
+    {        
+        return (eLineStyle)lineStyle.getProp().id;
+    }
+    
+    public void setLineStyle(eLineStyle val)
+    {
+        lineStyle.setProp(val);
     }
 }

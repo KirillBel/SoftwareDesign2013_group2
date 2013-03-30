@@ -25,7 +25,7 @@ public class IconStringArray {
             this.parent=parent;
         };
         
-        Object id=null;
+        public Object id=null;
         String name=null;
         Icon icon=null;
         IconStringArray parent=null;
@@ -43,7 +43,7 @@ public class IconStringArray {
         array.add(elem);
     };
     
-    int find(Object id)
+    public int find(Object id)
     {
         for(int i=0;i<array.size();i++)
         {
