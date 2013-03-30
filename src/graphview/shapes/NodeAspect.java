@@ -48,7 +48,7 @@ public abstract class NodeAspect extends BaseShape{
     
     public NodeAspect()
     {
-        color=propCreate("Color", Color.BLACK);
+        color=propCreate("Color", Color.YELLOW);
         hint=propCreate("Hint", "none");  
     };
     

@@ -23,6 +23,8 @@ import graphview.shapes.TextShape;
 import gui.structurePanel.StructurePanel;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import javax.swing.Action;
@@ -52,6 +54,9 @@ public class MainPanel extends DockablePanel{
     Dockable objectPropertiesDock;
     Dockable overviewDock;
     
+    ShapeCreatePanel shapeCreatePanel=null;
+    Dockable shapeCreateDock=null;
+    
     JFrame mainFrame;
      
     public MainPanel(JFrame frame,GraphScene scene_)
@@ -65,6 +70,11 @@ public class MainPanel extends DockablePanel{
     
     public void initUI()
     {
+        shapeCreatePanel=new ShapeCreatePanel(scene);
+        shapeCreateDock = new DefaultDockable("Create shape", shapeCreatePanel, "Shapes", null, DockingMode.ALL - DockingMode.FLOAT);
+        shapeCreateDock=addActions(shapeCreateDock);
+        rightTabbedDock.addDockable(shapeCreateDock, new Position(1));
+        
         
         structure=new StructurePanel(scene, mainFrame);
         structureDock = new DefaultDockable("Structure", structure, "Structure", null, DockingMode.ALL - DockingMode.FLOAT);
@@ -181,6 +191,8 @@ public class MainPanel extends DockablePanel{
         scene.addShape(ellipse2);
         scene.addShape(line2);
         scene.addShape(shape3);
+        
+        scene.addShape(scene.createNodeShape(NodeAspect.eNodeAspectType.IMAGE));
         //graphMain.getGraphScene().addShape(line3);
         //graphMain.getGraphScene().add(text);
     };

@@ -10,7 +10,12 @@ import geometry.Vec2;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -22,7 +27,11 @@ public class ImageShape extends NodeAspect {
     public ImageShape(Rect rect,String imagePath)
     {
         setRectangle(rect);
-        img1 = Toolkit.getDefaultToolkit().getImage(imagePath);
+        try {
+            img1 = ImageIO.read(new File(imagePath));
+        } catch (IOException ex) {
+            Logger.getLogger(ImageShape.class.getName()).log(Level.SEVERE, null, ex);
+        }
         this.aspectType=eNodeAspectType.IMAGE;
     };   
     public ImageShape(Rect rect,Image img)
@@ -34,7 +43,11 @@ public class ImageShape extends NodeAspect {
     public ImageShape(float posX,float posY, float sizeX, float sizeY,String imagePath)
     {
         setRectangle(new Rect(posX,posY,posX+sizeX,posY+sizeY));
-        img1 = Toolkit.getDefaultToolkit().getImage(imagePath);
+        try {
+            img1 = ImageIO.read(new File(imagePath));
+        } catch (IOException ex) {
+            Logger.getLogger(ImageShape.class.getName()).log(Level.SEVERE, null, ex);
+        }
         this.aspectType=eNodeAspectType.IMAGE;
     };
     

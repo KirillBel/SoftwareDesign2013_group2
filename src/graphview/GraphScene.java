@@ -24,11 +24,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
@@ -511,6 +513,31 @@ public class GraphScene extends javax.swing.JPanel{
     {
         updateUI();
     };
+    
+    public Image drawToImage(int sizeX, int sizeY, BaseShape shape)
+    {
+        BufferedImage img = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_4BYTE_ABGR);
+        Graphics2D g2d = img.createGraphics();
+        
+        Rect oldRect=shape.getGlobalRectangle();
+        shape.setGlobalRectangle(new Rect(0,0,sizeX-1,sizeY-1));
+        
+        try {
+            g2d.setColor(new Color(255,255,255,0));
+            g2d.fillRect(0, 0, sizeX, sizeY);
+
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HBGR);
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+            shape.draw(g2d);
+        } finally {
+            g2d.dispose();
+        }
+        
+        shape.setGlobalRectangle(oldRect);
+        return img;
+    };
     //////////////////////END DRAW/////////////////////////////////////////////
     
     /////////////////UNIT CONVERSION///////////////////////////////////////////
@@ -581,7 +608,14 @@ public class GraphScene extends javax.swing.JPanel{
     public static NodeAspect createNodeShape(eNodeAspectType shapeType, eNodeAspectType containmentType)
     {
         NodeAspect shape=createNodeShape(shapeType);
-        shape.addChild(createNodeShape(containmentType));
+        if(containmentType==eNodeAspectType.TEXT)
+        {
+            shape.createLabel("Text");
+        }
+        else shape.addChild(createNodeShape(containmentType));
+        
+        shape.fitToChilds(true);
+        shape.setContainerMode(NodeAspect.eContainerType.RESIZE_CHILDS_TO_PARENT);
         return shape;
     };
     

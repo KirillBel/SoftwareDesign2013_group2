@@ -168,6 +168,12 @@ public abstract class BaseShape extends PropertyObject{
         setSize(r.getSize());
     }
     
+    public void setGlobalRectangle(Rect r)
+    {
+        setPosition(globalCoord.minus(r.getTopLeft()));
+        setSize(r.getSize());
+    }
+    
     public Rect getRectangle()
     {
         return new Rect(localCoord.x,localCoord.y,

@@ -7,6 +7,7 @@ package graphview.shapes;
 import geometry.Rect;
 import geometry.Vec2;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -28,7 +29,8 @@ public class TextShape extends BoxShape{
         super(0,0,10,10);
         
         textProp=propCreate("Text", new String(text_));
-        fontProp=propCreate("Font", new Font("Arial",Font.PLAIN,15));  
+        fontProp=propCreate("Font", new Font("Arial",Font.PLAIN,15)); 
+        setColor(Color.black);
         
         updateTextBounds();
 
