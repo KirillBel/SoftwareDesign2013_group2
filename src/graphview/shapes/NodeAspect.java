@@ -127,7 +127,8 @@ public abstract class NodeAspect extends BaseShape{
                 else if(r.getSize().x<r.getSize().y) r.setSize(new Vec2(r.getSize().y,r.getSize().y));
             };
             
-            setSize(r.getSize().plus(containerOffset));
+            //setSize(r.getSize().plus(containerOffset));
+            fitChildRect(r);
             
             for(int i=0;i<childs.size();i++)
             {
@@ -150,6 +151,16 @@ public abstract class NodeAspect extends BaseShape{
         
         setSize(size.plus(containerOffset*2));
     }
+    
+    public void fitChildRect(Rect other)
+    {
+        Rect childRect=getContainRect();
+        Vec2 mult=new Vec2(other.getSize().x/childRect.getSize().x,
+                other.getSize().y/childRect.getSize().y);
+        
+        Vec2 newSize=getSize().multiply(mult);
+        setSize(newSize);
+    };
     
     public abstract Rect getContainRect();
     ///////////////////////////////END CONTAINER/////////////////////////////

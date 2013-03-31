@@ -38,7 +38,7 @@ public abstract class BaseShape extends PropertyObject{
     protected boolean bMouseIn=false;
     protected boolean bHaveGrip=true;
     
-    public boolean bDebugDrawBBox = false;
+    public boolean bDebugDrawBBox = true;
     
     public enum eShapeAspect
     {

@@ -83,7 +83,12 @@ public class EllipseShape extends NodeAspect{
     
     @Override
     public Rect getContainRect() {
-        Rect r=new Rect(0,0,getRectangle().getSize().x,getRectangle().getSize().y);
-        return r.getReduced(containerOffset);
+        
+        Vec2 axes=new Vec2((float)(getRectangle().getSize().x*Math.sqrt(2.0f)/2),
+                (float)(getRectangle().getSize().y*Math.sqrt(2.0f)/2));
+        Vec2 center=getRectangle().getSize().divide(2);
+        
+        Rect r=new Rect(center.x-axes.x/2,center.y-axes.y/2,center.x+axes.x/2,center.y+axes.y/2);
+        return r;
     }
 }
