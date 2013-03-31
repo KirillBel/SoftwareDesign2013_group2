@@ -534,15 +534,32 @@ public class GraphScene extends javax.swing.JPanel{
         updateUI();
     };
     
-    public Image drawToImage(int sizeX, int sizeY, BaseShape shape)
+    public Image drawToImage(int sizeX, int sizeY, NodeAspect shape)
     {
         BufferedImage img = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D g2d = img.createGraphics();
         
-        Rect oldRect=shape.getGlobalRectangle();
-        shape.setGlobalRectangle(new Rect(0,0,sizeX-1,sizeY-1));
+        Rect shapeRect=shape.getGlobalRectangle();
+        Vec2 newSize=shapeRect.getSize();
+        Vec2 center=shapeRect.getCenter();
+        if(newSize.x<newSize.y) newSize.x=newSize.y;
+        else if(newSize.x>newSize.y) newSize.y=newSize.x;
+        
+        shapeRect.set(center.x-newSize.x/2,center.y-newSize.y/2,center.x+newSize.x/2,center.y+newSize.y/2);
+        
+        
+        sizeX-=2;
+        sizeY-=2;
+        Vec2 newScale=new Vec2((float)sizeX/newSize.x,(float)sizeY/newSize.y);
+        Vec2 newOffset=shapeRect.getTopLeft();
+        
+        //shape.setGlobalRectangle(new Rect(0,0,sizeX-1,sizeY-1));
+        
         
         try {
+            g2d.translate(newOffset.x, newOffset.y);
+            g2d.scale(newScale.x, newScale.y);
+
             g2d.setColor(new Color(255,255,255,0));
             g2d.fillRect(0, 0, sizeX, sizeY);
 
@@ -555,7 +572,7 @@ public class GraphScene extends javax.swing.JPanel{
             g2d.dispose();
         }
         
-        shape.setGlobalRectangle(oldRect);
+        //shape.setGlobalRectangle(oldRect);
         return img;
     };
     //////////////////////END DRAW/////////////////////////////////////////////

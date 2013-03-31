@@ -67,7 +67,7 @@ public class ShapeCreatePanel extends javax.swing.JPanel {
         return panel;
     };
     
-    public JButton createButton(JPanel panel, String txt, BaseShape shape)
+    public JButton createButton(JPanel panel, String txt, NodeAspect shape)
     {
         JButton button = new JButton(txt);
         try {
@@ -76,7 +76,7 @@ public class ShapeCreatePanel extends javax.swing.JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Image img=scene.drawToImage(50,50,shape);
+        Image img=scene.drawToImage(60,60,shape);
         button.setIcon(new ImageIcon(img));
         panel.add(button);  
         return button;
