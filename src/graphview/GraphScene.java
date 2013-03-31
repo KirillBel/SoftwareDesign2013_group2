@@ -276,10 +276,14 @@ public class GraphScene extends javax.swing.JPanel{
         mouseState.scenePos=fromScreen(mouseState.screenPos);
         Rect screen = getScreenRect();
         Vec2 prevPos=mouseState.scenePos;
-        scale=scale.multiply(mult);
+        
+        setScale(scale.x*mult);
+                
         mouseState.scenePos=fromScreen(mouseState.screenPos);
         Vec2 delta=mouseState.scenePos.minus(prevPos);
-        offset=offset.plus(delta.multiply(scale));
+        
+        setOffset(offset.plus(delta.multiply(scale)));
+        
         mouseState.scenePos=fromScreen(mouseState.screenPos);
         updateScene();
     };
@@ -296,10 +300,26 @@ public class GraphScene extends javax.swing.JPanel{
         Vec2 newOffset=r.getTopLeft().multiply(-1);
         newOffset=newOffset.multiply(newScale);
         
-        offset.set(newOffset);
-        scale.set(newScale);
+        setOffset(newOffset);
+        setScale(newScale.x);
         mouseState.scenePos=fromScreen(mouseState.screenPos);
         updateScene();
+    };
+    
+    public void setScale(float sca)
+    {
+        if(sca>20) return;
+        if(sca<0.000000001) return;
+        
+        this.scale.set(sca,sca);
+    };
+    
+    public void setOffset(Vec2 off)
+    {
+        if(Math.abs(off.x)<500000 && Math.abs(off.y)<500000)
+        {
+            offset.set(off);
+        };
     };
     
     public void fitScene()
@@ -362,7 +382,7 @@ public class GraphScene extends javax.swing.JPanel{
         }
         else if(sceneMode==SCENE_MODE_OFFSET)
         {
-            offset=offset.plus(mouseState.screenDelta);
+            setOffset(offset.plus(mouseState.screenDelta));
         }
         else if(sceneMode==SCENE_MODE_DRAG_SELECTED)
         {
