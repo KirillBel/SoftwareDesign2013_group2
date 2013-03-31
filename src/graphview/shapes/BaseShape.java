@@ -452,8 +452,11 @@ public abstract class BaseShape extends PropertyObject{
     {
         for(int i=0;i<childs.size();i++)
         {
-            childs.get(i).bSelected=false;
-            childs.get(i).clearAllSelection();
+            if(childs.get(i)!=null)
+            {
+                childs.get(i).bSelected=false;
+                childs.get(i).clearAllSelection();
+            }            
         };
         selectedChilds.clear();
         
@@ -620,8 +623,11 @@ public abstract class BaseShape extends PropertyObject{
         bMouseIn=true;
         for(int i=0;i<childs.size();i++)
         {
-            if(childs.get(i).bMouseIn)
-                childs.get(i).onMouseOut(evt);
+            if(childs.get(i)!=null)
+            {
+                if(childs.get(i).bMouseIn)
+                    childs.get(i).onMouseOut(evt);
+            }
         };
         if(parent!=null && parent.bMouseIn)
             parent.bMouseIn=false;
