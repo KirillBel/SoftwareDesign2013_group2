@@ -5,17 +5,12 @@
 package gui.structurePanel;
 
 import graphview.GraphEdge;
-import graphview.GraphNode;
 import graphview.GraphScene;
 import graphview.shapes.EdgeAspect;
 import graphview.shapes.NodeAspect;
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,43 +18,24 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Vector;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.CellEditor;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneLayout;
 import javax.swing.SwingUtilities;
-import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
-import javax.swing.plaf.basic.BasicOptionPaneUI;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
 
 /**
  *
@@ -74,10 +50,6 @@ public class StructurePanel extends javax.swing.JPanel {
     public JTable tableNode;
     public JTable tableEdge;
     
-//    private ArrayList<TableCellEditor> editors = new ArrayList<TableCellEditor>();
-//    private ArrayList<TableCellEditor> editorsTo = new ArrayList<TableCellEditor>();
-//    private ArrayList<TableCellEditor> editorsDir = new ArrayList<TableCellEditor>();
-//    
     public TablePropertiesFrame propertiesFrame;
     
     private JFrame mainFrame;
@@ -89,9 +61,7 @@ public class StructurePanel extends javax.swing.JPanel {
 
     private JMenuItem jMenuItemDeleteNode = null;
     private JMenuItem jMenuItemDeleteEdge = null;
-    
-//    private ListSelectionModel SelectionModelNode;
-    
+       
     private JDialog textDialog=null;
     
     private Point editingNodeCell=new Point();
@@ -104,9 +74,7 @@ public class StructurePanel extends javax.swing.JPanel {
     
     private nodeCreateDialog nodeCreate=null;
     private edgeCreateDialog edgeCreate=null;
-    
-//    private ArrayList<Integer> arraySelectedNode=new ArrayList<Integer>();
-    
+      
     private JComboBox comboBoxNodesId = new JComboBox();
     private JComboBox comboBoxDir = new JComboBox();
     
@@ -152,11 +120,11 @@ public class StructurePanel extends javax.swing.JPanel {
         propertiesFrame=new TablePropertiesFrame(parent, true);
         initComponents();
         initCreate();
-        initLayout();      
+        initTable();      
         initTextDialog();
     }
 
-    public void initLayout()
+    public void initTable()
     {       
         jButton1.setSelected(true);
         jButton5.setEnabled(false);
@@ -188,13 +156,13 @@ public class StructurePanel extends javax.swing.JPanel {
                     int col=-1;
                     row=(int) editingEdgeCell.getX();
                     col=(int) editingEdgeCell.getY();
-                    if((String)tableEdge.getModel().getValueAt(row,col)!=(String)item)
+                    if(!((String)tableEdge.getModel().getValueAt(row,col)).equals((String)item))
                     {
                         columNumber=getColumNum(tableEdge, strEdgeID);                                               
                         int edgeId=(Integer)tableEdge.getModel().getValueAt(row, columNumber);
                         boolean dir=false;
     
-                        if((String)item=="True")
+                        if(((String)item).equals("True"))
                         {
                             dir=true;
                         }
@@ -238,9 +206,6 @@ public class StructurePanel extends javax.swing.JPanel {
                     int ID=(int)tableNode.getModel().getValueAt((int)editingNodeCell.getX(), columNumber);
                     scene.getNode(ID).getAspect().setLabel(label);            
                     textDialog.setVisible(false);
-//                    tableNode.getModel().setValueAt(textField.getText(), (int)editingCell.getX(), (int)editingCell.getY());
-//                    tableNode.getCellEditor().stopCellEditing();
-//                    tableNode.setEnabled(false);
                     updateTables();
                 }
                 else
@@ -271,10 +236,6 @@ public class StructurePanel extends javax.swing.JPanel {
         textDialog.setLayout(new BorderLayout());
         textDialog.add(textScrollPanel);
         textDialog.add(textPanel,BorderLayout.AFTER_LAST_LINE);
-        
-         
-        
-       // textDialog.setResizable(false);
     }    
     
     public void startEdit()
@@ -310,8 +271,7 @@ public class StructurePanel extends javax.swing.JPanel {
             textField.setText(data);
 
             textDialog.setVisible(true);
-        }
-       
+        }      
         
     }
     
@@ -321,7 +281,7 @@ public class StructurePanel extends javax.swing.JPanel {
         int result =0;
         if(table.getModel().getColumnCount()!=0)
         {
-            while(table.getModel().getColumnName(result)!=str)
+            while(!table.getModel().getColumnName(result).equals(str))
             {
                 result++;
             }
@@ -335,26 +295,13 @@ public class StructurePanel extends javax.swing.JPanel {
         modelNode.addColumn(strNodeID);
         modelNode.addColumn(strLabel);
         oldNewModelNode.addColumn(strNodeID);
-        oldNewModelNode.addColumn(strLabel);
-       // modelNode.addColumn("Edge's ID");
-       // modelNode.addColumn("Shape");
-        
-        //ListSelectionModel lm = new DefaultListSelectionModel();
-        //lm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        oldNewModelNode.addColumn(strLabel);       
         
         final JTable table = new JTable(modelNode)
-        {
-           /* public TableCellEditor getCellEditor(int row, int column)
-            {               
-                if (column == 2)
-                    return editors.get(row);
-                else
-                    return super.getCellEditor(row, column);
-            }*/
-            
+        {           
             @Override
             public boolean isCellEditable(int row, int column) {
-                if (this.getModel().getColumnName(column)==strNodeID || this.getModel().getColumnName(column)==strLabel)
+                if (this.getModel().getColumnName(column).equals(strNodeID) || this.getModel().getColumnName(column).equals(strLabel))
                 {
                     return false;                    
                 }
@@ -362,17 +309,7 @@ public class StructurePanel extends javax.swing.JPanel {
                 {
                     return true;
                 }
-            }
-        
-//        
-//        @Override
-//        
-//        public boolean isEditing()
-//        {
-//            System.out.printf("%d\t%d\n",selectionModel.getMinSelectionIndex(),columnModel.getSelectionModel().getMinSelectionIndex());
-//            return cellEditor != null;
-//        }
-                
+            }       
         };
         
         table.addMouseListener(new MouseAdapter() {
@@ -386,8 +323,7 @@ public class StructurePanel extends javax.swing.JPanel {
                     if(column!=-1 && row!=-1) 
                     { 
                         table.changeSelection(row, column, true, true);                                  
-                    }  
-                    
+                    }                      
                    
                     if(table.getSelectedColumnCount()==1)
                     {
@@ -403,9 +339,7 @@ public class StructurePanel extends javax.swing.JPanel {
                             cellNodeToEdit.x=column;
                             cellNodeToEdit.y=row;
                         }
-                    }
-                    
-                    
+                    }                                       
                 }                
                 else if (SwingUtilities.isRightMouseButton(e))
                 {      
@@ -447,7 +381,10 @@ public class StructurePanel extends javax.swing.JPanel {
                 if (dragNodeComplete) {
                     if(newModelNode!=null)
                     {
-                        modelNode=newModelNode;
+                        if(newModelNode.getColumnCount()==modelNode.getColumnCount())
+                        {
+                            modelNode=newModelNode;
+                        }
                         table.setModel(modelNode);
                         updateTables();
                     }
@@ -458,12 +395,15 @@ public class StructurePanel extends javax.swing.JPanel {
         });
         table.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
 
+            @Override
             public void columnAdded(TableColumnModelEvent e) {
             }
 
+            @Override
             public void columnRemoved(TableColumnModelEvent e) {
             }
 
+            @Override
             public void columnMoved(TableColumnModelEvent e) {
                 dragNodeComplete = true;
                 nodeColumnValue = e.getFromIndex();  
@@ -494,76 +434,19 @@ public class StructurePanel extends javax.swing.JPanel {
                     for(int i=0;i<table.getColumnCount();i++)
                     {                        
                        oldNewModelNode.addColumn(newModelNode.getColumnName(i));
-                    }                    
-                   
-                }
-                
-                
+                    }                                      
+                }                
             }
 
+            @Override
             public void columnMarginChanged(ChangeEvent e) {
             }
 
+            @Override
             public void columnSelectionChanged(ListSelectionEvent e) {
             }
-        });
-        
-//        table.addPropertyChangeListener(new PropertyChangeListener() 
-//        {
-//
-//            @Override
-//            public void propertyChange(PropertyChangeEvent evt) {
-//                if ("tableCellEditor".equals(evt.getPropertyName()))
-//		{
-//			if (table.isEditing())
-//                        {                            
-//                            int row=table.getSelectedRow();
-//                            int col=table.getSelectedColumn();
-//                            editingCell.x=row;
-//                            editingCell.y=col;
-//                            String data=(String)table.getModel().getValueAt(row, col);
-//                            textField.setText(data);
-//                            textDialog.setLocation(
-//                                    mainFrame.getLocationOnScreen().x+
-//                                    mainFrame.getWidth()/2-
-//                                    textDialog.getWidth()/2,
-//                                    mainFrame.getLocationOnScreen().y+
-//                                    mainFrame.getHeight()/2-
-//                                    textDialog.getHeight()/2 
-//                                    );  
-//                            textDialog.setVisible(true);
-//                        }
-//		}
-//            }
-//        });
+        });        
 
-//        TableColumn column = table.getColumnModel().getColumn(1);
-//        column.setCellEditor(new DefaultCellEditor(new JTextField()));
-//        column.getCellEditor().addCellEditorListener(new CellEditorListener()
-//        {
-//            int row;
-//            String label;
-//            int ID;
-//            @Override
-//            public void editingCanceled(ChangeEvent e)                
-//            {
-//                row = table.getSelectedRow();
-//                ID=(int)table.getModel().getValueAt(row, 0);
-//                label=(String)table.getModel().getValueAt(row, 1);
-//                scene.getNode(ID).getAspect().setLabel(label);
-//            }
-//            @Override
-//            public void editingStopped(ChangeEvent e) 
-//            {                
-//                row = table.getSelectedRow();
-//                ID=(int)table.getModel().getValueAt(row, 0);
-//                label=(String)table.getModel().getValueAt(row, 1);
-//                scene.getNode(ID).getAspect().setLabel(label);
-//            }
-//        }
-//                );
-
-        //table.setSelectionModel(lm);
         return table;
     }
     
@@ -596,25 +479,33 @@ public class StructurePanel extends javax.swing.JPanel {
                 editingEdgeCell.y=column;
                 int edgeId=-1;
                 DefaultCellEditor dce;
-                if (this.getModel().getColumnName(column)==strFrom )
+                if (this.getModel().getColumnName(column).equals(strFrom) )
                 {
                     columNumber=getColumNum(tableEdge, strEdgeID);
                     edgeId=(Integer)tableEdge.getModel().getValueAt(row, columNumber);
-                    comboBoxNodesId.setSelectedItem(Integer.toString(scene.getEdge(edgeId).getFromID())+" - "+scene.getEdge(edgeId).getAspect().getLabel());                    
+                    comboBoxNodesId.setSelectedItem(
+                            Integer.toString(scene.getEdge(edgeId).getFromID())+
+                            " - "+
+                            scene.getEdge(edgeId).getAspect().getLabel()
+                            );                    
                     tableEdge.getColumnModel().getColumn(column).setCellEditor(new DefaultCellEditor(comboBoxNodesId));
                     dce = new DefaultCellEditor( comboBoxNodesId );                    
                     return dce;
                 }
-                else if(this.getModel().getColumnName(column)==strTo)
+                else if(this.getModel().getColumnName(column).equals(strTo))
                 {
                     columNumber=getColumNum(tableEdge, strEdgeID);
                     edgeId=(Integer)tableEdge.getModel().getValueAt(row, columNumber);
-                    comboBoxNodesId.setSelectedItem(Integer.toString(scene.getEdge(edgeId).getToID())+" - "+scene.getEdge(edgeId).getAspect().getLabel());
+                    comboBoxNodesId.setSelectedItem(
+                            Integer.toString(scene.getEdge(edgeId).getToID())+
+                            " - "+
+                            scene.getEdge(edgeId).getAspect().getLabel()
+                            );
                     tableEdge.getColumnModel().getColumn(column).setCellEditor(new DefaultCellEditor(comboBoxNodesId));
                     dce = new DefaultCellEditor( comboBoxNodesId );  
                     return dce; 
                 }
-                else if(this.getModel().getColumnName(column)==strBdirectional)
+                else if(this.getModel().getColumnName(column).equals(strBdirectional))
                 {
                     columNumber=getColumNum(tableEdge, strEdgeID);
                     edgeId=(Integer)tableEdge.getModel().getValueAt(row, columNumber);
@@ -630,13 +521,6 @@ public class StructurePanel extends javax.swing.JPanel {
                     dce = new DefaultCellEditor( comboBoxDir );  
                     return dce;
                 }
-//                tableEdge.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(comboBoxNodesId));
-//                tableEdge.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(comboBoxNodesId));
-//                tableEdge.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(comboBoxDir));
-//                DefaultCellEditor dce = new DefaultCellEditor( comboBoxNodesId );
-//                editors.add( dce ); 
-//                dce = new DefaultCellEditor( comboBoxDir );
-//                editors.add( dce );
                 else
                 {
                     return super.getCellEditor(row, column);
@@ -645,7 +529,7 @@ public class StructurePanel extends javax.swing.JPanel {
             
             @Override
             public boolean isCellEditable(int row, int column) {
-                if (this.getModel().getColumnName(column)==strEdgeID || this.getModel().getColumnName(column)==strLabel)
+                if (this.getModel().getColumnName(column).equals(strEdgeID) || this.getModel().getColumnName(column).equals(strLabel))
                 {
                     return false;
                 }
@@ -654,8 +538,7 @@ public class StructurePanel extends javax.swing.JPanel {
                     return true;
                 }
             }         
-        };
-        
+        };        
 
         table.getTableHeader().addMouseListener(new MouseAdapter() {
             @Override
@@ -663,7 +546,10 @@ public class StructurePanel extends javax.swing.JPanel {
                 if (dragEdgeComplete) {
                     if(newModelEdge!=null)
                     {
-                        modelEdge=newModelEdge;
+                        if(newModelEdge.getColumnCount()==modelEdge.getColumnCount())
+                        {
+                            modelEdge=newModelEdge;
+                        } 
                         table.setModel(modelEdge);
                         updateTables();
                     }
@@ -673,12 +559,15 @@ public class StructurePanel extends javax.swing.JPanel {
         });
         table.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
 
+            @Override
             public void columnAdded(TableColumnModelEvent e) {
             }
 
+            @Override
             public void columnRemoved(TableColumnModelEvent e) {
             }
 
+            @Override
             public void columnMoved(TableColumnModelEvent e) {
                 dragEdgeComplete = true;
                 edgeColumnValue = e.getFromIndex();  
@@ -687,7 +576,6 @@ public class StructurePanel extends javax.swing.JPanel {
                 {                     
                     oldEdgeColumnValue=edgeColumnValue;
                     oldEdgeColumnNewValue=edgeColumnNewValue;
-                   // table.getColumnModel().moveColumn(columnNewValue, columnValue);   
                     newModelEdge = new DefaultTableModel();
                     for(int i=0;i<table.getColumnCount();i++)
                     {
@@ -710,14 +598,14 @@ public class StructurePanel extends javax.swing.JPanel {
                     {                        
                        oldNewModelEdge.addColumn(newModelEdge.getColumnName(i));
                     }                  
-                }
-                
-                
+                }                                
             }
 
+            @Override
             public void columnMarginChanged(ChangeEvent e) {
             }
 
+            @Override
             public void columnSelectionChanged(ListSelectionEvent e) {
             }
         });
@@ -790,52 +678,12 @@ public class StructurePanel extends javax.swing.JPanel {
                 }               
             }
         });
-        
-      
-        
-//        table.addPropertyChangeListener(new PropertyChangeListener() 
-//        {
-//
-//            @Override
-//            public void propertyChange(PropertyChangeEvent evt) {
-//                if ("tableCellEditor".equals(evt.getPropertyName()))
-//		{
-//                    int row;
-//                    int col;
-//			if (table.isEditing())
-//                        {                            
-//                            row=(int) editingEdgeCell.getX();
-//                            col=(int) editingEdgeCell.getY();
-//
-//                            JComboBox myCombo=(JComboBox)table.getEditorComponent();
-//                            if(col==3)
-//                            {                   
-//                                boolean dir=false;
-//                                int ID=-1;            
-//                                ID=(int)table.getModel().getValueAt(row, 0);
-//                                String lol=(String)table.getModel().getValueAt(row, 3);
-//                                if((String)table.getModel().getValueAt(row, 3)=="True")
-//                                {
-//                                    dir=true;
-//                                }
-//                                else
-//                                {
-//                                    dir=false;
-//                                }
-//                                scene.getEdge(ID).setDirection(dir);
-//                                dir=false;
-//                            }
-//                        }                       
-//                }          
-//            };
-// });
-        
+  
         return table;
     }
    
     public void updateNodes()
     {
-        //editors.clear();
         while(modelNode.getRowCount()>0)
         {
             modelNode.removeRow(0);
@@ -845,57 +693,21 @@ public class StructurePanel extends javax.swing.JPanel {
         {
             if(scene.getNode(i)!=null)
             {
-
-//                JComboBox comboBox = new JComboBox();
-//                for(int j=0; j<node.getSizeOfNodeEdgesIDArray();j++)
-//                {
-//                    comboBox.addItem(String.valueOf(node.getElementOfNodeEdgesIDArray(j)));
-//                }
-                
-//                if(node.getSizeOfNodeEdgesIDArray()>0)
-//                {
-//                    Object[] rowData={
-//                        node.getID(),
-//                        "",
-//                        String.valueOf(node.getElementOfNodeEdgesIDArray(0)),
-//                        node.getAspect()
-//                    };
-//                    modelNode.addRow(rowData);
-//                }
-//                else
-//                {
-
-                Vector vect=new Vector();
+                Object[] obj=new Object[tableNode.getColumnCount()];
                 for(int j=0;j<tableNode.getColumnCount();j++)
                 {
-                    if(tableNode.getModel().getColumnName(j)==strNodeID)
+                    if(tableNode.getModel().getColumnName(j).equals(strNodeID))
                     {
-                        vect.add(j, scene.getNode(i).getID());
+                        obj[j]=scene.getNode(i).getID();
                     }
-                    else if(tableNode.getModel().getColumnName(j)==strLabel)
+                    else if(tableNode.getModel().getColumnName(j).equals(strLabel))
                     {
-                        vect.add(j, scene.getNode(i).getAspect().getLabel());
+                        obj[j]=scene.getNode(i).getAspect().getLabel();
                     }                            
-                }
+                }             
                 
-                
-//                    Object[] rowData={
-//                        scene.getNode(i).getID(),
-//                        scene.getNode(i).getAspect().getLabel()
-////                        "",
-////                        null,
-////                        scene.getNode(i).getAspect()
-//                    };
-                    modelNode.addRow(vect);
-//                }
-                
-                
-                
-                tableNode.setModel(modelNode);
-                //tableNode.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(comboBox));
-//                DefaultCellEditor dce = new DefaultCellEditor( comboBox );
-//                editors.add( dce );              
-    
+                modelNode.addRow(obj);
+                tableNode.setModel(modelNode);                
             }
         }
     }
@@ -907,7 +719,11 @@ public class StructurePanel extends javax.swing.JPanel {
         {
             if(scene.getNode(j)!=null)
             {
-                comboBoxNodesId.addItem(String.valueOf(scene.getNode(j).getID())+" - "+scene.getNode(j).getAspect().getLabel());
+                comboBoxNodesId.addItem(String.valueOf(
+                        scene.getNode(j).getID())+
+                        " - "+
+                        scene.getNode(j).getAspect().getLabel()
+                        );
             }                          
         }
         if(comboBoxNodesId.getItemCount()<1)
@@ -923,7 +739,7 @@ public class StructurePanel extends javax.swing.JPanel {
     
     public void updateEdges()
     {
-//        editors.clear();
+
         updateComboBox();
         String dir="";        
         while(modelEdge.getRowCount()>0)
@@ -948,16 +764,14 @@ public class StructurePanel extends javax.swing.JPanel {
                         int edgeId=(Integer)tableEdge.getModel().getValueAt(row, columNumber);                        
                         String[] str=((String)item).split(" ");
                             
-                        if(tableEdge.getModel().getColumnName(col)==strFrom)
+                        if(tableEdge.getModel().getColumnName(col).equals(strFrom))
                         {
                             scene.setFromEdge(edgeId, Integer.valueOf(str[0]));
                         }
-                        else if(tableEdge.getModel().getColumnName(col)==strTo)
+                        else if(tableEdge.getModel().getColumnName(col).equals(strTo))
                         {
                             scene.setToEdge(edgeId, Integer.valueOf(str[0]));
-                        }  
-                                                   
-
+                        }                                                    
                     }    
                 }
             }  
@@ -981,39 +795,39 @@ public class StructurePanel extends javax.swing.JPanel {
                     dir="False";
                 }
 
-                Vector vect=new Vector();
+
+                Object[] obj=new Object[tableEdge.getColumnCount()];
                 for(int j=0;j<tableEdge.getColumnCount();j++)
                 {
-                    if(tableEdge.getModel().getColumnName(j)==strEdgeID)
+                    if(tableEdge.getModel().getColumnName(j).equals(strEdgeID))
                     {
-                        vect.add(j, edge.getID());
+                        obj[j]=edge.getID();
                     }
-                    else if(tableEdge.getModel().getColumnName(j)==strFrom)
+                    else if(tableEdge.getModel().getColumnName(j).equals(strFrom))
                     {
-                        vect.add(j, String.valueOf(edge.getFromID())+" - "+scene.getNode(edge.getFromID()).getAspect().getLabel());
+                        obj[j]=String.valueOf(edge.getFromID())+
+                                " - "+
+                                scene.getNode(edge.getFromID()
+                                ).getAspect().getLabel();
                     } 
-                    else if(tableEdge.getModel().getColumnName(j)==strTo)
+                    else if(tableEdge.getModel().getColumnName(j).equals(strTo))
                     {
-                        vect.add(j, String.valueOf(edge.getToID())+" - "+scene.getNode(edge.getToID()).getAspect().getLabel());
+                        obj[j]=String.valueOf(edge.getToID())+
+                                " - "+
+                                scene.getNode(edge.getToID()
+                                ).getAspect().getLabel();
                     } 
-                    else if(tableEdge.getModel().getColumnName(j)==strBdirectional)
+                    else if(tableEdge.getModel().getColumnName(j).equals(strBdirectional))
                     {
-                        vect.add(j, dir);
+                        obj[j]=dir;
                     } 
-                    else if(tableEdge.getModel().getColumnName(j)==strLabel)
+                    else if(tableEdge.getModel().getColumnName(j).equals(strLabel))
                     {
-                        vect.add(j, edge.getAspect().getLabel());
+                        obj[j]=edge.getAspect().getLabel();
                     }                            
                 }
-//                Object[] rowData={
-//                        edge.getID(),
-//                        edge.getFromID(),
-//                        edge.getToID(),
-//                        dir,
-//                        edge.getAspect().getLabel()
-//                };
-                
-                modelEdge.addRow(vect);
+
+                modelEdge.addRow(obj);
                 
                 }     
             
@@ -1072,13 +886,10 @@ public class StructurePanel extends javax.swing.JPanel {
                 jMenuItemDeleteNode = new JMenuItem("Удалить");
             }
             jMenuItemDeleteNode.addActionListener(new java.awt.event.ActionListener() {
+                @Override
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     int selectedRowsCount=tableNode.getSelectedRowCount();
-                    if(selectedRowsCount==0)
-                    {
-                        return;
-                    }
-                    else
+                    if(selectedRowsCount!=0)                    
                     {
                         int selectedRows[]=tableNode.getSelectedRows();  
                         int nodeID;
@@ -1101,13 +912,10 @@ public class StructurePanel extends javax.swing.JPanel {
                 jMenuItemDeleteEdge = new JMenuItem("Удалить");
             }
             jMenuItemDeleteEdge.addActionListener(new java.awt.event.ActionListener() {
+                @Override
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     int selectedRowsCount=tableEdge.getSelectedRowCount();
-                    if(selectedRowsCount==0)
-                    {
-                        return;
-                    }
-                    else
+                    if(selectedRowsCount!=0)                    
                     {
                         int selectedRows[]=tableEdge.getSelectedRows();  
                         int edgeID;
