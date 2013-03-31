@@ -10,11 +10,14 @@ import graphview.GraphScene;
 import graphview.shapes.BoxShape;
 import com.javadocking.dock.LineDock;
 import com.javadocking.dock.Position;
+import com.javadocking.dock.TabDock;
 import com.javadocking.dockable.DefaultDockable;
 import com.javadocking.dockable.Dockable;
 import com.javadocking.dockable.DockableState;
 import com.javadocking.dockable.DockingMode;
 import com.javadocking.dockable.action.DefaultDockableStateAction;
+import com.javadocking.event.DockingEvent;
+import com.javadocking.event.DockingListener;
 import geometry.Vec2;
 import graphview.shapes.EllipseShape;
 import graphview.shapes.ImageShape;
@@ -26,7 +29,13 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.awt.event.ItemEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -76,15 +85,17 @@ public class MainPanel extends DockablePanel{
         rightTabbedDock.addDockable(shapeCreateDock, new Position(1));
         
         
-        structure=new StructurePanel(scene, mainFrame);
+        structure=new StructurePanel(scene, mainFrame, this);
         structureDock = new DefaultDockable("Structure", structure, "Structure", null, DockingMode.ALL - DockingMode.FLOAT);
         structureDock=addActions(structureDock);
         centerTabbedDock.addDockable(structureDock, new Position(1));
         
+
         sceneDock = new DefaultDockable("Scene", scene, "Scene", null, DockingMode.ALL - DockingMode.FLOAT);
         sceneDock=addActions(sceneDock);
         centerTabbedDock.addDockable(sceneDock, new Position(0));
         
+ 
         Dimension texpPanelSize= new Dimension(100, 100) ;
         JTextArea textPanel1 = new JTextArea();
         textPanel1.setMinimumSize(texpPanelSize);
@@ -259,9 +270,19 @@ public class MainPanel extends DockablePanel{
                 }
                 break;
                 
-        }
-        
-       
-        
+        }                      
     }
+    
+//    public void selectStructure()
+//    {
+//        if(structureDock.getDock().getClass()==centerTabbedDock.getClass()) {
+//            ((TabDock)structureDock.getDock()).setSelectedDockable(structureDock);
+//        }
+//    }
+//    public void selectScene()
+//    {
+//        if(sceneDock.getDock().getClass()==centerTabbedDock.getClass()) {
+//            ((TabDock)sceneDock.getDock()).setSelectedDockable(sceneDock);
+//        }
+//    }
 }

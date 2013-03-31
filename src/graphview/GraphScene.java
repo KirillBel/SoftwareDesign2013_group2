@@ -896,7 +896,7 @@ public class GraphScene extends javax.swing.JPanel{
         
     }
     
-        public boolean setToEdge(int edgeID, int toID)
+    public boolean setToEdge(int edgeID, int toID)
     {
         if(edgesArray.get(edgeID).setTo(toID, this))
         {          
@@ -905,8 +905,13 @@ public class GraphScene extends javax.swing.JPanel{
         else
         {
             return false;
-        }
+        }       
+                
+    }
         
+    public void clearAllSelection()
+    {
+        root.clearAllSelection();
     }
     /////////////////END EDGES/NODES CREATION//////////////////////////////////
 }
