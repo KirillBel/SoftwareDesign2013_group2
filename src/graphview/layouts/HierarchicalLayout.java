@@ -17,24 +17,26 @@ import graphview.GraphNode;
 public class HierarchicalLayout extends BaseLayout{
     //int nodeID;
     
-    class PlaceNode
+    class NodeFlags
     {
-        //Данные нода
-        public GraphNode NodeData;
         //Указывает на то, что нод уже был установлен моим установщиком. Фактически,
         //это защита нода от перетаскивания
         public boolean isPlaced = false;
         //Тестовая переменная показывает справа или слева находится нод
         public boolean isRightHanded = true;
-        //public Vec2 place;
     };
 
     @Override
     public void applyLayout(GraphScene scene_) 
     {
         scene=scene_;
-        PlaceNode placeNode = new PlaceNode();
-        //GraphNode placeNode = null;
+        //Присвоение нодам флагов
+        for(int i=0; i<scene.getSizeNodeArray(); i++)
+        {
+            scene.getNode(i).userData = new NodeFlags();
+        }
+        //placeNode placeNode = new PlaceNode();
+        GraphNode placeNode = null;
         int nodeCount;
         int maxArrsize;
         int id=-1;
@@ -47,8 +49,8 @@ public class HierarchicalLayout extends BaseLayout{
   
         //В maxArr будет записан максимальный путь
         ArrayList<Integer> maxArr = new ArrayList<Integer>();
-        ArrayList<Integer> nodeArr=new ArrayList<Integer>();
-        
+        ArrayList<Integer> nodeArr = new ArrayList<Integer>();
+        ArrayList<Integer> placedNodesArray = new ArrayList<Integer>();
         
         System.out.println("Test of the node finder\n");
         
@@ -87,8 +89,8 @@ public class HierarchicalLayout extends BaseLayout{
         int NodeCount = scene.getCountNodes();
         for (int i = 0; i<NodeCount; i++)
         {
-            placeNode.NodeData = scene.getNode(i);
-            DemencionsOfNode = placeNode.NodeData.getAspect().getGlobalRectangle().getSize();
+            placeNode = scene.getNode(i);
+            DemencionsOfNode = placeNode.getAspect().getGlobalRectangle().getSize();
             MaxDemencions.x = Math.max(MaxDemencions.x, DemencionsOfNode.x);
             MaxDemencions.y = Math.max(MaxDemencions.y, DemencionsOfNode.y);
         }
@@ -96,14 +98,15 @@ public class HierarchicalLayout extends BaseLayout{
         //Расстановка самого длинного пути по вертикали
         for(int i =0; i<maxArrsize; i++)
         {
-            placeNode.NodeData = scene.getNode(maxArr.get(i));
+            placeNode = scene.getNode(maxArr.get(i));
             tempPlacement.y = MaxDemencions.y*2*(i);
-            placeNode.NodeData.getAspect().setPosition(tempPlacement);
-            placeNode.isPlaced = true;
+            placeNode.getAspect().setPosition(tempPlacement);
+           
         }
         //scene.updateUI();
-        
-        
+        //Расстановка оставшихся нодов.
+
+
     }
     
 }

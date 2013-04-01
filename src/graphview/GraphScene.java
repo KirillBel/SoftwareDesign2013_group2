@@ -869,6 +869,7 @@ public class GraphScene extends javax.swing.JPanel{
         updateScene();
         applySimpleLayout();
         //applyTestLayout();
+        //applyRadialLayout();
         return b;
     }
     
@@ -908,6 +909,45 @@ public class GraphScene extends javax.swing.JPanel{
                 NodesPerLineCounter++;
             }
             
+        }
+        updateScene();
+    };
+    
+    public void applyRadialLayout()
+    {
+        //removeAllItems();
+        GraphNode Node = null;
+        Vec2 DemencionsOfNode = new Vec2();
+        Vec2 MaxDemencions = new Vec2();
+        Vec2 tempPlacement = new Vec2();
+        Vec2 center = new Vec2();
+        center.x = 0;
+        center.y = 0;
+        int NodeCount = getCountNodes();
+        double SectorSize;
+        double tempNodesPerLine = Math.sqrt(NodeCount);
+        int NodesPerLine = (int) Math.round(tempNodesPerLine);
+        double Radius;
+        for (int i = 0; i<NodeCount; i++)
+        {
+            Node = getNode(i);
+            DemencionsOfNode = Node.getAspect().getGlobalRectangle().getSize();
+            MaxDemencions.x = Math.max(MaxDemencions.x, DemencionsOfNode.x);
+            MaxDemencions.y = Math.max(MaxDemencions.y, DemencionsOfNode.y);
+        }
+        //Вычисляем радиус круга
+        Radius = (double)Math.max(MaxDemencions.x, MaxDemencions.y)*NodesPerLine;
+        //Вычисляем размер сектора в углах
+        SectorSize = (double)360/NodeCount;
+        //РАсстановка вершин по кругу с радиусом Radius и Центром в 0.0
+        for(int i = 0; i<NodeCount;i++)
+        {
+            Node = getNode(i);
+            float tempX = (float)(Radius*Math.cos(SectorSize*i));
+            tempPlacement.x = (center.x + tempX);
+            float tempY = (float)(Radius*Math.sin(SectorSize*i));
+            tempPlacement.y = (center.y + tempY);
+            Node.getAspect().setPosition(tempPlacement);
         }
         updateScene();
     };
