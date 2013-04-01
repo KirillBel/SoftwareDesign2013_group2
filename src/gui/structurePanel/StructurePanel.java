@@ -4,7 +4,7 @@
  */
 package gui.structurePanel;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
+//import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import graphview.GraphEdge;
 import graphview.GraphScene;
 import graphview.shapes.EdgeAspect;

@@ -17,12 +17,24 @@ import graphview.GraphNode;
 public class HierarchicalLayout extends BaseLayout{
     //int nodeID;
     
+    class PlaceNode
+    {
+        //Данные нода
+        public GraphNode NodeData;
+        //Указывает на то, что нод уже был установлен моим установщиком. Фактически,
+        //это защита нода от перетаскивания
+        public boolean isPlaced = false;
+        //Тестовая переменная показывает справа или слева находится нод
+        public boolean isRightHanded = true;
+        //public Vec2 place;
+    };
 
     @Override
     public void applyLayout(GraphScene scene_) 
     {
         scene=scene_;
-        GraphNode placeNode = null;
+        PlaceNode placeNode = new PlaceNode();
+        //GraphNode placeNode = null;
         int nodeCount;
         int maxArrsize;
         int id=-1;
@@ -31,7 +43,6 @@ public class HierarchicalLayout extends BaseLayout{
         Vec2 tempPlacement = new Vec2();
         Vec2 MaxDemencions = new Vec2();
         Vec2 DemencionsOfNode = new Vec2();
-        //My code
         nodeCount = scene.getSizeNodeArray();
   
         //В maxArr будет записан максимальный путь
@@ -76,21 +87,22 @@ public class HierarchicalLayout extends BaseLayout{
         int NodeCount = scene.getCountNodes();
         for (int i = 0; i<NodeCount; i++)
         {
-            placeNode = scene.getNode(i);
-            DemencionsOfNode = placeNode.getAspect().getGlobalRectangle().getSize();
+            placeNode.NodeData = scene.getNode(i);
+            DemencionsOfNode = placeNode.NodeData.getAspect().getGlobalRectangle().getSize();
             MaxDemencions.x = Math.max(MaxDemencions.x, DemencionsOfNode.x);
             MaxDemencions.y = Math.max(MaxDemencions.y, DemencionsOfNode.y);
         }
         maxArrsize = maxArr.size();
         //Расстановка самого длинного пути по вертикали
-        for(int i =0; i<maxArrsize-1; i++)
+        for(int i =0; i<maxArrsize; i++)
         {
-            placeNode = scene.getNode(nodeArr.get(i));
-            tempPlacement.y = MaxDemencions.y*2*(i+1);
-            placeNode.getAspect().setPosition(tempPlacement);
+            placeNode.NodeData = scene.getNode(maxArr.get(i));
+            tempPlacement.y = MaxDemencions.y*2*(i);
+            placeNode.NodeData.getAspect().setPosition(tempPlacement);
+            placeNode.isPlaced = true;
         }
         //scene.updateUI();
-        //End (My code)
+        
         
     }
     
