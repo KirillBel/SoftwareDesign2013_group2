@@ -7,12 +7,15 @@ import graphview.GraphScene;
 import graphview.shapes.EdgeAspect;
 import graphview.shapes.EdgeAspect.eEdgeAspectType;
 import graphview.shapes.LineShape;
+import graphview.shapes.NodeAspect;
 import java.awt.Color;
+import java.awt.Shape;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.util.ArrayList;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Класс осуществляющий синтаксический анализ файла формата .dot
@@ -91,6 +94,7 @@ public class DotParser
     
     private int flag_opt = 0;
     private int flag = 0;
+    private boolean iter_node = false;
     
     private boolean direction = true;
     
@@ -242,6 +246,7 @@ public class DotParser
         {
             if(ListN.get(i).name.equalsIgnoreCase(name)) 
             {
+                iter_node = true;
                 return ListN.get(i);
             }
         }
@@ -320,20 +325,23 @@ public class DotParser
             {
                 flag_opt = 0;
                 flag=0;
+                
+                iter_node = false;
                 DotNode node1 = getNode(tk.sval);
                 System.out.println("Вершина: "+node1.name);
                 //scene.createTextCircleNode(node1.name, Color.yellow);
             
-                listNodeOpt.add(node1);
+                if(iter_node==false) listNodeOpt.add(node1);
                 tk.nextToken();
                            
             
             if(tk.ttype=='[')
             {
-              optionlist(tk);
-              listEdgeOpt.removeAll(listEdgeOpt);
-              listNodeOpt.removeAll(listNodeOpt);
-              tk.nextToken();
+                if(iter_node==true) listNodeOpt.add(node1);
+                optionlist(tk);
+                listEdgeOpt.removeAll(listEdgeOpt);
+                listNodeOpt.removeAll(listNodeOpt);
+                tk.nextToken();
             }
             
             if(tk.ttype==',')
@@ -575,6 +583,7 @@ public class DotParser
   }
   protected void createGraph()
   {
+      int flag_shape = 0;
       for(int i=0; i<ListN.size(); i++)
       {
           if(ListN.get(i).options.size()==0)
@@ -583,21 +592,49 @@ public class DotParser
               ListN.get(i).id = node.getID();              
           }
           else
-          {
-              GraphNode node = scene.createTextCircleNode(ListN.get(i).name, Color.yellow);
+          {            
+              NodeAspect.eNodeAspectType shape = null; 
+              
+              for(int k=0; k<ListN.get(i).options.size(); k++)
+              {
+                  switch(ListN.get(i).options.get(k).name)
+                  {
+                          case "shape":
+                              System.out.println("SH");
+                              flag_shape = 1;
+                              shape = OptionShape(ListN.get(i).options.get(k).value);
+                              break;
+                          default:
+                              break;
+                  }
+              }
+              
+              GraphNode gn;
+              if(flag_shape==1)
+              {
+                  NodeAspect na = scene.createNodeShape(shape);
+                  na.createLabel(ListN.get(i).name);
+                  gn = scene.createNode(na);
+                  ListN.get(i).id = gn.getID();
+              }
+              else
+              {
+                  gn = scene.createTextCircleNode(ListN.get(i).name, Color.yellow);
+                  ListN.get(i).id = gn.getID();
+              }
+                      
               for(int j=0; j<ListN.get(i).options.size(); j++)
               {
                   switch(ListN.get(i).options.get(j).name){
                     case "color":
                         Color col = OptionColor(ListN.get(i).options.get(j).value);
-                        node.getAspect().setColor(col);
-                        ListN.get(i).id = node.getID();
+                        gn.getAspect().setColor(col);
                         break;
                     case "label":
                         System.out.println("LABEL");
                         break;
                     case "shape":
-                        System.out.println("SHAPE");
+                        System.out.println("SHAPE");                                                                 
                         break;
                     case "style":
                         System.out.println("STYLE");
@@ -606,9 +643,10 @@ public class DotParser
                         System.err.println("Ошибка. Неправильная опция");
                         return;
                   }      
-              }    
+              }
           }    
-      }      
+      }
+      
       for(int j=0; j<ListE.size(); j++)
       {
           for(int n=0; n<ListN.size(); n++)
@@ -662,7 +700,7 @@ public class DotParser
   
   protected Color OptionColor(String value)
   {
-      Color col = Color.cyan;
+      Color col = Color.yellow;
       switch(value){
             case "black":
                 col= Color.black;
@@ -705,11 +743,25 @@ public class DotParser
                 break;    
             default:
                 System.err.println("Ошибка. Цвет недопустим");
-                //return col;
       }
       return col;      
   }
 
+  protected NodeAspect.eNodeAspectType OptionShape(String value)
+  {
+      NodeAspect.eNodeAspectType at = NodeAspect.eNodeAspectType.BOX;
+      switch(value){
+            case "box":
+                at= NodeAspect.eNodeAspectType.BOX;
+                break;
+            case "ellipse":
+                at= NodeAspect.eNodeAspectType.ELLIPSE;               
+                break;   
+            default:
+                System.err.println("Ошибка. Shape недопустим");
+      }
+      return at;     
+  }
   
   protected void subgraph(StreamTokenizer tk) throws IOException
   {

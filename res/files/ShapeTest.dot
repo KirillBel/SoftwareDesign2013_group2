@@ -1,0 +1,13 @@
+graph graphname {
+    a[color = red];
+	b[color = blue];
+	c[color = green];
+	a--d;
+	node[shape = box];
+	edge[color = green];
+	d[color = pink, shape = ellipse];
+	f;
+	a--b;
+	b--c;
+	d--f;
+ }
