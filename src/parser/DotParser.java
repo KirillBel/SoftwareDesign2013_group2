@@ -614,6 +614,7 @@ public class DotParser
               {
                   NodeAspect na = scene.createNodeShape(shape);
                   na.createLabel(ListN.get(i).name);
+                  na.setContainerMode(NodeAspect.eContainerType.RESIZE_PARENT_TO_CHILDS_EQUI);
                   gn = scene.createNode(na);
                   ListN.get(i).id = gn.getID();
               }
