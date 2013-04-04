@@ -4,15 +4,18 @@
  */
 package gui.structurePanel;
 
-//import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import graphview.GraphEdge;
 import graphview.GraphScene;
 import graphview.shapes.EdgeAspect;
 import graphview.shapes.NodeAspect;
 import gui.MainPanel;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,13 +23,20 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Arrays;
+import java.util.EventObject;
+import java.util.List;
+import javax.swing.ButtonModel;
 import javax.swing.DefaultCellEditor;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -34,6 +44,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -41,6 +52,8 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -116,6 +129,7 @@ public class StructurePanel extends javax.swing.JPanel {
     private String strFrom="From";
     private String strTo="To";
     private String strBdirectional="Bdirectional";
+    private String strNull="";
     
     private int[] selectedRow;
     private int[] prewSelectedRow;
@@ -307,8 +321,7 @@ public class StructurePanel extends javax.swing.JPanel {
         modelNode = new DefaultTableModel();
         modelNode.addColumn(strNodeID);
         modelNode.addColumn(strLabel);
-//        modelNode.addColumn("Delete");
-//        modelNode.addColumn("Edges");
+        modelNode.addColumn("");
 //        modelNode.addColumn("Scene");
         oldNewModelNode.addColumn(strNodeID);
         oldNewModelNode.addColumn(strLabel);       
@@ -342,7 +355,7 @@ public class StructurePanel extends javax.swing.JPanel {
                         table.changeSelection(row, column, true, true);
                         selectedRow=table.getSelectedRows();
                     }    
-                   
+
                     if(table.getSelectedColumnCount()==1)
                     {
                         columNumber=getColumNum(table, strLabel);
@@ -401,7 +414,7 @@ public class StructurePanel extends javax.swing.JPanel {
                 if (dragNodeComplete) {
                     if(newModelNode!=null)
                     {
-                        if(newModelNode.getColumnCount()==modelNode.getColumnCount())
+                        if(newModelNode.getColumnCount()>0)
                         {
                             modelNode=newModelNode;
                         }
@@ -428,7 +441,10 @@ public class StructurePanel extends javax.swing.JPanel {
                 dragNodeComplete = true;
                 nodeColumnValue = e.getFromIndex();  
                 nodeColumnNewValue = e.getToIndex();
-                if(e.getFromIndex()!=e.getToIndex() && nodeColumnValue!=oldNodeColumnValue && nodeColumnNewValue!=oldNodeColumnNewValue)
+                if(
+                        e.getFromIndex()!=e.getToIndex() &&
+                        nodeColumnValue!=oldNodeColumnValue &&
+                        nodeColumnNewValue!=oldNodeColumnNewValue)
                 {                     
                     oldNodeColumnValue=nodeColumnValue;
                     oldNodeColumnNewValue=nodeColumnNewValue;
@@ -476,6 +492,15 @@ public class StructurePanel extends javax.swing.JPanel {
 
         TableRowSorter sorter=new TableRowSorter(table.getModel()); 
         table.setRowSorter(sorter);
+        
+        table.setRowHeight(30);
+        
+        columNumber=getColumNum(table, strNull);
+        TableColumn column = table.getColumnModel().getColumn(columNumber);
+        column.setCellRenderer(new ButtonsRenderer());
+        column.setCellEditor(new ButtonsEditor(table));
+
+        
         
         return table;
     }
@@ -744,7 +769,11 @@ public class StructurePanel extends javax.swing.JPanel {
                     else if(tableNode.getModel().getColumnName(j).equals(strLabel))
                     {
                         obj[j]=scene.getNode(i).getAspect().getLabel();
-                    }                            
+                    }   
+                    else if(tableNode.getModel().getColumnName(j).equals(strNull))
+                    {
+                        obj[j]="";
+                    }
                 }             
                 
                 modelNode.addRow(obj);
@@ -880,7 +909,7 @@ public class StructurePanel extends javax.swing.JPanel {
     {
         if(jButton1.isSelected())
         {
-            if(tableNode.getSelectedColumnCount()==1)
+            if(tableNode.getSelectedRowCount()==1)
             {
                 if (getJPopupMenuNodeIndividual == null)
                 {
@@ -905,7 +934,7 @@ public class StructurePanel extends javax.swing.JPanel {
         }
         else
         {
-           if(tableEdge.getSelectedColumnCount()==1)
+           if(tableEdge.getSelectedRowCount()==1)
             {
                 if (getJPopupMenuEdgeIndividual == null)
                 {
@@ -937,44 +966,49 @@ public class StructurePanel extends javax.swing.JPanel {
         jMenuItemDelete.addActionListener(new java.awt.event.ActionListener() {
             @Override            
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                int selectedRowsCount=-1;
-                if(jButton1.isSelected())
-                {
-                selectedRowsCount=tableNode.getSelectedRowCount();
-                if(selectedRowsCount!=0)                    
-                {
-                    int selectedRows[]=tableNode.getSelectedRows();  
-                    int nodeID;
-                    for(int i=0; i<selectedRowsCount; i++)
-                    {
-                        columNumber=getColumNum(tableNode, strNodeID);
-                        nodeID=(int) tableNode.getModel().getValueAt(selectedRows[i], columNumber);
-                        scene.removeNode(nodeID);                            
-                    }
-                    updateTables();
-
-                }  
-                }
-                else
-                {
-                    selectedRowsCount=tableEdge.getSelectedRowCount();
-                    if(selectedRowsCount!=0)                    
-                    {
-                        int selectedRows[]=tableEdge.getSelectedRows();  
-                        int edgeID;
-                        for(int i=0; i<selectedRowsCount; i++)
-                        {
-                            columNumber=getColumNum(tableEdge, strEdgeID);
-                            edgeID=(int) tableEdge.getModel().getValueAt(selectedRows[i], columNumber);
-                            scene.removeEdge(edgeID);                            
-                        }
-                        updateTables();
-                    }
-                }
+                deleteTableRow();
             }
         });            
         return jMenuItemDelete;
-    }       
+    }   
+    
+    public void deleteTableRow()
+    {
+        int selectedRowsCount=-1;
+            if(jButton1.isSelected())
+            {
+            selectedRowsCount=tableNode.getSelectedRowCount();
+            if(selectedRowsCount!=0)                    
+            {
+                int selectedRows[]=tableNode.getSelectedRows();  
+                int nodeID;
+                for(int i=0; i<selectedRowsCount; i++)
+                {
+                    columNumber=getColumNum(tableNode, strNodeID);
+                    nodeID=(int) tableNode.getModel().getValueAt(selectedRows[i], columNumber);
+                    scene.removeNode(nodeID);                            
+                }
+                updateTables();
+
+            }  
+            }
+            else
+            {
+                selectedRowsCount=tableEdge.getSelectedRowCount();
+                if(selectedRowsCount!=0)                    
+                {
+                    int selectedRows[]=tableEdge.getSelectedRows();  
+                    int edgeID;
+                    for(int i=0; i<selectedRowsCount; i++)
+                    {
+                        columNumber=getColumNum(tableEdge, strEdgeID);
+                        edgeID=(int) tableEdge.getModel().getValueAt(selectedRows[i], columNumber);
+                        scene.removeEdge(edgeID);                            
+                    }
+                    updateTables();
+                }
+            }
+    }
    
     
     private JMenuItem goToAnotherTable() {
@@ -1146,7 +1180,149 @@ public class StructurePanel extends javax.swing.JPanel {
         }
     }
     
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    class ButtonsPanel extends JPanel {
+//        public final JButton but1=new JButton()
+//        {
+//
+//            
+//        };
+//        //JButton but1=new JButton();
+//        ImageIcon icon1 =createImageIcon("res/icons/cancel.png",
+//                                 "a pretty but meaningless splat");
+        //new ImageIcon("res/icons/cancel.png"); 
+//        but1.setIcon(icon1);
+//        this.setSize(16, 16);
+        Icon icon1=new ImageIcon("res/icons/add.png");
+        Icon icon2=new ImageIcon("res/icons/cancel.png");
+        public final List<JButton> buttons = Arrays.asList(new JButton(icon1), new JButton(icon2));
+        public ButtonsPanel() {
+            super();
+            setOpaque(true);
+            for(JButton b: buttons) {
+                b.setFocusable(false);
+                //b.setBackground(new Color(0,0,0,0));
+                //b.setBorder(null);
+                //b.setForeground(new Color(0,0,0,0));
+                //b.setMargin(new Insets(0, 0, 0, 0));
+                //b.setFocusPainted(false);    
+                //b.setOpaque(false);
+                b.setPreferredSize(new Dimension(20, 20));
+                add(b);
+            }
+        }
+}
+
+    class ButtonsRenderer extends ButtonsPanel implements TableCellRenderer {
+    public ButtonsRenderer() {
+        super();
+        setName("Table.cellRenderer");
+    }
+    @Override public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        this.setBackground(isSelected?table.getSelectionBackground():table.getBackground());
+        return this;
+    }
+}
+
+    class ButtonsEditor extends ButtonsPanel implements TableCellEditor {
+    public ButtonsEditor(final JTable table) {
+        super();
     
+        MouseListener ml = new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                ButtonModel m = ((JButton)e.getSource()).getModel();
+                if(m.isPressed() && table.isRowSelected(table.getEditingRow()) && e.isControlDown()) {
+                    setBackground(table.getBackground());
+                }
+            }
+        };        
+        buttons.get(0).addMouseListener(ml);
+        buttons.get(1).addMouseListener(ml);
+        //<----
+
+        buttons.get(0).addActionListener(new ActionListener() {
+            @Override public void actionPerformed(ActionEvent e) {
+                fireEditingStopped();
+                
+            }
+        });
+
+        buttons.get(1).addActionListener(new ActionListener() {
+            @Override public void actionPerformed(ActionEvent e) {
+                int row = table.convertRowIndexToModel(table.getEditingRow());                
+                fireEditingStopped();
+                deleteTableRow();
+            }
+        });
+
+        addMouseListener(new MouseAdapter() {
+            @Override public void mousePressed(MouseEvent e) {
+                fireEditingStopped();
+            }
+        });
+    }
+    @Override public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        this.setBackground(table.getSelectionBackground());
+        return this;
+    }
+    @Override public Object getCellEditorValue() {
+        return "";
+    }
+
+    transient protected ChangeEvent changeEvent = null;
+
+    @Override public boolean isCellEditable(EventObject e) {
+        return true;
+    } 
+    @Override public boolean shouldSelectCell(EventObject anEvent) {
+        return true;
+    }
+    @Override public boolean stopCellEditing() {
+        fireEditingStopped();
+        return true;
+    }
+    @Override public void  cancelCellEditing() {
+        fireEditingCanceled();
+    }
+    @Override public void addCellEditorListener(CellEditorListener l) {
+        listenerList.add(CellEditorListener.class, l);
+    }
+    @Override public void removeCellEditorListener(CellEditorListener l) {
+        listenerList.remove(CellEditorListener.class, l);
+    }
+    public CellEditorListener[] getCellEditorListeners() {
+        return listenerList.getListeners(CellEditorListener.class);
+    }
+    protected void fireEditingStopped() {
+
+        Object[] listeners = listenerList.getListenerList();
+
+        for(int i = listeners.length-2; i>=0; i-=2) {
+            if(listeners[i]==CellEditorListener.class) {
+                // Lazily create the event:
+                if(changeEvent == null) changeEvent = new ChangeEvent(this);
+                ((CellEditorListener)listeners[i+1]).editingStopped(changeEvent);
+            }
+        }
+    }
+    protected void fireEditingCanceled() {
+
+        Object[] listeners = listenerList.getListenerList();
+
+        for(int i = listeners.length-2; i>=0; i-=2) {
+            if(listeners[i]==CellEditorListener.class) {
+                // Lazily create the event:
+                if(changeEvent == null) changeEvent = new ChangeEvent(this);
+                ((CellEditorListener)listeners[i+1]).editingCanceled(changeEvent);
+            }
+        }
+    }
+}
+
       /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1333,7 +1509,8 @@ public class StructurePanel extends javax.swing.JPanel {
         {
             String s = nodeCreate.getMyText();
             scene.createNode(NodeAspect.eNodeAspectType.BOX, NodeAspect.eNodeAspectType.TEXT);
-            scene.getNode(scene.getCountNodes()-1).getAspect().createLabel(s);
+            scene.getNode(scene.getSizeNodeArray()-1).getAspect().createLabel(s);
+            scene.getNode(scene.getSizeNodeArray()-1).getAspect().setLabel(s);
             updateNodes();
         }
         nodeCreate.clearData();
@@ -1342,7 +1519,7 @@ public class StructurePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-//        myPanel.selectScene();
+                    Icon icon1=new ImageIcon("res/icons/add.png");
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
@@ -1369,6 +1546,7 @@ public class StructurePanel extends javax.swing.JPanel {
             scene.getEdge(scene.getSizeEdgeArray()-1).getAspect().setLabel(edgeCreate.getMyText());
         }
         edgeCreate.clearData();
+        updateEdges();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
