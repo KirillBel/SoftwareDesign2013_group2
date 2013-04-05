@@ -18,8 +18,9 @@ import java.awt.font.FontRenderContext;
  * @author Kirill
  */
 public class TextShape extends BoxShape{
-    FontRenderContext frc=new FontRenderContext(null, true,true);
+    FontRenderContext frc=new FontRenderContext(null, true,false);
     Rect bounds=null;
+    int lines=0;
     
     FontProperty fontProp=null;
     StringProperty textProp=null;
@@ -62,8 +63,13 @@ public class TextShape extends BoxShape{
     
     public void updateTextBounds()
     {
-        bounds=Rect.fromRectangle2D(fontProp.getProp().
-                getStringBounds(textProp.getProp(), frc));
+        bounds=ShapeTools.getTextBounds(textProp.getProp(), fontProp.getProp(), frc);
+        lines=0;
+        for (String line : textProp.getProp().split("\n"))
+        {
+            lines++;
+        }
+        
         setSize(bounds.getSize());
         if(parent!=null) ((NodeAspect) parent).updateContainer();
     };
@@ -72,10 +78,11 @@ public class TextShape extends BoxShape{
     public void draw(Graphics2D g) {
         g.setFont(fontProp.getProp());
         
-        
         Rect globalPlace=getGlobalRectangle();
         g.setColor(color.getProp());
-        g.drawString(textProp.getProp(), globalPlace.left, globalPlace.bottom-bounds.bottom);
+        float offset=bounds.getSize().y/(float)lines;
+        offset/=4;
+        ShapeTools.drawText(globalPlace.left, globalPlace.top-offset, g, textProp.getProp(),fontProp.getProp(), frc);
         
         if(bSelected) drawGrip(g);
     }

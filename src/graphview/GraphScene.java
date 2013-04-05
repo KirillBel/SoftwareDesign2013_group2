@@ -474,6 +474,7 @@ public class GraphScene extends javax.swing.JPanel{
         g.drawRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
         
         setScreenDrawMode(g);
+        g.setFont(sceneFont);
         Rect screen=getSceneRect();
         g.drawString(String.format("scale: %.2f, %.2f", scale.x,scale.y), 0, 20);
         g.drawString(String.format("offset: %.2f, %.2f", offset.x,offset.y), 0, 40);
