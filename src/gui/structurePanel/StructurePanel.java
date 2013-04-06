@@ -1143,14 +1143,14 @@ public class StructurePanel extends javax.swing.JPanel {
              {
                  if(scene.getNode(id)!=null)
                  {
-                     scene.getNode(id).getAspect().setSelected(true);
+                     scene.setSceneSelected(scene.getNode(id).getAspect(), true, false);
                  }
              }
              else
              {
                  if(scene.getEdge(id)!=null)
                  {
-                     scene.getEdge(id).getAspect().setSelected(true);
+                     scene.setSceneSelected(scene.getEdge(id).getAspect(), true, false);
                  }
              }             
              
