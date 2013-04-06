@@ -61,7 +61,7 @@ public class LineShape extends EdgeAspect {
             g.drawLine((int)point.x, (int)point.y, (int)point1.x, (int)point1.y);
             g.setStroke(oldStroke);
             
-            
+            g.setColor(Color.BLACK);
             if(i==0)
             {
                 g.fillOval((int)point.x-3, (int)point.y-3, 6, 6);

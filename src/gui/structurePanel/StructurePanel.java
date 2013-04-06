@@ -5,6 +5,7 @@
 package gui.structurePanel;
 
 import graphview.GraphEdge;
+import graphview.GraphNode;
 import graphview.GraphScene;
 import graphview.shapes.EdgeAspect;
 import graphview.shapes.NodeAspect;
@@ -1508,9 +1509,9 @@ public class StructurePanel extends javax.swing.JPanel {
         if(nodeCreate.getNice())
         {
             String s = nodeCreate.getMyText();
-            scene.createNode(NodeAspect.eNodeAspectType.BOX, NodeAspect.eNodeAspectType.TEXT);
-            scene.getNode(scene.getSizeNodeArray()-1).getAspect().createLabel(s);
-            scene.getNode(scene.getSizeNodeArray()-1).getAspect().setLabel(s);
+            GraphNode node=scene.createNode(NodeAspect.eNodeAspectType.BOX);
+            node.getAspect().createLabel(s);
+            node.getAspect().setContainerMode(NodeAspect.eContainerType.RESIZE_PARENT_TO_CHILDS);
             updateNodes();
         }
         nodeCreate.clearData();

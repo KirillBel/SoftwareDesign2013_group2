@@ -347,7 +347,10 @@ public class PropertyObject {
         
         public void setProp(Object id)
         {
-            setValue(array.find(id));
+            int index=array.find(id);
+            if(index!=-1) setValue(array.get(index));
+            else setValue(null);
+            
         };
     }
 }

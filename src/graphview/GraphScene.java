@@ -339,6 +339,18 @@ public class GraphScene extends javax.swing.JPanel{
         return fromScreen(getScreenRect());
     };
 
+    public void setSceneSelected(BaseShape shape,boolean bSel, boolean bDeselectOther)
+    {
+        if(shape==null) return;
+        
+        shape.setSelected(bSel);
+        if(bSel)
+            objectProperties.fromPropObject(shape);
+        else 
+            objectProperties.clearShape();
+        
+        if(bDeselectOther) root.clearAllSelection();
+    };
     /////////////////END MESSAGES//////////////////////////////////////////////
     
     ////////////////////SCENE MODE/////////////////////////////////////////////
@@ -376,7 +388,7 @@ public class GraphScene extends javax.swing.JPanel{
 
                 if(root.getChild(i).isIntersects(selectionRect.getConvertedToStd()))
                 {
-                    root.getChild(i).setSelected(true);
+                    setSceneSelected(root.getChild(i),true,false);
                 };
             }
         }
@@ -399,9 +411,9 @@ public class GraphScene extends javax.swing.JPanel{
                 if(dragTarget.getParent().getShapeAspect()==BaseShape.eShapeAspect.NODE &&
                         dragTarget.getParent()!=root)
                 {
-                    dragTarget.setSelected(false);
+                    setSceneSelected(dragTarget,false,false);
                     dragTarget=dragTarget.getParent();
-                    dragTarget.setSelected(true);
+                    setSceneSelected(dragTarget,true,false);
                 }
 
                 for(int i=0;i<dragTarget.getParent().getNumChilds();i++)
@@ -697,7 +709,14 @@ public class GraphScene extends javax.swing.JPanel{
     
     public GraphNode createNode(eNodeAspectType shapeType, eNodeAspectType containmentType)
     {
-        GraphNode node=new GraphNode(nodesArray.size(),shapeType,containmentType);
+        GraphNode node=createNode(shapeType);
+        node.getAspect().setContainmentObject(containmentType);
+        return node;
+    };
+    
+    public GraphNode createNode(eNodeAspectType shapeType)
+    {
+        GraphNode node=new GraphNode(nodesArray.size(),GraphScene.createNodeShape(shapeType));
         nodesArray.add(node);
         root.addChild(node.getAspect());
         nodeCount++;

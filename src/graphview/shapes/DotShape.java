@@ -23,6 +23,7 @@ public class DotShape extends NodeAspect{
         
         bHaveGrip=false;
         bResizeable=false;
+        setColor(Color.BLACK);
     };
     
     @Override

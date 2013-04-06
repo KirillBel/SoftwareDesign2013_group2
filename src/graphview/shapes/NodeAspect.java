@@ -11,6 +11,8 @@ import graphview.GraphNode;
 import graphview.GraphScene;
 import java.awt.Color;
 import java.awt.Font;
+import javax.swing.ImageIcon;
+import property.IconStringArray;
 
 /**
  *
@@ -36,13 +38,14 @@ public abstract class NodeAspect extends BaseShape{
         IMAGE
     };
 
+    IconStringProperty containType=null;
     ColorProperty color=null;
     StringProperty hint=null;
 
     int labelNode=-1;
     GraphNode graphParent;
     eNodeAspectType aspectType;
-    eContainerType containerType;
+    //eContainerType containerType;
     public float containerOffset=7;
     
     
@@ -50,6 +53,21 @@ public abstract class NodeAspect extends BaseShape{
     {
         color=propCreate("Color", Color.YELLOW);
         hint=propCreate("Hint", "none");  
+        
+        IconStringArray ls=new IconStringArray();
+        ls.add(eContainerType.DEFAULT, "Default", null);
+        ls.add(eContainerType.RESIZE_PARENT_TO_CHILDS, "Parent to childs", null);
+        ls.add(eContainerType.RESIZE_PARENT_TO_CHILDS_EQUI, "Parent to childs eq", null);
+        ls.add(eContainerType.RESIZE_CHILDS_TO_PARENT, "Childs to parent", null);
+        
+        containType=propCreate("Container type",ls);
+    };
+    
+    @Override
+    public void updateProperties(boolean bUpdateToProp)
+    {
+        if(!bUpdateToProp) updateContainer();
+        super.updateProperties(bUpdateToProp);
     };
     
     public Color getColor()
@@ -94,13 +112,13 @@ public abstract class NodeAspect extends BaseShape{
     
     public void setContainerMode(eContainerType mode)
     {
-        containerType=mode;
+        containType.setProp(mode);
         updateContainer();
     };
     
     public eContainerType getContainerMode()
     {
-        return containerType;
+        return (eContainerType)containType.getProp().id;
     };
     
     public eNodeAspectType getAspectType()
@@ -110,6 +128,7 @@ public abstract class NodeAspect extends BaseShape{
     
     public void updateContainer()
     {
+        eContainerType containerType=getContainerMode();
         if(containerType==eContainerType.RESIZE_CHILDS_TO_PARENT)
         {
             for(int i=0;i<childs.size();i++)
