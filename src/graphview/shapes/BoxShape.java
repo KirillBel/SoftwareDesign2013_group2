@@ -7,10 +7,8 @@ package graphview.shapes;
 import geometry.Intersect;
 import geometry.Rect;
 import geometry.Vec2;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.util.ArrayList;
 
 /**

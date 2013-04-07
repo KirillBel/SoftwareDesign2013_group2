@@ -35,7 +35,8 @@ public abstract class NodeAspect extends BaseShape{
         BOX,
         ELLIPSE,
         TEXT,
-        IMAGE
+        IMAGE,
+        TRINGLE
     };
 
     IconStringProperty containType=null;

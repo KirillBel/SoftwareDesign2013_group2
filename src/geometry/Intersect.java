@@ -196,4 +196,47 @@ public class Intersect {
         
         return INCLUSION;
     }
+    public static int line_tringlecenter(Vec2 lineFrom,Rect r,Vec2 in1,Vec2 in2, Vec2 out1)
+    {
+        float epsilon = (float) 0.0001;
+        float a,b,c,d,x,y;
+        //tringle poin 1
+        float x1= in1.x;
+        float y1= in1.y;
+        //tringle point 2
+        float x2= in2.x;
+        float y2= in2.y;
+        //point from
+        float x0=lineFrom.x;
+        float y0=lineFrom.y;
+        //center of tringle
+        Vec2 centrOfTringle=r.getCenter();
+        float xc = centrOfTringle.x;
+        float yc = centrOfTringle.y;
+        //check for parallel axes
+        if (Math.abs(y1 - y2) <= epsilon) {
+            a = (yc - y0) / (xc - x0);
+            b = (xc * y0 - x0 * yc) / (xc - x0);       
+            d = (y1 * x2 - x1 * y2) / (x2 - x1);
+            y = d;
+            x = (y-b)/a;
+        } else if (Math.abs(x1 - x2) <= epsilon) {
+            a = (yc - y0) / (xc - x0);
+            b = (xc * y0 - x0 * yc) / (xc - x0);
+            x = (x1*y2-x2*y1)/(y2-y1);
+            y = x *a + b;
+        } else {
+            a = (yc - y0) / (xc - x0);
+            b = (xc * y0 - x0 * yc) / (xc - x0);
+            c = (y2 - y1) / (x2 - x1);
+            d = (y1 * x2 - x1 * y2) / (x2 - x1);
+            x = (b - d) / (c - a);
+            y = x * a + b;
+        }   
+        out1.x=x;
+        out1.y=y;
+        
+        out1.set(out1.x,out1.y);
+        return INCLUSION;
+    }
 }
