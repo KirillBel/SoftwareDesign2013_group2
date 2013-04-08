@@ -20,10 +20,11 @@ import java.awt.font.FontRenderContext;
 public class TextShape extends BoxShape{
     FontRenderContext frc=new FontRenderContext(null, true,false);
     Rect bounds=null;
-    int lines=0;
+    boolean bFitText=false;
     
     FontProperty fontProp=null;
     StringProperty textProp=null;
+    ColorProperty background=null;
     
     public TextShape(String text_)
     {
@@ -31,6 +32,7 @@ public class TextShape extends BoxShape{
         
         textProp=propCreate("Text", new String(text_));
         fontProp=propCreate("Font", new Font("Arial",Font.PLAIN,15)); 
+        background=propCreate("Background", (Color)null);
         setColor(Color.black);
         
         updateTextBounds();
@@ -63,12 +65,15 @@ public class TextShape extends BoxShape{
     
     public void updateTextBounds()
     {
-        bounds=ShapeTools.getTextBounds(textProp.getProp(), fontProp.getProp(), frc);
-        lines=0;
-        for (String line : textProp.getProp().split("\n"))
+        if(getParentContainerType()==eContainerType.RESIZE_CHILDS_TO_PARENT)
         {
-            lines++;
+            bFitText=true;
         }
+        else 
+        {
+            bounds=ShapeTools.getTextBounds(textProp.getProp(), fontProp.getProp(), frc);
+            bFitText=false;
+        } 
         
         setSize(bounds.getSize());
         if(parent!=null) ((NodeAspect) parent).updateContainer();
@@ -79,10 +84,21 @@ public class TextShape extends BoxShape{
         g.setFont(fontProp.getProp());
         
         Rect globalPlace=getGlobalRectangle();
+        
+        if(background.getProp()!=null)
+        {
+            g.setColor(background.getProp());
+            g.fillRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+        }
+        else if(parent!=null && parent.isNode())
+        {
+            g.setColor(new Color(255,255,255,200));
+            g.fillRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+        };
+        
         g.setColor(color.getProp());
-        float offset=bounds.getSize().y/(float)lines;
-        offset/=4;
-        ShapeTools.drawText(globalPlace.left, globalPlace.top-offset, g, textProp.getProp(),fontProp.getProp(), frc);
+        if(bFitText) ShapeTools.drawText(globalPlace, g, textProp.getProp(),fontProp.getProp(), frc);
+        else ShapeTools.drawText(globalPlace.left, globalPlace.top, g, textProp.getProp(),fontProp.getProp(), frc);
         
         if(bSelected) drawGrip(g);
     }

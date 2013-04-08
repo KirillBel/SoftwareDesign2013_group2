@@ -152,66 +152,10 @@ public class MainPanel extends DockablePanel{
     {
         NodeAspect shape=new BoxShape(10,10,200,300);
         shape.setColor(Color.yellow);
-        
-        NodeAspect shape3=new BoxShape(15,15,200,200);
-        shape3.setColor(Color.red);
-        //shape.addChild(shape3);
-        NodeAspect shapetringle = new TringleShape(10,10,100,100,"right");
-        // 4 types - top, bottom, right, left.
-        shapetringle.setColor(Color.blue);
-        
-        
-        NodeAspect imageShape=new ImageShape(0,0,100,100,"res/images/default.png");
-        shape3.addChild(imageShape);
-        shape3.setContainerMode(NodeAspect.eContainerType.RESIZE_CHILDS_TO_PARENT);
-        
-        NodeAspect shape2=new BoxShape(0,0,100,100);
-        shape2.setColor(Color.red);
-        shape2.setPosition(new Vec2(300,10));
-
-        
-        NodeAspect dot=new EllipseShape(0,0,5,5);
-        dot.move(new Vec2(200,-100));
-        dot.setColor(Color.black);
-        
-        TextShape text=new TextShape("12345\n67890");
-        shape.addChild(text);
-        shape.setContainerMode(NodeAspect.eContainerType.RESIZE_PARENT_TO_CHILDS);
-        //shape.setContainerMode(BaseShape.CONTAIN_CHILDS_TO_NODE);
-        
-        NodeAspect ellipse=new EllipseShape(new Vec2(0,0),100);
-        ellipse.setPosition(new Vec2(40,100));
-        ellipse.setColor(Color.CYAN);
-        NodeAspect text2=new TextShape("QWERty");
-        ellipse.addChild(text2);
-        ellipse.setContainerMode(NodeAspect.eContainerType.RESIZE_PARENT_TO_CHILDS);
-        
-        NodeAspect ellipse2=new EllipseShape(new Vec2(40,40),100);
-        ellipse2.setPosition(new Vec2(100,100));
-        ellipse2.setColor(Color.PINK);
-        //ellipse2.bDebugDrawBBox=true;
-        
-        LineShape line = new LineShape(shape,shape2);
-        line.insertPoint(new Vec2(200,-100),0);
-        
-        LineShape line2 = new LineShape(shape,ellipse);
-        
-        LineShape line3 = new LineShape(shape2,shapetringle);
+        shape.setLabel("To be, or not to be: that is the question:\nWhether 'tis nobler in the mind to suffer\nThe slings and arrows of outrageous fortune,\nOr to take arms against a sea of troubles,\nAnd by opposing end them? To die: to sleep;");
+        shape.setContainerMode(NodeAspect.eContainerType.RESIZE_CHILDS_TO_PARENT);
         
         scene.addShape(shape);
-        scene.addShape(shape2);
-        //graphMain.getGraphScene().addShape(imageShape);
-        scene.addShape(line);
-        scene.addShape(ellipse);
-        scene.addShape(ellipse2);
-        scene.addShape(line2);
-        scene.addShape(shape3);
-        scene.addShape(shapetringle);
-        scene.addShape(line3);
-        
-        scene.addShape(scene.createNodeShape(NodeAspect.eNodeAspectType.IMAGE));
-        //graphMain.getGraphScene().addShape(line3);
-        //graphMain.getGraphScene().add(text);
     };
     
     public void hideDock(String str)

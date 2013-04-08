@@ -96,13 +96,25 @@ public abstract class NodeAspect extends BaseShape{
     
     public void setLabel(String txt)
     {
-        if(labelNode==-1) return;
+        if(labelNode==-1) 
+        {
+            createLabel(txt);
+            return;
+        }
         
         ((TextShape)childs.get(labelNode)).setText(txt);
         ((TextShape)childs.get(labelNode)).update();
     };
     
     /////////////////////////////CONTAINER////////////////////////////////
+    
+    public eContainerType getParentContainerType()
+    {
+        if(parent==null) return eContainerType.DEFAULT;
+        if(parent.getShapeAspect()!=eShapeAspect.NODE) return eContainerType.DEFAULT;
+        
+        return ((NodeAspect)parent).getContainerMode();
+    };
     
     public void setContainmentObject(eNodeAspectType type)
     {

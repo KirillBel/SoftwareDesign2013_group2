@@ -82,6 +82,16 @@ public abstract class BaseShape extends PropertyObject{
         return eShapeAspect.DEFAULT;
     };
     
+    public boolean isNode()
+    {
+        return getShapeAspect()==eShapeAspect.NODE;
+    };
+    
+    public boolean isEdge()
+    {
+        return getShapeAspect()==eShapeAspect.EDGE;
+    };
+    
     /////////////////////PROPERTIES/////////////////////////////////////
     
     @Override
