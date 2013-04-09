@@ -116,8 +116,6 @@ public class GraphNodeTest {
                 assertEquals(expID, resultID);
                 assertEquals(node2.getAspect(), aspect);
                 assertEquals(node.getAspect().getAspectType(), aspectType);
-                NodeAspect asp=(NodeAspect) node.getAspect().getChild(0);
-                assertEquals(asp.getAspectType(), containmentAspectType);
                                
             }  
         
