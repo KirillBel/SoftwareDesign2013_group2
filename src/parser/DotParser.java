@@ -284,7 +284,7 @@ public class DotParser
             System.out.println(ListE.get(j).from+" to "+ListE.get(j).to);
         }
         return edge;
-    }
+    } 
     /**
      * Метод для определения вершин и ребер
      * @param tk - поток StreamTokenizer
@@ -584,6 +584,7 @@ public class DotParser
   protected void createGraph()
   {
       int flag_shape = 0;
+      int flag_style = 0;
       for(int i=0; i<ListN.size(); i++)
       {
           if(ListN.get(i).options.size()==0)
@@ -600,7 +601,6 @@ public class DotParser
                   switch(ListN.get(i).options.get(k).name)
                   {
                           case "shape":
-                              System.out.println("SH");
                               flag_shape = 1;
                               shape = OptionShape(ListN.get(i).options.get(k).value);
                               break;
@@ -617,6 +617,7 @@ public class DotParser
                   na.setContainerMode(NodeAspect.eContainerType.RESIZE_PARENT_TO_CHILDS_EQUI);
                   gn = scene.createNode(na);
                   ListN.get(i).id = gn.getID();
+                  flag_shape=0;
               }
               else
               {
@@ -632,7 +633,7 @@ public class DotParser
                         gn.getAspect().setColor(col);
                         break;
                     case "label":
-                        System.out.println("LABEL");
+                        System.out.println("LABEL");  
                         break;
                     case "shape":
                         System.out.println("SHAPE");                                                                 
@@ -660,20 +661,48 @@ public class DotParser
                       if(ListE.get(j).to.equalsIgnoreCase(ListN.get(i).name))
                       {
                           int to = ListN.get(i).id;
+                          
                           if(ListE.get(j).options.size()==0)
                           {
                               GraphEdge edge = scene.createEdge(from, to, EdgeAspect.eEdgeAspectType.SIMPLE_LINE);                              
                           }
                           else
                           {
-                              GraphEdge edge = scene.createEdge(from, to, EdgeAspect.eEdgeAspectType.SIMPLE_LINE);
+                              EdgeAspect.eLineStyle sh = null; 
+              
+                            for(int k=0; k<ListE.get(j).options.size(); k++)
+                            {
+                                switch(ListE.get(j).options.get(k).name)
+                                {
+                                        case "style":
+                                            flag_style = 1;
+                                            sh = OptionStyle(ListE.get(j).options.get(k).value);
+                                            break;
+                                        default:
+                                            break;
+                                }
+                            }
+              
+                            GraphEdge ge;
+                            if(flag_style==1)
+                            {
+                                EdgeAspect ea = scene.createEdgeShape(eEdgeAspectType.SIMPLE_LINE);
+                                ea.setLineStyle(sh);
+                                ge = scene.createEdge(from, to, ea);
+                                flag_style = 0;
+                            }
+                            else
+                            {
+                                ge = scene.createEdge(from, to, EdgeAspect.eEdgeAspectType.SIMPLE_LINE);
+                            }
+                              
                               for(int c=0; c<ListE.get(j).options.size(); c++)
                               {
                                   switch(ListE.get(j).options.get(c).name)
                                   {
                                       case "color":
                                         Color col = OptionColor(ListE.get(j).options.get(c).value);
-                                        edge.getAspect().setColor(col);
+                                        ge.getAspect().setColor(col);
                                         break;
                                       case "label":
                                           System.out.println("LABEL");
@@ -682,7 +711,7 @@ public class DotParser
                                           System.out.println("SHAPE");
                                           break;
                                       case "style":
-                                          System.out.println("STYLE");
+                                          System.out.println("STYLE");                                      
                                           break;
                                       default:
                                           System.err.println("Ошибка. Неправильная опция");
@@ -757,12 +786,29 @@ public class DotParser
                 break;
             case "ellipse":
                 at= NodeAspect.eNodeAspectType.ELLIPSE;               
-                break;   
+                break;
+            case "triangle":
+                at= NodeAspect.eNodeAspectType.TRINGLE;               
+                break; 
             default:
                 System.err.println("Ошибка. Shape недопустим");
       }
       return at;     
   }
+  
+  protected EdgeAspect.eLineStyle OptionStyle(String value)
+  {
+      EdgeAspect.eLineStyle style = EdgeAspect.eLineStyle.SOLID; 
+      switch(value){
+            case "dotted":
+                style= EdgeAspect.eLineStyle.DASH;
+                break;   
+            default:
+                System.err.println("Ошибка. Style недопустим");
+      }
+      return style;  
+  }
+ 
   
   protected void subgraph(StreamTokenizer tk) throws IOException
   {

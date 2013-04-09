@@ -17,6 +17,7 @@ import geometry.Rect;
 import geometry.Vec2;
 import graphevents.ShapeMouseEvent;
 import graphview.layouts.HierarchicalLayout;
+import graphview.shapes.*;
 import graphview.shapes.EdgeAspect.eEdgeAspectType;
 import graphview.shapes.NodeAspect.eNodeAspectType;
 import java.awt.BasicStroke;
@@ -673,6 +674,7 @@ public class GraphScene extends javax.swing.JPanel{
         switch(shapeType)
         {
             case BOX: return new BoxShape(new Rect(0,0,80,80));
+            case TRINGLE: return new TringleShape(new Vec2(0, 0), 3, 0);
             case TEXT: return new TextShape("12345678");
             case ELLIPSE: return new EllipseShape(new Rect(0,0,80,80));
             case IMAGE: return new ImageShape(new Rect(0,0,80,80),"res/images/default.png");
