@@ -85,6 +85,7 @@ public abstract class NodeAspect extends BaseShape{
     {
         removeAllChilds();
         labelNode=addChild(GraphScene.createNodeShape(eNodeAspectType.TEXT));
+        setContainerMode(eContainerType.RESIZE_CHILDS_TO_PARENT);
         setLabel(str);
     };
     
@@ -187,11 +188,14 @@ public abstract class NodeAspect extends BaseShape{
     public void fitChildRect(Rect other)
     {
         Rect childRect=getContainRect();
-        Vec2 mult=new Vec2(other.getSize().x/childRect.getSize().x,
-                other.getSize().y/childRect.getSize().y);
+        Vec2 sizeDiff=getSize().minus(childRect.getSize());
+        setSize(other.getSize().plus(sizeDiff));
         
-        Vec2 newSize=getSize().multiply(mult);
-        setSize(newSize);
+//        Vec2 mult=new Vec2(other.getSize().x/childRect.getSize().x,
+//                other.getSize().y/childRect.getSize().y);
+//        
+//        Vec2 newSize=getSize().multiply(mult);
+//        setSize(newSize);
     };
     
     public abstract Rect getContainRect();

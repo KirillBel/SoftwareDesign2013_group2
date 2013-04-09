@@ -21,6 +21,7 @@ public class TextShape extends BoxShape{
     FontRenderContext frc=new FontRenderContext(null, true,false);
     Rect bounds=null;
     boolean bFitText=false;
+    ButtonShape button=null;
     
     FontProperty fontProp=null;
     StringProperty textProp=null;
@@ -40,10 +41,26 @@ public class TextShape extends BoxShape{
         //bMoveable=false;
         //bResizeable=false;
         bReceiveMouseDrag=false;
-        bReceiveMousePress=false;
+        //bReceiveMousePress=false;
         //bReceiveMouseClick=false;
         
         this.aspectType=eNodeAspectType.TEXT;
+        
+        button=new ButtonShape(new Rect(0,0,15,15),ShapeTools.getImage("res/icons/plus.png"));
+        button.bEnableBackground=false;
+        button.setVisible(false);
+        button.addListener(new ButtonShapeListener() {
+            @Override
+            public void onButtonDown() {
+                if(parent.isNode()) 
+                    ((NodeAspect)parent).fitChildRect(ShapeTools.getTextBounds(textProp.getProp(),fontProp.getProp(), frc));
+            }
+
+            @Override
+            public void onButtonUp() {
+            }
+        });
+        addChild(button);
     };
     
     public void updateProperties(boolean bUpdateToProp)
@@ -68,6 +85,10 @@ public class TextShape extends BoxShape{
         if(getParentContainerType()==eContainerType.RESIZE_CHILDS_TO_PARENT)
         {
             bFitText=true;
+            if(ShapeTools.isTextPlaced(getGlobalRectangle(), textProp.getProp(),fontProp.getProp(), frc,bounds))
+                button.setVisible(false);
+            else 
+                button.setVisible(true);
         }
         else 
         {
@@ -78,6 +99,18 @@ public class TextShape extends BoxShape{
         setSize(bounds.getSize());
         if(parent!=null) ((NodeAspect) parent).updateContainer();
     };
+    
+    @Override
+    public void update()
+    {
+        updateTextBounds();
+        super.update();
+    };
+    
+    protected Vec2 onResize(Vec2 oldSize, Vec2 newSize){
+        if(button!=null) button.setRectangle(new Rect(newSize.x-15,newSize.y-15,newSize.x,newSize.y));
+        return super.onResize(oldSize, newSize);
+    }
     
     @Override
     public void draw(Graphics2D g) {
@@ -101,6 +134,12 @@ public class TextShape extends BoxShape{
         else ShapeTools.drawText(globalPlace.left, globalPlace.top, g, textProp.getProp(),fontProp.getProp(), frc);
         
         if(bSelected) drawGrip(g);
+        
+        for(int i=0;i<zbuffer.size();i++)
+        {
+            if(childs.get(zbuffer.get(i))!=null) 
+                childs.get(zbuffer.get(i)).draw(g);
+        };
     }
     
     @Override
@@ -108,4 +147,9 @@ public class TextShape extends BoxShape{
         Rect r=new Rect(0,0,getRectangle().getSize().x,getRectangle().getSize().y);
         return r.getReduced(containerOffset);
     }
+    
+    public void setBackgroundColor(Color c)
+    {
+        background.setProp(c);
+    };
 }

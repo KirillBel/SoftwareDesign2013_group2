@@ -26,12 +26,7 @@ public class ImageShape extends NodeAspect {
     Image img1 = null;
     public ImageShape(Rect rect,String imagePath)
     {
-        setRectangle(rect);
-        try {
-            img1 = ImageIO.read(new File(imagePath));
-        } catch (IOException ex) {
-            Logger.getLogger(ImageShape.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        img1 = ShapeTools.getImage(imagePath);
         this.aspectType=eNodeAspectType.IMAGE;
     };   
     public ImageShape(Rect rect,Image img)

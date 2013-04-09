@@ -658,14 +658,13 @@ public class GraphScene extends javax.swing.JPanel{
     public static NodeAspect createNodeShape(eNodeAspectType shapeType, eNodeAspectType containmentType)
     {
         NodeAspect shape=createNodeShape(shapeType);
+        shape.setContainerMode(NodeAspect.eContainerType.RESIZE_CHILDS_TO_PARENT);
         if(containmentType==eNodeAspectType.TEXT)
         {
             shape.createLabel("Text");
         }
         else shape.addChild(createNodeShape(containmentType));
         
-        shape.fitToChilds(true);
-        shape.setContainerMode(NodeAspect.eContainerType.RESIZE_CHILDS_TO_PARENT);
         return shape;
     };
     
@@ -673,10 +672,10 @@ public class GraphScene extends javax.swing.JPanel{
     {
         switch(shapeType)
         {
-            case BOX: return new BoxShape(new Rect(0,0,40,40));
-            case TEXT: return new TextShape("0");
-            case ELLIPSE: return new EllipseShape(new Rect(0,0,40,40));
-            case IMAGE: return new ImageShape(new Rect(0,0,40,40),"res/images/default.png");
+            case BOX: return new BoxShape(new Rect(0,0,80,80));
+            case TEXT: return new TextShape("12345678");
+            case ELLIPSE: return new EllipseShape(new Rect(0,0,80,80));
+            case IMAGE: return new ImageShape(new Rect(0,0,80,80),"res/images/default.png");
         }
         return null;
     };

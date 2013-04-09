@@ -155,7 +155,13 @@ public class MainPanel extends DockablePanel{
         shape.setLabel("To be, or not to be: that is the question:\nWhether 'tis nobler in the mind to suffer\nThe slings and arrows of outrageous fortune,\nOr to take arms against a sea of troubles,\nAnd by opposing end them? To die: to sleep;");
         shape.setContainerMode(NodeAspect.eContainerType.RESIZE_CHILDS_TO_PARENT);
         
+        EllipseShape ellipse=new EllipseShape(10,10,200,300);
+        ellipse.setColor(Color.ORANGE);
+        ellipse.setLabel("To be, or not to be: that is the question:\nWhether 'tis nobler in the mind to suffer\nThe slings and arrows of outrageous fortune,\nOr to take arms against a sea of troubles,\nAnd by opposing end them? To die: to sleep;");
+        ellipse.setContainerMode(NodeAspect.eContainerType.RESIZE_CHILDS_TO_PARENT);
+        
         scene.addShape(shape);
+        scene.addShape(ellipse);
     };
     
     public void hideDock(String str)

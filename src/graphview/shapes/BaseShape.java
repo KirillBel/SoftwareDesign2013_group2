@@ -283,7 +283,7 @@ public abstract class BaseShape extends PropertyObject{
         shape.updateGlobalCoord();
         shape.childIndex=childs.size()-1;
         
-        addToZBuffer(shape.childIndex);
+        if(shape.bVisible) addToZBuffer(shape.childIndex);
         update();
         return shape.childIndex;
     };
@@ -364,6 +364,7 @@ public abstract class BaseShape extends PropertyObject{
     public void setVisible(boolean bVal)
     {
         if(bVal==bVisible) return;
+        bVisible=bVal;
         
         if(bVal==true && parent!=null)
         {
