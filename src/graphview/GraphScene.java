@@ -27,16 +27,23 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -143,16 +150,16 @@ public class GraphScene extends javax.swing.JPanel{
         
         objectProperties.addPropertySheetChangeListener(listener);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 75, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 68, Short.MAX_VALUE)
-        );
+//        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+//        this.setLayout(layout);
+//        layout.setHorizontalGroup(
+//            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//            .addGap(0, 0, Short.MAX_VALUE)
+//        );
+//        layout.setVerticalGroup(
+//            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//            .addGap(0, 0, Short.MAX_VALUE)
+//        );
     }
 
 
@@ -457,20 +464,28 @@ public class GraphScene extends javax.swing.JPanel{
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        //g=getGraphics();
 
-        Graphics2D g2d = (Graphics2D) g;
+        //Graphics2D g2d = (Graphics2D) g;
+        Graphics2D g2d = (Graphics2D)g.create();
+        
+        Shape clip=g2d.getClip();
         
         g2d.setColor(Color.white);
         g2d.fillRect(0, 0, getWidth(), getHeight());
         
         g2d.setRenderingHint ( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 
+        Shape clip3=g2d.getClip();
         draw(g2d);
+        Shape clip2=g2d.getClip();
+        g2d.dispose();
     }
     
     public void draw(Graphics2D g){
         setSceneDrawMode(g);
-        
+        //Rectangle rz=this.getBounds();
+        //g.setClip(0,0,(int)frameSize.x,(int)frameSize.y);
         g.setFont(sceneFont);
 
         drawGrid(g,new Vec2(100,100));
@@ -877,18 +892,19 @@ public class GraphScene extends javax.swing.JPanel{
     
     public boolean loadDot(String filename){
         removeAllItems();
-        Reader stream;
+        Reader stream=null;
+        File f = new File(filename);
         try {
-            stream = new FileReader(filename);
-        } catch (FileNotFoundException ex) {
+            stream = new InputStreamReader(new FileInputStream(f), "cp1251");
+        } catch (Exception ex) {
             Logger.getLogger(GraphScene.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
         }
         
         DotParser parser=new DotParser(stream,this);
         boolean b=parser.parse();
         updateScene();
         applySimpleLayout();
+        fitScene();
         //applyTestLayout();
         //applyRadialLayout();
         return b;

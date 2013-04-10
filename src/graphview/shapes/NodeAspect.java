@@ -87,6 +87,7 @@ public abstract class NodeAspect extends BaseShape{
         labelNode=addChild(GraphScene.createNodeShape(eNodeAspectType.TEXT));
         setContainerMode(eContainerType.RESIZE_CHILDS_TO_PARENT);
         setLabel(str);
+        ((TextShape)getChild(labelNode)).fitParentToText();
     };
     
     public String getLabel()
@@ -104,6 +105,7 @@ public abstract class NodeAspect extends BaseShape{
         }
         
         ((TextShape)childs.get(labelNode)).setText(txt);
+        ((TextShape)getChild(labelNode)).fitParentToText();
         ((TextShape)childs.get(labelNode)).update();
     };
     

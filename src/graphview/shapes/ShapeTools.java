@@ -102,12 +102,15 @@ public class ShapeTools {
     public static void drawText(Rect bounds, Graphics2D g, String txt,Font font, FontRenderContext frc)
     {
         Shape prevClip=g.getClip();
+        Rectangle prevClipRect=g.getClipBounds();
         g.setClip((int)bounds.left, (int)bounds.top, (int)bounds.getSize().x, (int)bounds.getSize().y);
         
         String formatted=formatTextToBounds(bounds, txt, font, frc,null);
         drawText(bounds.left,bounds.top, g, formatted, font, frc);
         
         g.setClip(prevClip);
+        //if(prevClipRect!=null) g.setClip((int)prevClipRect.x, (int)prevClipRect.y, (int)prevClipRect.width, (int)prevClipRect.height);
+        
     };
     
     public static Image getImage(String path)

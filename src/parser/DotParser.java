@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -143,7 +144,7 @@ public class DotParser
         tk.ordinaryChar('/');
         tk.ordinaryChar('*');
         tk.ordinaryChar(',');
-        tk.quoteChar('"');
+        tk.quoteChar('\"');
         tk.whitespaceChars(';',';');
         tk.ordinaryChar('=');
     }
@@ -444,7 +445,7 @@ public class DotParser
           if(tk.ttype=='=')
           {
               tk.nextToken();
-              if(tk.ttype==tk.TT_WORD)
+              if(tk.ttype==tk.TT_WORD || tk.ttype=='"')
               {
                   val_opt = tk.sval;
                   DotOption opt = new DotOption(name_opt, val_opt);
@@ -614,7 +615,7 @@ public class DotParser
               {
                   NodeAspect na = scene.createNodeShape(shape);
                   na.createLabel(ListN.get(i).name);
-                  na.setContainerMode(NodeAspect.eContainerType.RESIZE_PARENT_TO_CHILDS_EQUI);
+                  na.setContainerMode(NodeAspect.eContainerType.RESIZE_CHILDS_TO_PARENT);
                   gn = scene.createNode(na);
                   ListN.get(i).id = gn.getID();
                   flag_shape=0;
@@ -633,7 +634,8 @@ public class DotParser
                         gn.getAspect().setColor(col);
                         break;
                     case "label":
-                        System.out.println("LABEL");  
+                        String lab = OptionLabel(ListN.get(i).options.get(j).value);
+                        gn.getAspect().setLabel(lab); 
                         break;
                     case "shape":
                         System.out.println("SHAPE");                                                                 
@@ -705,7 +707,8 @@ public class DotParser
                                         ge.getAspect().setColor(col);
                                         break;
                                       case "label":
-                                          System.out.println("LABEL");
+                                          String lab = OptionLabel(ListE.get(j).options.get(c).value);
+                                          ge.getAspect().setLabel(lab);
                                           break;
                                       case "shape":
                                           System.out.println("SHAPE");
@@ -796,13 +799,29 @@ public class DotParser
       return at;     
   }
   
+  protected String OptionLabel(String value)
+  {
+      if(value.length()==0) return "unknown";
+      
+      String ret=new String(value);
+      if(ret.startsWith("\"")) ret=ret.substring(1);
+      if(ret.endsWith("\"")) ret=ret.substring(0, ret.length()-1);
+      return ret;
+  }
+  
   protected EdgeAspect.eLineStyle OptionStyle(String value)
   {
       EdgeAspect.eLineStyle style = EdgeAspect.eLineStyle.SOLID; 
       switch(value){
             case "dotted":
+                style= EdgeAspect.eLineStyle.DOT;
+                break;  
+            case "dashed":
                 style= EdgeAspect.eLineStyle.DASH;
-                break;   
+                break;
+            case "dashdotted":
+                style= EdgeAspect.eLineStyle.DASHDOT;
+                break;
             default:
                 System.err.println("Ошибка. Style недопустим");
       }

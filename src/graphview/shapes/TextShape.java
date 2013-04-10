@@ -52,8 +52,7 @@ public class TextShape extends BoxShape{
         button.addListener(new ButtonShapeListener() {
             @Override
             public void onButtonDown() {
-                if(parent.isNode()) 
-                    ((NodeAspect)parent).fitChildRect(ShapeTools.getTextBounds(textProp.getProp(),fontProp.getProp(), frc));
+                fitParentToText();
             }
 
             @Override
@@ -61,6 +60,15 @@ public class TextShape extends BoxShape{
             }
         });
         addChild(button);
+    };
+    
+    public void fitParentToText()
+    {
+        if(parent.isNode()) 
+        {
+            for(int i=0;i<5;i++) //ACHTUNG
+                ((NodeAspect)parent).fitChildRect(ShapeTools.getTextBounds(textProp.getProp(),fontProp.getProp(), frc));
+        };
     };
     
     public void updateProperties(boolean bUpdateToProp)
