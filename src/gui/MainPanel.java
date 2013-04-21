@@ -112,7 +112,7 @@ public class MainPanel extends DockablePanel{
         objectPropertiesDock=addActions(objectPropertiesDock);
         rightTabbedDock.addDockable(objectPropertiesDock, new Position(1));
         
-        overview=new OverviewPanel();
+        overview=new OverviewPanel(scene);
         overviewDock = new DefaultDockable("Overview", overview, "Overview", null, DockingMode.ALL - DockingMode.FLOAT);
         overviewDock=addActions(overviewDock);
         topLeftTabbedDock.addDockable(overviewDock, new Position(1));

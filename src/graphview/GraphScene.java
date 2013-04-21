@@ -32,7 +32,10 @@ import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -87,9 +90,6 @@ class MouseState{
         LastBtn=nButton;
     };
 }
-
-
-
 public class GraphScene extends javax.swing.JPanel{
     Vec2 frameSize=new Vec2(1,1);
     Vec2 offset=new Vec2();
@@ -110,6 +110,9 @@ public class GraphScene extends javax.swing.JPanel{
     
     BaseShape dragTarget=null;
     int selectedGrip=0;
+    Rect gridFrameSizeHack=null;
+    
+    ArrayList<GraphSceneListener> listeners=new ArrayList<GraphSceneListener>();
     
     public GraphScene() {
         initComponents();
@@ -161,6 +164,23 @@ public class GraphScene extends javax.swing.JPanel{
 //            .addGap(0, 0, Short.MAX_VALUE)
 //        );
     }
+    
+    ////////////////////LISTENERS/////////////////////////////////////////////
+    
+    public void addListener(GraphSceneListener list)
+    {
+        listeners.add(list);
+    };
+    
+    public void notifySceneRedraw()
+    {
+        for(int i=0;i<listeners.size();i++)
+        {
+            listeners.get(i).onSceneRedraw();
+        };
+    };
+    
+    /////////////////END LISTENERS////////////////////////////////////////////
 
 
     ////////////////////MESSAGES//////////////////////////////////////////////
@@ -298,8 +318,12 @@ public class GraphScene extends javax.swing.JPanel{
     
     void setSceneRect(Rect r)
     {
+        setSceneRect(r,getScreenRect());
+    };
+    
+    void setSceneRect(Rect r, Rect screen)
+    {
         Rect prev=getSceneRect();
-        Rect screen=getScreenRect();
         
         Vec2 newScale=new Vec2(screen.getSize().x/r.getSize().x,screen.getSize().y/r.getSize().y);
         if(newScale.x<newScale.y) newScale.y=newScale.x;
@@ -307,6 +331,9 @@ public class GraphScene extends javax.swing.JPanel{
         
         Vec2 newOffset=r.getTopLeft().multiply(-1);
         newOffset=newOffset.multiply(newScale);
+        
+        newOffset.x+=screen.left;
+        newOffset.y+=screen.top;
         
         setOffset(newOffset);
         setScale(newScale.x);
@@ -478,6 +505,7 @@ public class GraphScene extends javax.swing.JPanel{
 
         Shape clip3=g2d.getClip();
         draw(g2d);
+        drawInfo(g2d);
         Shape clip2=g2d.getClip();
         g2d.dispose();
     }
@@ -491,6 +519,10 @@ public class GraphScene extends javax.swing.JPanel{
         drawGrid(g,new Vec2(100,100));
         root.draw(g);
         
+        Rect chRect=root.getChildsRect().getIncreased(10);
+        g.setColor(Color.orange);
+        g.drawRect((int)chRect.left, (int)chRect.top, (int)chRect.getSize().x, (int)chRect.getSize().y);
+        
         if(sceneMode==SCENE_MODE_RECTANGLE_SELECT)
         {
             g.setColor(Color.orange);
@@ -500,7 +532,10 @@ public class GraphScene extends javax.swing.JPanel{
         
         Rect r=new Rect(mouseState.scenePos.x-5,mouseState.scenePos.y-5,mouseState.scenePos.x+5,mouseState.scenePos.y+5);
         g.drawRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
-        
+    }
+    
+    public void drawInfo(Graphics2D g)
+    {
         setScreenDrawMode(g);
         g.setFont(sceneFont);
         Rect screen=getSceneRect();
@@ -508,7 +543,7 @@ public class GraphScene extends javax.swing.JPanel{
         g.drawString(String.format("offset: %.2f, %.2f", offset.x,offset.y), 0, 40);
         g.drawString(String.format("mouseScreen: %.2f, %.2f", mouseState.screenPos.x,mouseState.screenPos.y), 0, 60);
         g.drawString(String.format("mouseScene: %.2f, %.2f", mouseState.scenePos.x,mouseState.scenePos.y), 0, 80);
-    }
+    };
     
     public void setScreenDrawMode(Graphics2D g)
     {
@@ -528,7 +563,11 @@ public class GraphScene extends javax.swing.JPanel{
     
     public void drawGrid(Graphics2D g, Vec2 gridSize)
     {
-        Rect frameRect=fromScreen(new Rect(0,0,frameSize.x,frameSize.y));
+        Rect frameRect=null;
+        
+        if(gridFrameSizeHack==null) frameRect=fromScreen(new Rect(0,0,frameSize.x,frameSize.y));
+        else frameRect=fromScreen(gridFrameSizeHack);
+        
         if((frameRect.getSize().x/gridSize.x)>50) return;
         if((frameRect.getSize().y/gridSize.y)>50) return;
         
@@ -561,7 +600,81 @@ public class GraphScene extends javax.swing.JPanel{
     void updateScene()
     {
         updateUI();
+        notifySceneRedraw();
     };
+    
+    public void drawOverview(Graphics g, Rect r){
+        Graphics2D g2d = (Graphics2D)g.create();
+        g2d.setColor(Color.white);
+        g2d.fillRect(0, 0, (int)r.getSize().x, (int)r.getSize().y);
+        
+        Rect oldSceneRect=getSceneRect();
+        
+        Rect chRect=root.getChildsRect().getIncreased(10);
+        Rect scrChRect=new Rect();
+        
+        scrChRect.bottom=r.right*(chRect.getSize().y/chRect.getSize().x);
+        scrChRect.right=r.bottom*(chRect.getSize().x/chRect.getSize().y);
+        
+        if(scrChRect.getSize().x<r.getSize().x)
+            scrChRect.move(new Vec2((r.getSize().x-scrChRect.getSize().x)/2,0));
+        
+        if(scrChRect.getSize().y<r.getSize().y)
+            scrChRect.move(new Vec2(0,(r.getSize().y-scrChRect.getSize().y)/2));
+        
+        setSceneRect(chRect,scrChRect);
+        Rect newChRect=this.toScreen(chRect);
+        Rect newSceneRect=this.toScreen(oldSceneRect);
+        
+        g2d.setRenderingHint ( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+
+        gridFrameSizeHack=newChRect;
+        draw(g2d);
+        gridFrameSizeHack=null;
+        
+        setScreenDrawMode(g2d);
+        Area sceneRect=new Area(new Rectangle2D.Float(0, 0, (int)r.getSize().x, (int)r.getSize().y));
+        sceneRect.exclusiveOr(new Area(new Rectangle2D.Float((int)newSceneRect.left, (int)newSceneRect.top, (int)newSceneRect.getSize().x, (int)newSceneRect.getSize().y)));
+        
+        Color col=new Color(0,0,0,100);
+        Color col1=new Color(255,0,0,150);
+        g2d.setColor(col);
+        g2d.fill(sceneRect);
+        g2d.setColor(Color.black);
+        g2d.drawRect((int)newSceneRect.left, (int)newSceneRect.top, (int)newSceneRect.getSize().x, (int)newSceneRect.getSize().y);
+        
+        if(newSceneRect.left>r.right)
+        {
+            g2d.setColor(col1);
+            g2d.fillPolygon(new int[]{(int)r.right-10,(int)r.right,(int)r.right,(int)r.right-10},
+                    new int[]{(int)r.top+10,(int)r.top,(int)r.bottom,(int)r.bottom-10},4);
+        };
+        
+        if(newSceneRect.top>r.bottom)
+        {
+            g2d.setColor(col1);
+            g2d.fillPolygon(new int[]{(int)r.left,(int)r.left+10,(int)r.right-10,(int)r.right},
+                    new int[]{(int)r.bottom,(int)r.bottom-10,(int)r.bottom-10,(int)r.bottom},4);
+        };
+        
+        if(newSceneRect.right<r.left)
+        {
+            g2d.setColor(col1);
+            g2d.fillPolygon(new int[]{(int)r.left+10,(int)r.left,(int)r.left,(int)r.left+10},
+                    new int[]{(int)r.top+10,(int)r.top,(int)r.bottom,(int)r.bottom-10},4);
+        };
+        
+        if(newSceneRect.bottom<r.top)
+        {
+            g2d.setColor(col1);
+            g2d.fillPolygon(new int[]{(int)r.left,(int)r.left+10,(int)r.right-10,(int)r.right},
+                    new int[]{(int)r.top,(int)r.top+10,(int)r.top+10,(int)r.top},4);
+        };
+        
+        g2d.dispose();
+        
+        setSceneRect(oldSceneRect);
+    }
     
     public Image drawToImage(int sizeX, int sizeY, NodeAspect shape)
     {
