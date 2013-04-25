@@ -1086,9 +1086,9 @@ public class GraphScene extends javax.swing.JPanel{
             MaxDemencions.y = Math.max(MaxDemencions.y, DemencionsOfNode.y);
         }
         //Вычисляем радиус круга
-        Radius = (double)Math.max(MaxDemencions.x, MaxDemencions.y)*NodesPerLine;
+        Radius = (double)Math.max(MaxDemencions.x, MaxDemencions.y)*NodesPerLine*3;
         //Вычисляем размер сектора в углах
-        SectorSize = (double)360/NodeCount;
+        SectorSize = (double)358/NodeCount;
         //РАсстановка вершин по кругу с радиусом Radius и Центром в 0.0
         for(int i = 0; i<NodeCount;i++)
         {
