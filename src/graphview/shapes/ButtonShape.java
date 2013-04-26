@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import javax.swing.Icon;
 
@@ -56,7 +57,8 @@ public class ButtonShape extends BoxShape{
     public void draw(Graphics2D g) {
         Rect globalPlace=getGlobalRectangle();
         Shape prevClip=g.getClip();
-        g.setClip((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+        Rectangle2D clipRect=new Rectangle((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+        g.clip(clipRect);
         
         if(bEnableBackground)
         {

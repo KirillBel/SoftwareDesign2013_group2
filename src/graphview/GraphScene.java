@@ -519,9 +519,9 @@ public class GraphScene extends javax.swing.JPanel{
         drawGrid(g,new Vec2(100,100));
         root.draw(g);
         
-        Rect chRect=root.getChildsRect().getIncreased(10);
-        g.setColor(Color.orange);
-        g.drawRect((int)chRect.left, (int)chRect.top, (int)chRect.getSize().x, (int)chRect.getSize().y);
+        //Rect chRect=root.getChildsRect().getIncreased(10);
+        //g.setColor(Color.orange);
+        //g.drawRect((int)chRect.left, (int)chRect.top, (int)chRect.getSize().x, (int)chRect.getSize().y);
         
         if(sceneMode==SCENE_MODE_RECTANGLE_SELECT)
         {
@@ -530,14 +530,15 @@ public class GraphScene extends javax.swing.JPanel{
             g.drawRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
         }
         
-        Rect r=new Rect(mouseState.scenePos.x-5,mouseState.scenePos.y-5,mouseState.scenePos.x+5,mouseState.scenePos.y+5);
-        g.drawRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
+        //Rect r=new Rect(mouseState.scenePos.x-5,mouseState.scenePos.y-5,mouseState.scenePos.x+5,mouseState.scenePos.y+5);
+        //g.drawRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
     }
     
     public void drawInfo(Graphics2D g)
     {
         setScreenDrawMode(g);
         g.setFont(sceneFont);
+        g.setColor(Color.black);
         Rect screen=getSceneRect();
         g.drawString(String.format("scale: %.2f, %.2f", scale.x,scale.y), 0, 20);
         g.drawString(String.format("offset: %.2f, %.2f", offset.x,offset.y), 0, 40);
