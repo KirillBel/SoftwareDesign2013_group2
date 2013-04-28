@@ -27,7 +27,7 @@ public class GraphUtils {
         return new Color((float)Math.random()*255.f,(float)Math.random()*255.f,(float)Math.random()*255.f);
     };
     
-    public static ArrayList<ArrayList<GraphNode>> findClusters(GraphScene scene)
+    public static ArrayList<ArrayList<GraphNode>> findClusters(GraphScene scene,ArrayList<GraphNode> from)
     {
         ArrayList<ArrayList<GraphNode>> clusters=new ArrayList<ArrayList<GraphNode>>();
         
@@ -79,33 +79,56 @@ public class GraphUtils {
             clusterHelper.clear();
         };
         
+        if(from!=null)
+        {
+            for(int i=0;i<clusters.size();i++)
+            {
+                boolean bFound=false;
+                for(int j=0;j<from.size();j++)
+                {
+                    if(clusters.get(i).contains(from.get(j)))
+                    {
+                        bFound=true;
+                    }
+                };
+                
+                if(!bFound)
+                {
+                    clusters.remove(i);
+                    i--;
+                };
+            }
+        };
+        
         return clusters;
     };
     
-    public static ArrayList<ArrayList<GraphNode>> findCycles(GraphScene scene)
+    public static ArrayList<ArrayList<GraphNode>> findCycles(GraphScene scene,ArrayList<GraphNode> from)
     {
-        ArrayList<ArrayList<GraphNode>> clusters=findClusters(scene);
+        ArrayList<ArrayList<GraphNode>> clusters=findClusters(scene,from);
         ArrayList<ArrayList<GraphNode>> cycles=new ArrayList<ArrayList<GraphNode>>();
         for(int i=0;i<clusters.size();i++)
         {
-            for(int j=0;j<clusters.get(i).size();j++)
+            if(from==null)
             {
-                ArrayList<ArrayList<GraphNode>> cyclesTmp=findCycles(scene, clusters.get(i), clusters.get(i).get(j));
-                cycles.addAll(cyclesTmp);
+                for(int j=0;j<clusters.get(i).size();j++)
+                {
+                    ArrayList<ArrayList<GraphNode>> cyclesTmp=findCycles(scene, clusters.get(i), clusters.get(i).get(j));
+                    cycles.addAll(cyclesTmp);
+                };
+            }
+            else
+            {
+                for(int j=0;j<from.size();j++)
+                {
+                    ArrayList<ArrayList<GraphNode>> cyclesTmp=findCycles(scene, clusters.get(i), from.get(j));
+                    cycles.addAll(cyclesTmp);
+                };
             };
         };
         
         removeEqualCycles(cycles);
         
-        
-        for(int i=0;i<cycles.size();i++)
-        {
-            System.out.println(String.format("\ncycle %d:", i));
-            for(int j=0;j<cycles.get(i).size();j++)
-            {
-                System.out.print(String.format("%s->",cycles.get(i).get(j).getAspect().getLabel()));
-            };
-        }
         return cycles;
     }
     

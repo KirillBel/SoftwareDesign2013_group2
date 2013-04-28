@@ -6,7 +6,7 @@ nbproject/
 dist/
 nbdist/
 target/
-res/property/
+res/properties/
 nbactions.xml
 nb-configuration.xml
 manifest.mf

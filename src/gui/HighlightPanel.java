@@ -24,6 +24,21 @@ public class HighlightPanel extends javax.swing.JPanel {
         this.scene=scene;
         initComponents();
     }
+    
+    public void highlightSelected(ArrayList<ArrayList<GraphNode>> clusters)
+    {
+        scene.clearHighlight();
+        Color c=null;
+        for(int i=0;i<clusters.size();i++)
+        {
+            c=GraphUtils.nextColor(c);
+            for(int j=0;j<clusters.get(i).size();j++)
+            {
+                clusters.get(i).get(j).getAspect().addHighlight(c);
+            };
+        };
+        scene.updateScene();
+    };
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -37,6 +52,8 @@ public class HighlightPanel extends javax.swing.JPanel {
         jButtonHClusters = new javax.swing.JButton();
         jButtonHCycles = new javax.swing.JButton();
         jButtonHClear = new javax.swing.JButton();
+        jButtonHCycles1 = new javax.swing.JButton();
+        jButtonHClusters1 = new javax.swing.JButton();
 
         jButtonHClusters.setText("Highlight clusters");
         jButtonHClusters.addActionListener(new java.awt.event.ActionListener() {
@@ -59,6 +76,20 @@ public class HighlightPanel extends javax.swing.JPanel {
             }
         });
 
+        jButtonHCycles1.setText("Highlight selected cycles");
+        jButtonHCycles1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonHCycles1ActionPerformed(evt);
+            }
+        });
+
+        jButtonHClusters1.setText("Highlight selected clusters");
+        jButtonHClusters1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonHClusters1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -67,8 +98,10 @@ public class HighlightPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButtonHClusters, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButtonHCycles, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
-                    .addComponent(jButtonHClear, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE))
+                    .addComponent(jButtonHCycles, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonHClear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonHCycles1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonHClusters1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -79,38 +112,26 @@ public class HighlightPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonHCycles)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonHClusters1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonHCycles1)
+                .addGap(55, 55, 55)
                 .addComponent(jButtonHClear)
-                .addContainerGap(385, Short.MAX_VALUE))
+                .addContainerGap(278, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonHClustersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonHClustersActionPerformed
-        ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findClusters(scene);
+        ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findClusters(scene,null);
         
-        Color c=null;
-        for(int i=0;i<clusters.size();i++)
-        {
-            c=GraphUtils.nextColor(c);
-            for(int j=0;j<clusters.get(i).size();j++)
-            {
-                clusters.get(i).get(j).getAspect().highlight(c);
-            };
-        };
+        highlightSelected(clusters);
         scene.updateScene();
     }//GEN-LAST:event_jButtonHClustersActionPerformed
 
     private void jButtonHCyclesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonHCyclesActionPerformed
-        ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findCycles(scene);
+        ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findCycles(scene,null);
         
-        Color c=null;
-        for(int i=0;i<clusters.size();i++)
-        {
-            c=GraphUtils.nextColor(c);
-            for(int j=0;j<clusters.get(i).size();j++)
-            {
-                clusters.get(i).get(j).getAspect().addHighlight(c);
-            };
-        };
+        highlightSelected(clusters);
         scene.updateScene();
     }//GEN-LAST:event_jButtonHCyclesActionPerformed
 
@@ -118,9 +139,24 @@ public class HighlightPanel extends javax.swing.JPanel {
         scene.clearHighlight();
     }//GEN-LAST:event_jButtonHClearActionPerformed
 
+    private void jButtonHCycles1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonHCycles1ActionPerformed
+        ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findCycles(scene,scene.getSelectedNodes());
+        highlightSelected(clusters);
+        scene.updateScene();
+    }//GEN-LAST:event_jButtonHCycles1ActionPerformed
+
+    private void jButtonHClusters1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonHClusters1ActionPerformed
+        ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findClusters(scene,scene.getSelectedNodes());
+        
+        highlightSelected(clusters);
+        scene.updateScene();
+    }//GEN-LAST:event_jButtonHClusters1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonHClear;
     private javax.swing.JButton jButtonHClusters;
+    private javax.swing.JButton jButtonHClusters1;
     private javax.swing.JButton jButtonHCycles;
+    private javax.swing.JButton jButtonHCycles1;
     // End of variables declaration//GEN-END:variables
 }

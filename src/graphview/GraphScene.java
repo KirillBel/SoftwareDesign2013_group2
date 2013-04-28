@@ -168,6 +168,11 @@ public class GraphScene extends javax.swing.JPanel{
 //        );
     }
     
+    public BaseShape getRoot()
+    {
+        return root;
+    };
+    
     ////////////////////LISTENERS/////////////////////////////////////////////
     
     public void addListener(GraphSceneListener list)
@@ -852,6 +857,19 @@ public class GraphScene extends javax.swing.JPanel{
             getEdge(i).getAspect().highlight(null);
         };
         updateScene();
+    };
+    
+    public ArrayList<GraphNode> getSelectedNodes()
+    {
+        ArrayList<GraphNode> nodes=new ArrayList<GraphNode>();
+        for(int i=0;i<nodesArray.size();i++)
+        {
+            if(nodesArray.get(i)==null) continue;
+            if(nodesArray.get(i).getAspect()==null) continue;
+            if(!nodesArray.get(i).getAspect().isSelected()) continue;
+            nodes.add(nodesArray.get(i));
+        };
+        return nodes;
     };
     ////////////////END SHAPE CREATION/////////////////////////////////////////
     

@@ -20,8 +20,10 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jButtonHClusters" alignment="0" max="32767" attributes="0"/>
-                  <Component id="jButtonHCycles" alignment="0" pref="156" max="32767" attributes="0"/>
-                  <Component id="jButtonHClear" alignment="0" pref="156" max="32767" attributes="0"/>
+                  <Component id="jButtonHCycles" alignment="0" max="32767" attributes="0"/>
+                  <Component id="jButtonHClear" alignment="0" max="32767" attributes="0"/>
+                  <Component id="jButtonHCycles1" alignment="0" max="32767" attributes="0"/>
+                  <Component id="jButtonHClusters1" alignment="1" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -35,8 +37,12 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jButtonHCycles" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
+              <Component id="jButtonHClusters1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jButtonHCycles1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="55" max="-2" attributes="0"/>
               <Component id="jButtonHClear" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="385" max="32767" attributes="0"/>
+              <EmptySpace pref="278" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -64,6 +70,22 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonHClearActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButtonHCycles1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Highlight selected cycles"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonHCycles1ActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButtonHClusters1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Highlight selected clusters"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonHClusters1ActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

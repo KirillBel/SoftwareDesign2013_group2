@@ -800,26 +800,29 @@ public abstract class BaseShape extends PropertyObject{
         
         for(int i=highlightColor.size()-1;i>=0;i--)
         {
-            drawShade(g,shape,highlightColor.get(i),(highlightWidth/2)*(i+1));
+            drawShade(g,shape,highlightColor.get(i),(highlightWidth/2)*(i+1),10,0);
         }
     };
     
     protected void drawShade ( Graphics2D g2d, Shape rr, Color shadeColor,
-                                     float width )
+                                     float width,int steps, float startRad )
     {
         Composite comp = g2d.getComposite ();
         Stroke old = g2d.getStroke ();
         Color oldCol=g2d.getColor();
+        float radScale=((width-startRad)/width);
         width = width * 2;
-        int steps=1;
         
         for(int i=0;i<steps;i++)
         {
             float w=(width/(float)steps)*(steps-i);
+            w=startRad+w*radScale;
             float opacity = ( float ) ( i+1 ) / ( steps );
+            if(opacity>1) opacity=1;
+            
             g2d.setColor ( shadeColor );
             g2d.setComposite (
-                    AlphaComposite.getInstance ( AlphaComposite.SRC_OVER, opacity/2 ) );
+                    AlphaComposite.getInstance ( AlphaComposite.SRC_OVER, opacity*0.8f ) );
             g2d.setStroke ( new BasicStroke ( w ) );
             g2d.draw ( rr );
         };

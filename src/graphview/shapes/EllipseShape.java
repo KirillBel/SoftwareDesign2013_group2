@@ -47,6 +47,11 @@ public class EllipseShape extends NodeAspect{
     public void draw(Graphics2D g) {
         Rect globalPlace=getGlobalRectangle();
         
+        ell.x=getPosition().x;
+        ell.y=getPosition().y;
+        ell.width=getSize().x;
+        ell.height=getSize().y;
+        
         drawHighlight(g,ell);
         g.setColor(color.getProp());
         g.fill(ell);
