@@ -81,4 +81,25 @@ public class GraphUtils {
         
         return clusters;
     };
+    
+    public static ArrayList<ArrayList<GraphNode>> findCycles(GraphScene scene)
+    {
+        ArrayList<ArrayList<GraphNode>> clusters=findClusters(scene);
+        
+        for(int i=0;i<clusters.size();i++)
+        {
+        };
+        
+        return null;
+    }
+    
+    public static ArrayList<ArrayList<GraphNode>> findCycles(ArrayList<GraphNode> cluster,GraphNode from)
+    {    
+        ArrayList<Integer> nCycle=new ArrayList<Integer>(cluster.size());
+        for(int i=0;i<cluster.size();i++)
+        {
+        };
+        
+        return null;
+    }
 }

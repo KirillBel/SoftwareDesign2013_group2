@@ -602,7 +602,7 @@ public class GraphScene extends javax.swing.JPanel{
         g.setStroke(oldStroke);
     };
     
-    void updateScene()
+    public void updateScene()
     {
         if(!bEnableSceneRedraw) return;
         manualUpdateCount++;
@@ -834,6 +834,24 @@ public class GraphScene extends javax.swing.JPanel{
         node.setContainerMode(NodeAspect.eContainerType.RESIZE_PARENT_TO_CHILDS_EQUI);
         node.fitToChilds(true);
         return createNode(node);
+    };
+    
+    public void clearHighlight()
+    {
+        for(int i=0;i<getSizeNodeArray();i++)
+        {
+            if(getNode(i)==null) continue;
+            if(getNode(i).getAspect()==null) continue;
+            getNode(i).getAspect().highlight(null);
+        };
+        
+        for(int i=0;i<getSizeEdgeArray();i++)
+        {
+            if(getEdge(i)==null) continue;
+            if(getEdge(i).getAspect()==null) continue;
+            getEdge(i).getAspect().highlight(null);
+        };
+        updateScene();
     };
     ////////////////END SHAPE CREATION/////////////////////////////////////////
     
@@ -1068,18 +1086,6 @@ public class GraphScene extends javax.swing.JPanel{
             
         }
         updateScene();
-        
-        ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findClusters(this);
-        
-        Color c=null;
-        for(int i=0;i<clusters.size();i++)
-        {
-            c=GraphUtils.nextColor(c);
-            for(int j=0;j<clusters.get(i).size();j++)
-            {
-                clusters.get(i).get(j).getAspect().highlight(c);
-            };
-        };
     };
     
     public void applyRadialLayout()
