@@ -12,6 +12,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 /**
@@ -43,8 +44,13 @@ public class LineShape extends EdgeAspect {
             point=getPointWithPort(i);
             point1=getPointWithPort(i+1);
             
+            Line2D line=new Line2D.Float(point.x, point.y, point1.x, point1.y);
+            drawHighlight(g, line);
             if(bSelected)
             {
+                //Color c=g.getColor();
+                //drawShade(g, line, Color.ORANGE, 5);
+                //g.setColor(c);
                 Color c=g.getColor();
                 g.setColor(Color.ORANGE);
                 Stroke oldStroke=g.getStroke();
@@ -58,7 +64,7 @@ public class LineShape extends EdgeAspect {
             Stroke oldStroke=g.getStroke();
             BasicStroke stroke=getLineStroke();
             g.setStroke(stroke);
-            g.drawLine((int)point.x, (int)point.y, (int)point1.x, (int)point1.y);
+            g.draw(line);
             g.setStroke(oldStroke);
             
             g.setColor(Color.BLACK);

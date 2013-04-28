@@ -40,7 +40,16 @@ public class Intersect {
             || ((r2.top <= r1.top) && (r2.bottom >= r1.bottom))))
         return INCLUSION;
         return EXCLUSION;
-    }
+    };
+    
+    public static boolean rectangle_rectangle_in(Rect r1, Rect r2)
+    {
+        for(int i=0;i<4;i++)
+        {
+            if(rectangle_point(r1,r2.getVertex(i))!=INCLUSION) return false;
+        };
+        return true;
+    };
     
     public static float line_point_distance(Vec2 lineA, Vec2 lineB, Vec2 point)
     {

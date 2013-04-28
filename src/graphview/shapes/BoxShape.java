@@ -9,6 +9,7 @@ import geometry.Rect;
 import geometry.Vec2;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 
 /**
@@ -32,11 +33,15 @@ public class BoxShape extends NodeAspect{
     @Override
     public void draw(Graphics2D g) {
         Rect globalPlace=getGlobalRectangle();
-        g.setColor(color.getProp());
-        g.fillRoundRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y,5,5);
-        g.setColor(Color.black);
         
-        g.drawRoundRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y,5,5);
+        
+        
+        RoundRectangle2D rr=new RoundRectangle2D.Float(globalPlace.left, globalPlace.top, globalPlace.getSize().x, globalPlace.getSize().y,5,5);
+        drawHighlight(g,rr);
+        g.setColor(color.getProp());
+        g.fill(rr);
+        g.setColor(Color.black);
+        g.draw(rr);
         
         super.draw(g);
     }

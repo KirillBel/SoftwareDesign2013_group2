@@ -529,7 +529,6 @@ public class GraphScene extends javax.swing.JPanel{
             Rect r=selectionRect.getConvertedToStd();
             g.drawRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
         }
-        
         //Rect r=new Rect(mouseState.scenePos.x-5,mouseState.scenePos.y-5,mouseState.scenePos.x+5,mouseState.scenePos.y+5);
         //g.drawRect((int)r.left, (int)r.top, (int)r.getSize().x, (int)r.getSize().y);
     }
@@ -1062,6 +1061,18 @@ public class GraphScene extends javax.swing.JPanel{
             
         }
         updateScene();
+        
+        ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findClusters(this);
+        
+        Color c=null;
+        for(int i=0;i<clusters.size();i++)
+        {
+            c=GraphUtils.nextColor(c);
+            for(int j=0;j<clusters.get(i).size();j++)
+            {
+                clusters.get(i).get(j).getAspect().highlight(c);
+            };
+        };
     };
     
     public void applyRadialLayout()

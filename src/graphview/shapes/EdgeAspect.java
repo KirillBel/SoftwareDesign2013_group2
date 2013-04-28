@@ -63,6 +63,7 @@ public abstract class EdgeAspect extends BaseShape{
         ls.add(eLineStyle.DASHDOT, "Dash-Dot", new ImageIcon("res/images/lines/line_dash_dot.png"));
         
         lineStyle=propCreate("Line style",ls);
+        highlightWidth=7;
     };
     
     protected BasicStroke getLineStroke()

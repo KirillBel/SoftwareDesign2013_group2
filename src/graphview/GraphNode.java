@@ -74,6 +74,16 @@ public class GraphNode {
         return edgeID;
     }
     
+    public GraphNode getLinkedItem(GraphScene scene, int index) 
+    {
+        int edgeId=getElementOfNodeEdgesIDArray(index);
+        
+        int nodeID = scene.getEdge(edgeId).getFromID() == getID() ? 
+                scene.getEdge(edgeId).getToID() : scene.getEdge(edgeId).getFromID();
+        
+        return scene.getNode(nodeID);
+    };
+    
     /**
      * Функция для сравнения двух элементов класса GraphNode на равенство
      * @param node - Вершина, которую требуется сравнить с данной

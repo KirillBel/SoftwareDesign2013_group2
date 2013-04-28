@@ -9,9 +9,12 @@ import geometry.Rect;
 import geometry.Vec2;
 import graphevents.BaseEvent;
 import graphevents.ShapeMouseEvent;
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.Stroke;
 import java.util.ArrayList;
 import property.PropertyObject;
@@ -38,7 +41,15 @@ public abstract class BaseShape extends PropertyObject{
     protected boolean bMouseIn=false;
     protected boolean bHaveGrip=true;
     
+    protected Color highlightColor=null;
+    protected int highlightWidth=15;
+    
     public boolean bDebugDrawBBox = false;
+    
+    public interface BaseShapeListener {
+        public void onMove(Vec2 oldPos, Vec2 newPos);
+        public void onResize(Vec2 oldSize, Vec2 newSize);
+    }
     
     public enum eShapeAspect
     {
@@ -60,6 +71,7 @@ public abstract class BaseShape extends PropertyObject{
     protected ArrayList<BaseShape> childs=new ArrayList<BaseShape>();
     protected ArrayList<Integer> selectedChilds=new ArrayList<Integer>();
     protected ArrayList<Integer> zbuffer=new ArrayList<Integer>();
+    ArrayList<BaseShapeListener> listeners=new ArrayList<BaseShapeListener>();
     
     public BaseShape()
     {
@@ -113,6 +125,27 @@ public abstract class BaseShape extends PropertyObject{
     
     /////////////////////MOVEMENT///////////////////////////////////////
     
+    public void addListener(BaseShapeListener list)
+    {
+        listeners.add(list);
+    };
+    
+    public void notifyShapeMove(Vec2 oldPos, Vec2 newPos)
+    {
+        for(int i=0;i<listeners.size();i++)
+        {
+            listeners.get(i).onMove(oldPos, newPos);
+        };
+    };
+    
+    public void notifyShapeResize(Vec2 oldSize, Vec2 newSize)
+    {
+        for(int i=0;i<listeners.size();i++)
+        {
+            listeners.get(i).onResize(oldSize, newSize);
+        };
+    };
+    
     public void updateGlobalCoord()
     {
         if(parent==null) globalCoord.set(localCoord);
@@ -134,6 +167,7 @@ public abstract class BaseShape extends PropertyObject{
         localCoord.set(onMove(localCoord,coord));
         updateGlobalCoord();
         localCoordProp.setProp(localCoord);
+        notifyShapeResize(localCoord, coord);
     };
     
     public void move(Vec2 v)
@@ -165,6 +199,7 @@ public abstract class BaseShape extends PropertyObject{
         if(size.y<5) size.y=5;
         shapeSize.set(onResize(shapeSize,size));
         sizeProp.setProp(shapeSize);
+        notifyShapeResize(shapeSize, size);
     };
     
     public Vec2 getSize()
@@ -284,7 +319,7 @@ public abstract class BaseShape extends PropertyObject{
         shape.childIndex=childs.size()-1;
         
         if(shape.bVisible) addToZBuffer(shape.childIndex);
-        update();
+        //update();
         return shape.childIndex;
     };
     
@@ -748,6 +783,39 @@ public abstract class BaseShape extends PropertyObject{
     };
     ///////////////////////END GRIP/////////////////////////////////////////
     
+    public void highlight(Color col)
+    {
+        highlightColor=col;
+    };
+    
+    protected void drawHighlight(Graphics2D g, Shape shape)
+    {
+        if(highlightColor==null) return;
+        
+        drawShade(g,shape,highlightColor,highlightWidth);
+    };
+    
+    protected void drawShade ( Graphics2D g2d, Shape rr, Color shadeColor,
+                                     int width )
+    {
+        Composite comp = g2d.getComposite ();
+        Stroke old = g2d.getStroke ();
+        Color oldCol=g2d.getColor();
+        width = width * 2;
+        int step=width/10;
+        for ( int i = width; i >= step; i -= step )
+        {
+            float opacity = ( float ) ( width - i ) / ( width - 1 );
+            g2d.setColor ( shadeColor );
+            g2d.setComposite (
+                    AlphaComposite.getInstance ( AlphaComposite.SRC_OVER, opacity/2 ) );
+            g2d.setStroke ( new BasicStroke ( i ) );
+            g2d.draw ( rr );
+        }
+        g2d.setStroke ( old );
+        g2d.setComposite ( comp );
+        g2d.setColor ( oldCol );
+    }
     
     public void update()
     {

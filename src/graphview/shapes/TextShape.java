@@ -12,6 +12,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -126,15 +127,17 @@ public class TextShape extends BoxShape{
         
         Rect globalPlace=getGlobalRectangle();
         
+        Rectangle2D rr=new Rectangle2D.Float(globalPlace.left, globalPlace.top, globalPlace.getSize().x, globalPlace.getSize().y);
+        drawHighlight(g,rr);
         if(background.getProp()!=null)
         {
             g.setColor(background.getProp());
-            g.fillRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+            g.fill(rr);
         }
         else if(parent!=null && parent.isNode())
         {
             g.setColor(new Color(255,255,255,200));
-            g.fillRect((int)globalPlace.left, (int)globalPlace.top, (int)globalPlace.getSize().x, (int)globalPlace.getSize().y);
+            g.fill(rr);
         };
         
         g.setColor(color.getProp());

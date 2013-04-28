@@ -146,6 +146,20 @@ public class MainPanel extends DockablePanel{
         compositeToolBarDockTop.addChildDock(nodeToolBar, new Position(2));
         compositeToolBarDockTop.addChildDock(edgeToolBar, new Position(3));
         
+        
+        for(int i=0;i<300;i++)
+        {
+            System.out.println(String.format("a%d",i));
+        };
+        
+        System.out.println();
+        
+        for(int i=0;i<299;i++)
+        {
+            System.out.println(String.format("a%d--a%d",i,i+1));
+        };
+        
+        System.out.println("END");
     };
     
     public void initScene()
