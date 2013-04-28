@@ -46,6 +46,8 @@ public class OverviewPanel extends JPanel{
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        scene.bEnableSceneRedraw=false;
         scene.drawOverview(g, Rect.fromRectangle2D(getBounds()));
+        scene.bEnableSceneRedraw=true;
     }
 }

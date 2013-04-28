@@ -98,6 +98,9 @@ public class GraphScene extends javax.swing.JPanel{
     MouseState mouseState=new MouseState();
     Rect selectionRect=new Rect();
     Font sceneFont= new Font("Arial",Font.PLAIN,13);
+    int drawCount=0;
+    int manualUpdateCount=0;
+    public boolean bEnableSceneRedraw = true;
     
     int sceneMode=0;
     public static final int SCENE_MODE_NONE = 0;
@@ -511,6 +514,7 @@ public class GraphScene extends javax.swing.JPanel{
     }
     
     public void draw(Graphics2D g){
+        drawCount++;
         setSceneDrawMode(g);
         //Rectangle rz=this.getBounds();
         //g.setClip(0,0,(int)frameSize.x,(int)frameSize.y);
@@ -543,6 +547,7 @@ public class GraphScene extends javax.swing.JPanel{
         g.drawString(String.format("offset: %.2f, %.2f", offset.x,offset.y), 0, 40);
         g.drawString(String.format("mouseScreen: %.2f, %.2f", mouseState.screenPos.x,mouseState.screenPos.y), 0, 60);
         g.drawString(String.format("mouseScene: %.2f, %.2f", mouseState.scenePos.x,mouseState.scenePos.y), 0, 80);
+        g.drawString(String.format("drawCount: %d, mup: %d", drawCount,manualUpdateCount), 0, 100);
     };
     
     public void setScreenDrawMode(Graphics2D g)
@@ -599,6 +604,8 @@ public class GraphScene extends javax.swing.JPanel{
     
     void updateScene()
     {
+        if(!bEnableSceneRedraw) return;
+        manualUpdateCount++;
         updateUI();
         notifySceneRedraw();
     };
