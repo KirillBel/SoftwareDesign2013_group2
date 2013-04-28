@@ -17,9 +17,18 @@ import graphview.GraphScene;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+import parser.parserXML;
 
 /**
  *
@@ -27,6 +36,11 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
  */
 public class MainFrame extends javax.swing.JFrame {
 
+    
+    ArrayList<String> openedDoc=new ArrayList<String>();
+    File fileProperties = new File("res/properties/openedFiles.xml");
+    parserXML myParser=new parserXML(openedDoc);
+    
     GraphScene scene=null;
     MainPanel mainPanel;
     Properties properties;
@@ -34,8 +48,9 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainFrame
      */
-    public MainFrame() {
+    public MainFrame() throws IOException {
         initComponents();
+        openProperties();
         initUI();        
     }
     
@@ -63,6 +78,98 @@ public class MainFrame extends javax.swing.JFrame {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation((screenSize.width - this.getWidth()) / 2, (screenSize.height - this.getHeight()) / 2);
     };
+    
+    public void openProperties() throws IOException
+    {     
+        jMenu7.removeAll();
+        if(!fileProperties.exists())
+        {
+            fileProperties.createNewFile();
+        }       
+        else
+        {
+            BufferedReader propertiesText = new BufferedReader (new FileReader(fileProperties));
+            String temp="";
+            ArrayList<String> tempData=new ArrayList<String>();
+            while((temp = propertiesText.readLine()) != null)
+            {
+                tempData.add(temp);
+            }
+            openedDoc=myParser.openedFilesPars(tempData);
+            
+            for(int i=0;i<openedDoc.size();i++)
+            {
+                JMenuItem jMenuItemNew = new javax.swing.JMenuItem();
+                jMenuItemNew.setText(openedDoc.get(i));
+                jMenuItemNew.addActionListener(new java.awt.event.ActionListener()
+                {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) 
+                    {
+                        File file = new File(evt.getActionCommand());      
+                        if(file.exists())
+                        {
+                            scene.loadDot(file.getPath());
+
+                            mainPanel.structure.updateTables();
+
+                            if(openedDoc.size()!=0)
+                            {
+                                while(openedDoc.contains(file.getPath()))
+                                {
+                                    openedDoc.remove(file.getPath());
+                                }
+                                if(openedDoc.size()>4)
+                                {
+                                    for(int i=openedDoc.size()-1;i>0;i--)
+                                    {
+                                        openedDoc.set(i, openedDoc.get(i-1));
+                                    }
+                                    openedDoc.set(0, file.getPath());
+                                }
+                                else
+                                {
+                                    openedDoc.add(null);
+                                    for(int i=openedDoc.size()-1;i>0;i--)
+                                    {
+                                        openedDoc.set(i, openedDoc.get(i-1));
+                                    }
+                                    openedDoc.set(0, file.getPath());
+                                }
+
+                            }
+                            else
+                            {
+                                openedDoc.add(file.getPath());
+                            }
+
+                            PrintWriter propertiesText;
+                            try {
+                                propertiesText = new PrintWriter(fileProperties.getAbsoluteFile());
+                                propertiesText.print(myParser.openedFilesToWrite(openedDoc));
+                                propertiesText.flush();                                
+                            } catch (FileNotFoundException ex) {
+                                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                            }   
+
+                            try {
+                                openProperties();
+                            } catch (IOException ex) {
+                                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                        else
+                        {
+                            JOptionPane.showMessageDialog(mainPanel,"File not exists!");
+                        }
+                            
+                    }
+                });                
+                jMenu7.add(jMenuItemNew);
+
+            }
+        }
+        
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -76,6 +183,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItemFileOpen = new javax.swing.JMenuItem();
+        jMenu7 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
@@ -115,6 +223,9 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         jMenu1.add(jMenuItemFileOpen);
+
+        jMenu7.setText("Recent Documents");
+        jMenu1.add(jMenu7);
 
         jMenuBar1.add(jMenu1);
 
@@ -325,9 +436,60 @@ public class MainFrame extends javax.swing.JFrame {
             if(!scene.loadDot(file.getPath())) {
                 JOptionPane.showMessageDialog(this, "Load failed!");
             }
-            else JOptionPane.showMessageDialog(this, "Load OK!");
-        }
-        mainPanel.structure.updateTables();
+            else
+            {
+                JOptionPane.showMessageDialog(this, "Load OK!");
+            
+                mainPanel.structure.updateTables();
+
+                if(openedDoc.size()!=0)
+                {
+                    while(openedDoc.contains(file.getPath()))
+                    {
+                        openedDoc.remove(file.getPath());
+                    }
+                    if(openedDoc.size()>4)
+                    {
+                        for(int i=openedDoc.size()-1;i>0;i--)
+                        {
+                            openedDoc.set(i, openedDoc.get(i-1));
+                        }
+                        openedDoc.set(0, file.getPath());
+                    }
+                    else
+                    {
+                        openedDoc.add(null);
+                        for(int i=openedDoc.size()-1;i>0;i--)
+                        {
+                            openedDoc.set(i, openedDoc.get(i-1));
+                        }
+                        openedDoc.set(0, file.getPath());
+                    }
+
+                }
+                else
+                {
+                    openedDoc.add(file.getPath());
+                }
+                
+                 PrintWriter propertiesText;
+                 try {
+                     propertiesText = new PrintWriter(fileProperties.getAbsoluteFile());
+                     propertiesText.print(myParser.openedFilesToWrite(openedDoc));
+                     propertiesText.flush();                     
+                 } catch (FileNotFoundException ex) {
+                     Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }   
+                 
+                 try {
+                        openProperties();
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            }
+            
+            
+        }        
     }//GEN-LAST:event_jMenuItemFileOpenActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
@@ -399,7 +561,11 @@ public class MainFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainFrame().setVisible(true); 
+                try { 
+                    new MainFrame().setVisible(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -410,6 +576,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
+    private javax.swing.JMenu jMenu7;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
