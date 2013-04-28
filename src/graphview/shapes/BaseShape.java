@@ -41,7 +41,7 @@ public abstract class BaseShape extends PropertyObject{
     protected boolean bMouseIn=false;
     protected boolean bHaveGrip=true;
     
-    protected Color highlightColor=null;
+    protected ArrayList<Color> highlightColor=new ArrayList<Color>();
     protected int highlightWidth=15;
     
     public boolean bDebugDrawBBox = false;
@@ -785,33 +785,45 @@ public abstract class BaseShape extends PropertyObject{
     
     public void highlight(Color col)
     {
-        highlightColor=col;
+        highlightColor.clear();
+        if(col!=null) highlightColor.add(col);
+    };
+    
+    public void addHighlight(Color col)
+    {
+        if(col!=null) highlightColor.add(col);
     };
     
     protected void drawHighlight(Graphics2D g, Shape shape)
     {
-        if(highlightColor==null) return;
+        if(highlightColor.size()==0) return;
         
-        drawShade(g,shape,highlightColor,highlightWidth);
+        for(int i=highlightColor.size()-1;i>=0;i--)
+        {
+            drawShade(g,shape,highlightColor.get(i),(highlightWidth/2)*(i+1));
+        }
     };
     
     protected void drawShade ( Graphics2D g2d, Shape rr, Color shadeColor,
-                                     int width )
+                                     float width )
     {
         Composite comp = g2d.getComposite ();
         Stroke old = g2d.getStroke ();
         Color oldCol=g2d.getColor();
         width = width * 2;
-        int step=width/10;
-        for ( int i = width; i >= step; i -= step )
+        int steps=1;
+        
+        for(int i=0;i<steps;i++)
         {
-            float opacity = ( float ) ( width - i ) / ( width - 1 );
+            float w=(width/(float)steps)*(steps-i);
+            float opacity = ( float ) ( i+1 ) / ( steps );
             g2d.setColor ( shadeColor );
             g2d.setComposite (
                     AlphaComposite.getInstance ( AlphaComposite.SRC_OVER, opacity/2 ) );
-            g2d.setStroke ( new BasicStroke ( i ) );
+            g2d.setStroke ( new BasicStroke ( w ) );
             g2d.draw ( rr );
-        }
+        };
+
         g2d.setStroke ( old );
         g2d.setComposite ( comp );
         g2d.setColor ( oldCol );

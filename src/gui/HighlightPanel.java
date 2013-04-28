@@ -108,7 +108,7 @@ public class HighlightPanel extends javax.swing.JPanel {
             c=GraphUtils.nextColor(c);
             for(int j=0;j<clusters.get(i).size();j++)
             {
-                clusters.get(i).get(j).getAspect().highlight(c);
+                clusters.get(i).get(j).getAspect().addHighlight(c);
             };
         };
         scene.updateScene();

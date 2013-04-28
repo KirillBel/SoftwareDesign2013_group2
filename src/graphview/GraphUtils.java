@@ -85,21 +85,87 @@ public class GraphUtils {
     public static ArrayList<ArrayList<GraphNode>> findCycles(GraphScene scene)
     {
         ArrayList<ArrayList<GraphNode>> clusters=findClusters(scene);
-        
+        ArrayList<ArrayList<GraphNode>> cycles=new ArrayList<ArrayList<GraphNode>>();
         for(int i=0;i<clusters.size();i++)
         {
+            for(int j=0;j<clusters.get(i).size();j++)
+            {
+                ArrayList<ArrayList<GraphNode>> cyclesTmp=findCycles(scene, clusters.get(i), clusters.get(i).get(j));
+                cycles.addAll(cyclesTmp);
+            };
         };
         
-        return null;
+        removeEqualCycles(cycles);
+        
+        
+        for(int i=0;i<cycles.size();i++)
+        {
+            System.out.println(String.format("\ncycle %d:", i));
+            for(int j=0;j<cycles.get(i).size();j++)
+            {
+                System.out.print(String.format("%s->",cycles.get(i).get(j).getAspect().getLabel()));
+            };
+        }
+        return cycles;
     }
     
-    public static ArrayList<ArrayList<GraphNode>> findCycles(ArrayList<GraphNode> cluster,GraphNode from)
-    {    
-        ArrayList<Integer> nCycle=new ArrayList<Integer>(cluster.size());
-        for(int i=0;i<cluster.size();i++)
-        {
-        };
+    public static ArrayList<ArrayList<GraphNode>> reqFindCycles(GraphScene scene, ArrayList<GraphNode> cluster, GraphNode from, GraphNode current, ArrayList<GraphNode> passed)
+    {
+        ArrayList<ArrayList<GraphNode>> cycles=new ArrayList<ArrayList<GraphNode>>();
+        if(passed==null) passed=new ArrayList<GraphNode>();
+        GraphNode prev=null;
+        if(passed.size()!=0) prev=passed.get(passed.size()-1);
+        passed.add(current);
         
-        return null;
-    }
+        for(int i=0;i<current.getSizeOfNodeEdgesIDArray();i++)
+        {
+            GraphNode node=current.getLinkedItem(scene, i);
+            if((node==from) && (node!=prev))
+            {
+                cycles.add(passed);
+            };
+            if(passed.contains(node)) continue;
+            
+            ArrayList<GraphNode> newPassed=new ArrayList<GraphNode>(passed);
+            ArrayList<ArrayList<GraphNode>> found=reqFindCycles(scene,cluster,from,node,newPassed);
+            
+            for(int j=0;j<found.size();j++)
+            {
+                cycles.add(found.get(j));
+            };
+        };
+        return cycles;
+    };
+    
+    public static ArrayList<ArrayList<GraphNode>> findCycles(GraphScene scene, ArrayList<GraphNode> cluster,GraphNode from)
+    {    
+        ArrayList<ArrayList<GraphNode>> cycles=reqFindCycles(scene, cluster, from, from, null);
+        removeEqualCycles(cycles);
+        return cycles;
+    };
+    
+    public static void removeEqualCycles(ArrayList<ArrayList<GraphNode>> cycles)
+    {
+        for(int i=0;i<cycles.size();i++)
+        {
+            for(int j=i+1;j<cycles.size();j++)
+            {
+                //if(i==j) continue;
+                if(compareByData(cycles.get(i),cycles.get(j)))
+                {
+                    cycles.remove(j);
+                    j--;
+                };
+            };
+        };
+    };
+    
+    public static boolean compareByData(ArrayList<GraphNode> c1,ArrayList<GraphNode> c2)
+    {
+        for(int i=0;i<c1.size();i++)
+        {
+            if(!c2.contains(c1.get(i))) return false;
+        };
+        return true;
+    };
 }
