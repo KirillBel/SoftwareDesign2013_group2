@@ -191,4 +191,27 @@ public class GraphUtils {
         };
         return true;
     };
+    
+    public static ArrayList<ArrayList<Integer>> getClusterEdges(GraphScene scene, ArrayList<GraphNode> cluster)
+    {
+        ArrayList<ArrayList<Integer>> edges=new ArrayList<ArrayList<Integer>>();
+        for(int i=0;i<cluster.size();i++) edges.add(new ArrayList<Integer>());
+        
+        for(int i=0;i<cluster.size();i++)
+        {
+            for(int j=0;j<cluster.get(i).getSizeOfNodeEdgesIDArray();j++)
+            {
+                GraphNode node=cluster.get(i).getLinkedItem(scene, j);
+                for(int z=i+1;z<cluster.size();z++)
+                {
+                    if(cluster.get(z)==node)
+                    {
+                        edges.get(z).add(i);
+                        edges.get(i).add(z);
+                    };
+                };
+            };
+        };
+        return edges;
+    };
 }

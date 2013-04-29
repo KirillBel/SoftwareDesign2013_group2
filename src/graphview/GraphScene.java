@@ -16,6 +16,7 @@ import graphview.shapes.TextShape;
 import geometry.Rect;
 import geometry.Vec2;
 import graphevents.ShapeMouseEvent;
+import graphview.layouts.BaseLayout;
 import graphview.layouts.HierarchicalLayout;
 import graphview.shapes.*;
 import graphview.shapes.EdgeAspect.eEdgeAspectType;
@@ -1183,6 +1184,12 @@ public class GraphScene extends javax.swing.JPanel{
     {
         //removeAllItems();
         HierarchicalLayout layout=new HierarchicalLayout();
+        layout.applyLayout(this);
+        updateScene();
+    };
+    
+    public void applyLayout(BaseLayout layout)
+    {
         layout.applyLayout(this);
         updateScene();
     };

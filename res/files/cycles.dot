@@ -1,21 +1,4 @@
 graph graphname {
-	a [shape=box];
-	b [shape=box];
-	c [shape=box];
-	d [shape=box];
-	e [shape=box];
-	f [shape=box];
-	
-	h [shape=box];
-	g [shape=box];
-	g1 [shape=box];
-
-	
      a -- b -- c -- d -- e -- f -- a;
-	 b -- e;
-	 a -- h -- g;
-	 h -- g1 -- g;
-	 
-	a1 -- b1 -- c1 -- d1;
-	a1 -- c1;	
+	 a -- d;
  }

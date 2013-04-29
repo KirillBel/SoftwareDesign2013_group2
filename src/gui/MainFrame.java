@@ -16,6 +16,7 @@ import com.javadocking.model.FloatDockModel;
 import graphview.GraphNode;
 import graphview.GraphScene;
 import graphview.GraphUtils;
+import graphview.layouts.HierarchicalLayoutK;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -251,6 +252,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
+        jMenuItemTestLayout = new javax.swing.JMenuItem();
         jMenuHighlight = new javax.swing.JMenu();
         jMenuItemHClusters = new javax.swing.JMenuItem();
         jMenuItemHCycles = new javax.swing.JMenuItem();
@@ -405,6 +407,14 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         jMenu5.add(jMenuItem11);
+
+        jMenuItemTestLayout.setText("Test layout");
+        jMenuItemTestLayout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemTestLayoutActionPerformed(evt);
+            }
+        });
+        jMenu5.add(jMenuItemTestLayout);
 
         jMenuBar1.add(jMenu5);
 
@@ -745,6 +755,11 @@ public class MainFrame extends javax.swing.JFrame {
         c.setContents( trans, null );
     }//GEN-LAST:event_jMenuItemCopyToClipboardActionPerformed
 
+    private void jMenuItemTestLayoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemTestLayoutActionPerformed
+        HierarchicalLayoutK layout=new HierarchicalLayoutK();
+        scene.applyLayout(layout);
+    }//GEN-LAST:event_jMenuItemTestLayoutActionPerformed
+
     public static void setSkin(String str)
     {
         try {
@@ -817,6 +832,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemMotifSkin;
     private javax.swing.JMenuItem jMenuItemNimbusSkin;
     private javax.swing.JMenuItem jMenuItemSaveToImage;
+    private javax.swing.JMenuItem jMenuItemTestLayout;
     private javax.swing.JMenuItem jMenuItemWindowsClas;
     private javax.swing.JMenuItem jMenuItemWindowsSkin;
     private javax.swing.JPopupMenu.Separator jSeparator1;
