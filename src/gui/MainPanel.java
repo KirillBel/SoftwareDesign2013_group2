@@ -58,13 +58,11 @@ public class MainPanel extends DockablePanel{
     
     StructurePanel structure;
     OverviewPanel overview;
-    HighlightPanel highlight;
     
     Dockable sceneDock;
     Dockable structureDock;
     Dockable objectPropertiesDock;
     Dockable overviewDock;
-    Dockable highlightDock;
     
     ShapeCreatePanel shapeCreatePanel=null;
     Dockable shapeCreateDock=null;
@@ -118,13 +116,7 @@ public class MainPanel extends DockablePanel{
         overviewDock = new DefaultDockable("Overview", overview, "Overview", null, DockingMode.ALL - DockingMode.FLOAT);
         overviewDock=addActions(overviewDock);
         topLeftTabbedDock.addDockable(overviewDock, new Position(1));
-        
-        highlight=new HighlightPanel(scene);
-        highlightDock = new DefaultDockable("Highlight", highlight, "Highlight", null, DockingMode.ALL - DockingMode.FLOAT);
-        highlightDock=addActions(highlightDock);
-        rightTabbedDock.addDockable(highlightDock, new Position(1));
-        
-        
+
         
         buttonDockables = new Dockable[6];
         buttonDockables[0]  = createButtonDockable("ButtonDockableAdd",              "Add",               new ImageIcon("res/icons/add.png"),               "Add!");

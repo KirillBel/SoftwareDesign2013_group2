@@ -13,7 +13,9 @@ import com.javadocking.dockable.DefaultDockable;
 import com.javadocking.dockable.Dockable;
 import com.javadocking.dockable.DockingMode;
 import com.javadocking.model.FloatDockModel;
+import graphview.GraphNode;
 import graphview.GraphScene;
+import graphview.GraphUtils;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -200,6 +202,14 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
+        jMenuHighlight = new javax.swing.JMenu();
+        jMenuItemHClusters = new javax.swing.JMenuItem();
+        jMenuItemHCycles = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenuItemHSelCluster = new javax.swing.JMenuItem();
+        jMenuItemHSelCycle = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        jMenuItemHClear = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
@@ -330,6 +340,52 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu5.add(jMenuItem11);
 
         jMenuBar1.add(jMenu5);
+
+        jMenuHighlight.setText("Highlight");
+
+        jMenuItemHClusters.setText("Highlight clusters");
+        jMenuItemHClusters.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemHClustersActionPerformed(evt);
+            }
+        });
+        jMenuHighlight.add(jMenuItemHClusters);
+
+        jMenuItemHCycles.setText("Highlight cycles");
+        jMenuItemHCycles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemHCyclesActionPerformed(evt);
+            }
+        });
+        jMenuHighlight.add(jMenuItemHCycles);
+        jMenuHighlight.add(jSeparator1);
+
+        jMenuItemHSelCluster.setText("Highlight selected cluster");
+        jMenuItemHSelCluster.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemHSelClusterActionPerformed(evt);
+            }
+        });
+        jMenuHighlight.add(jMenuItemHSelCluster);
+
+        jMenuItemHSelCycle.setText("Highlight selected cycle");
+        jMenuItemHSelCycle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemHSelCycleActionPerformed(evt);
+            }
+        });
+        jMenuHighlight.add(jMenuItemHSelCycle);
+        jMenuHighlight.add(jSeparator2);
+
+        jMenuItemHClear.setText("Clear");
+        jMenuItemHClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemHClearActionPerformed(evt);
+            }
+        });
+        jMenuHighlight.add(jMenuItemHClear);
+
+        jMenuBar1.add(jMenuHighlight);
 
         jMenu6.setText("Windows");
 
@@ -532,6 +588,49 @@ public class MainFrame extends javax.swing.JFrame {
         scene.applyRadialLayout();
     }//GEN-LAST:event_jMenuItem11ActionPerformed
 
+    public void highlightSelected(ArrayList<ArrayList<GraphNode>> clusters)
+    {
+        scene.clearHighlight();
+        Color c=null;
+        for(int i=0;i<clusters.size();i++)
+        {
+            c=GraphUtils.nextColor(c);
+            for(int j=0;j<clusters.get(i).size();j++)
+            {
+                clusters.get(i).get(j).getAspect().addHighlight(c);
+            };
+        };
+        scene.updateScene();
+    };
+    
+    private void jMenuItemHClustersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemHClustersActionPerformed
+        ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findClusters(scene,null);
+        highlightSelected(clusters);
+        scene.updateScene();
+    }//GEN-LAST:event_jMenuItemHClustersActionPerformed
+
+    private void jMenuItemHCyclesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemHCyclesActionPerformed
+        ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findCycles(scene,null);
+        highlightSelected(clusters);
+        scene.updateScene();
+    }//GEN-LAST:event_jMenuItemHCyclesActionPerformed
+
+    private void jMenuItemHSelClusterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemHSelClusterActionPerformed
+        ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findClusters(scene,scene.getSelectedNodes());
+        highlightSelected(clusters);
+        scene.updateScene();
+    }//GEN-LAST:event_jMenuItemHSelClusterActionPerformed
+
+    private void jMenuItemHSelCycleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemHSelCycleActionPerformed
+        ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findCycles(scene,scene.getSelectedNodes());
+        highlightSelected(clusters);
+        scene.updateScene();
+    }//GEN-LAST:event_jMenuItemHSelCycleActionPerformed
+
+    private void jMenuItemHClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemHClearActionPerformed
+        scene.clearHighlight();
+    }//GEN-LAST:event_jMenuItemHClearActionPerformed
+
     public static void setSkin(String str)
     {
         try {
@@ -578,6 +677,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenu jMenu7;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenu jMenuHighlight;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem11;
@@ -590,10 +690,17 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemFileOpen;
+    private javax.swing.JMenuItem jMenuItemHClear;
+    private javax.swing.JMenuItem jMenuItemHClusters;
+    private javax.swing.JMenuItem jMenuItemHCycles;
+    private javax.swing.JMenuItem jMenuItemHSelCluster;
+    private javax.swing.JMenuItem jMenuItemHSelCycle;
     private javax.swing.JMenuItem jMenuItemMetalSkin;
     private javax.swing.JMenuItem jMenuItemMotifSkin;
     private javax.swing.JMenuItem jMenuItemNimbusSkin;
     private javax.swing.JMenuItem jMenuItemWindowsClas;
     private javax.swing.JMenuItem jMenuItemWindowsSkin;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
     // End of variables declaration//GEN-END:variables
 }

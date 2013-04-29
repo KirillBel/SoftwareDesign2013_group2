@@ -17,12 +17,12 @@ public class GraphUtils {
     {
         if(c==null) return Color.green;
         else if(c.equals(c.green)) return Color.blue;
-        else if(c.equals(c.blue)) return Color.red;
-        else if(c.equals(c.red)) return Color.orange;
-        else if(c.equals(c.orange)) return Color.yellow;
-        else if(c.equals(c.yellow)) return Color.magenta;
-        else if(c.equals(c.magenta)) return Color.cyan;
-        else if(c.equals(c.cyan)) return Color.PINK;
+        else if(c.equals(c.blue)) return Color.orange;
+        else if(c.equals(c.orange)) return Color.red;
+        else if(c.equals(c.red)) return Color.cyan;
+        else if(c.equals(c.cyan)) return Color.magenta;
+        else if(c.equals(c.magenta)) return Color.yellow;
+        else if(c.equals(c.yellow)) return Color.PINK;
         
         return new Color((float)Math.random()*255.f,(float)Math.random()*255.f,(float)Math.random()*255.f);
     };
