@@ -116,10 +116,23 @@ public class HierarchicalLayout extends BaseLayout{
         for(int i =0; i<maxArrsize; i++)
         {
             placeNode = scene.getNode(maxArr.get(i));
-            tempPlacement.y = MaxDemencions.y*2*(i);
-            placeNode.getAspect().setPosition(tempPlacement);
-            placedNodesArray.add(placeNode.getID());
-       }
+            if(i == 0 || i == (maxArrsize-1))
+            {
+                tempPlacement.x = tempPlacement.x+MaxDemencions.x;
+                tempPlacement.y = MaxDemencions.y*2*(i);
+                placeNode.getAspect().setPosition(tempPlacement);
+                placedNodesArray.add(placeNode.getID());
+            }
+            else
+            {
+                tempPlacement.x = 0;
+                tempPlacement.y = MaxDemencions.y*2*(i);
+                placeNode.getAspect().setPosition(tempPlacement);
+                placedNodesArray.add(placeNode.getID()); 
+            }
+
+        }
+       
         
        for(int l=0;l<placedNodesArray.size();l++)
        {
@@ -133,6 +146,34 @@ public class HierarchicalLayout extends BaseLayout{
             boolean Is = IsNodeInPlacedArray(placeNode);
             System.out.println(String.format("Node %s is in placedNodesArray?", placeNode.getAspect().getLabel()));
             System.out.println(Is);
+        }
+        
+        for (int i = 0; i<NodeCount;i++)
+        {
+            placeNode = scene.getNode(i);
+            if(IsNodeInPlacedArray(placeNode) == true)
+            {
+                continue;
+            }
+            else
+            {
+                for(int j = 0; j<placeNode.getSizeOfNodeEdgesIDArray();j++)
+                {
+                    GraphNode currentNode = placeNode.getLinkedItem(scene, j);
+                    if(IsNodeInPlacedArray(currentNode) == true)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        tempPlacement = placeNode.getAspect().getPosition();
+                        tempPlacement.y = tempPlacement.y + MaxDemencions.y;
+                        tempPlacement.x = ((-1)^i)*((MaxDemencions.x)*(j+1));
+                        currentNode.getAspect().setPosition(tempPlacement);
+                        placedNodesArray.add(currentNode.getID());
+                    }
+                }
+            }
         }
        
 
