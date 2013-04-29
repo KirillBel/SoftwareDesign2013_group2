@@ -19,6 +19,7 @@ import graphview.GraphUtils;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,7 +29,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import parser.parserXML;
 
@@ -187,6 +190,9 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItemFileOpen = new javax.swing.JMenuItem();
         jMenu7 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItemSaveToImage = new javax.swing.JMenuItem();
+        jMenuItemCopyToClipboard = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenu4 = new javax.swing.JMenu();
@@ -195,6 +201,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItemMotifSkin = new javax.swing.JMenuItem();
         jMenuItemWindowsSkin = new javax.swing.JMenuItem();
         jMenuItemWindowsClas = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
@@ -240,6 +247,18 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Edit");
+
+        jMenuItemSaveToImage.setText("Save to image...");
+        jMenuItemSaveToImage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemSaveToImageActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItemSaveToImage);
+
+        jMenuItemCopyToClipboard.setText("Copy to clipboard");
+        jMenu2.add(jMenuItemCopyToClipboard);
+        jMenu2.add(jSeparator3);
 
         jMenuItem1.setText("Properties");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -296,6 +315,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu4.add(jMenuItemWindowsClas);
 
         jMenu3.add(jMenu4);
+        jMenu3.add(jSeparator4);
 
         jMenuItem2.setText("Zoom in");
         jMenu3.add(jMenuItem2);
@@ -494,8 +514,6 @@ public class MainFrame extends javax.swing.JFrame {
             }
             else
             {
-                JOptionPane.showMessageDialog(this, "Load OK!");
-            
                 mainPanel.structure.updateTables();
 
                 if(openedDoc.size()!=0)
@@ -631,6 +649,47 @@ public class MainFrame extends javax.swing.JFrame {
         scene.clearHighlight();
     }//GEN-LAST:event_jMenuItemHClearActionPerformed
 
+    private void jMenuItemSaveToImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveToImageActionPerformed
+        BufferedImage img=scene.drawToImage(0, 0);
+        
+        final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+        
+        fc.setFileFilter(new FileNameExtensionFilter("JPEG file", "jpg", "jpeg"));
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("PNG file", "png"));
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("BMP file", "bmp"));
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("GIF file", "gif"));
+        fc.setSelectedFile(new File("unnamed"));
+            
+        int returnVal = fc.showSaveDialog(this);
+        
+        if (returnVal == JFileChooser.APPROVE_OPTION) 
+        {
+            String str=fc.getFileFilter().getDescription();
+            String path=fc.getSelectedFile().getPath();
+            String ff="";
+            if(str.equals("JPEG file")) ff="jpg";
+            else if(str.equals("PNG file")) ff="png";
+            else if(str.equals("BMP file")) ff="bmp";
+            else if(str.equals("GIF file")) ff="gif";
+            
+            if(!path.endsWith(ff)) path+="."+ff;
+            File file=new File(path);
+            
+            if(file.exists())
+            {
+                int t=JOptionPane.showConfirmDialog(this, String.format("Overwrite %s?", file.getName()),"",JOptionPane.YES_NO_OPTION);
+                if(t==JOptionPane.CANCEL_OPTION) return;
+            };
+            
+            try {
+                ImageIO.write(img, ff, file);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Save FAILED!");
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        };
+    }//GEN-LAST:event_jMenuItemSaveToImageActionPerformed
+
     public static void setSkin(String str)
     {
         try {
@@ -689,6 +748,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
+    private javax.swing.JMenuItem jMenuItemCopyToClipboard;
     private javax.swing.JMenuItem jMenuItemFileOpen;
     private javax.swing.JMenuItem jMenuItemHClear;
     private javax.swing.JMenuItem jMenuItemHClusters;
@@ -698,9 +758,12 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemMetalSkin;
     private javax.swing.JMenuItem jMenuItemMotifSkin;
     private javax.swing.JMenuItem jMenuItemNimbusSkin;
+    private javax.swing.JMenuItem jMenuItemSaveToImage;
     private javax.swing.JMenuItem jMenuItemWindowsClas;
     private javax.swing.JMenuItem jMenuItemWindowsSkin;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
     // End of variables declaration//GEN-END:variables
 }

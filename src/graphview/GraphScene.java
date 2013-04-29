@@ -369,6 +369,11 @@ public class GraphScene extends javax.swing.JPanel{
     {
         setSceneRect(root.getChildsRect().getIncreased(10));
     };
+    
+    public void fitScene(Rect r)
+    {
+        setSceneRect(root.getChildsRect().getIncreased(10),r);
+    };
 
     Rect getScreenRect()
     {
@@ -511,10 +516,8 @@ public class GraphScene extends javax.swing.JPanel{
         
         g2d.setRenderingHint ( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 
-        Shape clip3=g2d.getClip();
         draw(g2d);
         drawInfo(g2d);
-        Shape clip2=g2d.getClip();
         g2d.dispose();
     }
     
@@ -688,7 +691,41 @@ public class GraphScene extends javax.swing.JPanel{
         setSceneRect(oldSceneRect);
     }
     
-    public Image drawToImage(int sizeX, int sizeY, NodeAspect shape)
+    public BufferedImage drawToImage(int sizeX, int sizeY)
+    {
+        Rect shildRect=root.getChildsRect().getIncreased(10);
+        if((sizeX==0) || (sizeY==0))
+        {
+            sizeX=(int)shildRect.getSize().x*2;
+            sizeY=(int)shildRect.getSize().y*2;
+        };
+        
+        BufferedImage img = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = img.createGraphics();
+        
+        bEnableSceneRedraw=false;
+        Rect oldSceneRect=getSceneRect();
+        fitScene(new Rect(0,0,sizeX,sizeY));
+        
+        try {
+            g2d.setColor(Color.white);
+            g2d.fillRect(0, 0, sizeX, sizeY);
+
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HBGR);
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+            draw(g2d);
+        } finally {
+            g2d.dispose();
+        }
+        
+        setSceneRect(oldSceneRect);
+        bEnableSceneRedraw=true;
+        return img;
+    };
+    
+    public BufferedImage drawToImage(int sizeX, int sizeY, NodeAspect shape)
     {
         BufferedImage img = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D g2d = img.createGraphics();
@@ -707,14 +744,11 @@ public class GraphScene extends javax.swing.JPanel{
         Vec2 newScale=new Vec2((float)sizeX/newSize.x,(float)sizeY/newSize.y);
         Vec2 newOffset=shapeRect.getTopLeft();
         
-        //shape.setGlobalRectangle(new Rect(0,0,sizeX-1,sizeY-1));
-        
-        
         try {
             g2d.translate(newOffset.x, newOffset.y);
             g2d.scale(newScale.x, newScale.y);
 
-            g2d.setColor(new Color(255,255,255,0));
+            g2d.setColor(Color.white);
             g2d.fillRect(0, 0, sizeX, sizeY);
 
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
