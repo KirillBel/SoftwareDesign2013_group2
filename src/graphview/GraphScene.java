@@ -749,7 +749,7 @@ public class GraphScene extends javax.swing.JPanel{
             g2d.scale(newScale.x, newScale.y);
 
             g2d.setColor(Color.white);
-            g2d.fillRect(0, 0, sizeX, sizeY);
+            g2d.fillRect(0, 0, (int)newSize.x, (int)newSize.y);
 
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HBGR);

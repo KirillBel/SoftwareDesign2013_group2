@@ -16,7 +16,13 @@ import java.util.ArrayList;
 public abstract class BaseLayout {
     GraphScene scene=null;
     
-    public abstract void applyLayout(GraphScene scene_);
+    public void applyLayout(GraphScene scene_)
+    {
+        scene=scene_;
+        onApplyLayout();
+    };
+    
+    public abstract void onApplyLayout();
     
     protected ArrayList<Integer> recurseTestNodeCyclic(ArrayList<Integer> list, GraphNode base, GraphNode prev, GraphNode next, int pathLen)
     {

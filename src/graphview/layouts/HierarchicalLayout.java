@@ -44,9 +44,8 @@ public class HierarchicalLayout extends BaseLayout{
     };
 
     @Override
-    public void applyLayout(GraphScene scene_) 
+    public void onApplyLayout() 
     {
-        scene=scene_;
         //Присвоение нодам флагов
         for(int i=0; i<scene.getSizeNodeArray(); i++)
         {
