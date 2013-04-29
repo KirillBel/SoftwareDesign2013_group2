@@ -12,10 +12,11 @@ import graphview.GraphNode;
 
 /**
  *
- * @author Kirill
+ * @author REXIT
  */
 public class HierarchicalLayout extends BaseLayout{
     //int nodeID;
+    ArrayList<Integer> placedNodesArray = new ArrayList<Integer>();
     
     class NodeFlags
     {
@@ -24,6 +25,22 @@ public class HierarchicalLayout extends BaseLayout{
         public boolean isPlaced = false;
         //Тестовая переменная показывает справа или слева находится нод
         public boolean isRightHanded = true;
+    };
+    
+    public boolean IsNodeInPlacedArray(GraphNode Node)
+    {
+        if (placedNodesArray == null)
+        {
+            return false;
+        }
+        for (int i = 0; i < placedNodesArray.size(); i++)
+        {
+               if(placedNodesArray.get(i) == Node.getID())
+               {
+                   return true;
+               }
+        }
+        return false;
     };
 
     @Override
@@ -50,7 +67,7 @@ public class HierarchicalLayout extends BaseLayout{
         //В maxArr будет записан максимальный путь
         ArrayList<Integer> maxArr = new ArrayList<Integer>();
         ArrayList<Integer> nodeArr = new ArrayList<Integer>();
-        ArrayList<Integer> placedNodesArray = new ArrayList<Integer>();
+        
         
         System.out.println("Test of the node finder\n");
         
@@ -101,11 +118,23 @@ public class HierarchicalLayout extends BaseLayout{
             placeNode = scene.getNode(maxArr.get(i));
             tempPlacement.y = MaxDemencions.y*2*(i);
             placeNode.getAspect().setPosition(tempPlacement);
-           
-        }
+            placedNodesArray.add(placeNode.getID());
+       }
+        
+       for(int l=0;l<placedNodesArray.size();l++)
+       {
+               System.out.println(String.format("placedNodesArray %s",scene.getNode(placedNodesArray.get(l)).getAspect().getLabel()));
+       };
         //scene.updateUI();
         //Расстановка оставшихся нодов.
-
+        for (int i = 0; i<NodeCount; i++)
+        {
+            placeNode = scene.getNode(i);
+            boolean Is = IsNodeInPlacedArray(placeNode);
+            System.out.println(String.format("Node %s is in placedNodesArray?", placeNode.getAspect().getLabel()));
+            System.out.println(Is);
+        }
+       
 
     }
     
