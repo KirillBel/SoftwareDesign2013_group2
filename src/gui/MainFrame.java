@@ -19,6 +19,10 @@ import graphview.GraphUtils;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,6 +33,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.activation.DataHandler;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -40,6 +45,43 @@ import parser.parserXML;
  * @author Kirill
  */
 public class MainFrame extends javax.swing.JFrame {
+    
+    private class TransferableImage implements Transferable 
+    {
+
+        Image i;
+
+        public TransferableImage( Image i ) {
+            this.i = i;
+        }
+
+        public Object getTransferData( DataFlavor flavor )
+        throws UnsupportedFlavorException, IOException {
+            if ( flavor.equals( DataFlavor.imageFlavor ) && i != null ) {
+                return i;
+            }
+            else {
+                throw new UnsupportedFlavorException( flavor );
+            }
+        }
+
+        public DataFlavor[] getTransferDataFlavors() {
+            DataFlavor[] flavors = new DataFlavor[ 1 ];
+            flavors[ 0 ] = DataFlavor.imageFlavor;
+            return flavors;
+        }
+
+        public boolean isDataFlavorSupported( DataFlavor flavor ) {
+            DataFlavor[] flavors = getTransferDataFlavors();
+            for ( int i = 0; i < flavors.length; i++ ) {
+                if ( flavor.equals( flavors[ i ] ) ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
 
     
     ArrayList<String> openedDoc=new ArrayList<String>();
@@ -257,6 +299,11 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu2.add(jMenuItemSaveToImage);
 
         jMenuItemCopyToClipboard.setText("Copy to clipboard");
+        jMenuItemCopyToClipboard.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemCopyToClipboardActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItemCopyToClipboard);
         jMenu2.add(jSeparator3);
 
@@ -690,6 +737,14 @@ public class MainFrame extends javax.swing.JFrame {
         };
     }//GEN-LAST:event_jMenuItemSaveToImageActionPerformed
 
+    private void jMenuItemCopyToClipboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCopyToClipboardActionPerformed
+        BufferedImage img=scene.drawToImage(0, 0);
+        TransferableImage trans = new TransferableImage( img );
+        
+        Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
+        c.setContents( trans, null );
+    }//GEN-LAST:event_jMenuItemCopyToClipboardActionPerformed
+
     public static void setSkin(String str)
     {
         try {
@@ -726,6 +781,9 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
         });
+        
+        
+        
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
