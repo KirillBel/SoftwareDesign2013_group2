@@ -98,27 +98,28 @@ public class HierarchicalLayoutK extends BaseLayout{
         
         public void calculate()
         {
-            
-            //if(childs.size()<=1) return;
-            if(links.size()==0) 
-            {
-                for(int i=0;i<childs.size();i++)
-                    childs.get(i).calculate();
-                return;
-            }
+//            if(links.size()==0) 
+//            {
+//                for(int i=0;i<childs.size();i++)
+//                    childs.get(i).calculate();
+//                return;
+//            }
             
             for(int i=0;i<childs.size();i++)
             {
                 if(childs.get(i).links.size()==0)
+                {
+                    //childs.get(i).calculate();
                     continue;
+                };
                 
-                int maxDiff=getSumLinksDist();
+                int maxDiff=childs.get(i).getSumLinksDist();
                 int maxI=i;
                 for(int j=0;j<childs.size();j++)
                 {
                     if(i==j) continue;
                     swapChilds(i, j);
-                    int diff=getSumLinksDist();
+                    int diff=childs.get(j).getSumLinksDist();
                     if(diff<maxDiff)
                     {
                         maxI=j;
@@ -127,6 +128,7 @@ public class HierarchicalLayoutK extends BaseLayout{
                     swapChilds(i, j);
                 };
                 swapChilds(i, maxI);
+                childs.get(i).calculate();
             };
             
             for(int i=0;i<childs.size();i++)

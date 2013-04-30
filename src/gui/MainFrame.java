@@ -408,7 +408,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jMenu5.add(jMenuItem11);
 
-        jMenuItemTestLayout.setText("Test layout");
+        jMenuItemTestLayout.setText("Hierarchical layout (K)");
         jMenuItemTestLayout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemTestLayoutActionPerformed(evt);

@@ -162,7 +162,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemTestLayout">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Test layout"/>
+                <Property name="text" type="java.lang.String" value="Hierarchical layout (K)"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemTestLayoutActionPerformed"/>
