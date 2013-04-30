@@ -219,6 +219,11 @@ public abstract class BaseShape extends PropertyObject{
         setSize(r.getSize());
     }
     
+    public void setGlobalPosition(Vec2 pos)
+    {
+        setPosition(globalCoord.minus(pos));
+    }
+    
     public Rect getRectangle()
     {
         return new Rect(localCoord.x,localCoord.y,
