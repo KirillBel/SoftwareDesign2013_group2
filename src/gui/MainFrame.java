@@ -253,6 +253,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem10 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
         jMenuItemTestLayout = new javax.swing.JMenuItem();
+        jMenuItem12 = new javax.swing.JMenuItem();
         jMenuHighlight = new javax.swing.JMenu();
         jMenuItemHClusters = new javax.swing.JMenuItem();
         jMenuItemHCycles = new javax.swing.JMenuItem();
@@ -415,6 +416,14 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         jMenu5.add(jMenuItemTestLayout);
+
+        jMenuItem12.setText("Tree");
+        jMenuItem12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem12ActionPerformed(evt);
+            }
+        });
+        jMenu5.add(jMenuItem12);
 
         jMenuBar1.add(jMenu5);
 
@@ -760,6 +769,10 @@ public class MainFrame extends javax.swing.JFrame {
         scene.applyLayout(layout);
     }//GEN-LAST:event_jMenuItemTestLayoutActionPerformed
 
+    private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
+        scene.applyTreeLayout();
+    }//GEN-LAST:event_jMenuItem12ActionPerformed
+
     public static void setSkin(String str)
     {
         try {
@@ -813,6 +826,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem11;
+    private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
