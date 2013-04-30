@@ -260,6 +260,7 @@ public class MainFrame extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         jMenuItemHSelCluster = new javax.swing.JMenuItem();
         jMenuItemHSelCycle = new javax.swing.JMenuItem();
+        jMenuItemHNeit = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItemHClear = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
@@ -461,6 +462,14 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         jMenuHighlight.add(jMenuItemHSelCycle);
+
+        jMenuItemHNeit.setText("Highlight neighbours");
+        jMenuItemHNeit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemHNeitActionPerformed(evt);
+            }
+        });
+        jMenuHighlight.add(jMenuItemHNeit);
         jMenuHighlight.add(jSeparator2);
 
         jMenuItemHClear.setText("Clear");
@@ -679,10 +688,16 @@ public class MainFrame extends javax.swing.JFrame {
         for(int i=0;i<clusters.size();i++)
         {
             c=GraphUtils.nextColor(c);
-            for(int j=0;j<clusters.get(i).size();j++)
-            {
-                clusters.get(i).get(j).getAspect().addHighlight(c);
-            };
+            highlightSelected(clusters.get(i),c);
+        };
+        scene.updateScene();
+    };
+    
+    public void highlightSelected(ArrayList<GraphNode> cluster, Color c)
+    {
+        for(int j=0;j<cluster.size();j++)
+        {
+            cluster.get(j).getAspect().addHighlight(c);
         };
         scene.updateScene();
     };
@@ -769,9 +784,27 @@ public class MainFrame extends javax.swing.JFrame {
         scene.applyLayout(layout);
     }//GEN-LAST:event_jMenuItemTestLayoutActionPerformed
 
+
+    private void jMenuItemHNeitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemHNeitActionPerformed
+        scene.clearHighlight();
+        ArrayList<GraphNode> neitCluster=scene.getSelectedNodes();
+        
+        int numFound=1;
+        Color prevNeitColor=null;
+        while(numFound!=0)
+        {
+            ArrayList<GraphNode> neit=GraphUtils.getNeighbours(scene,neitCluster);
+            numFound=neit.size();
+            prevNeitColor=GraphUtils.nextColor(prevNeitColor);
+            highlightSelected(neit,prevNeitColor);
+            neitCluster.addAll(neit);
+        };
+    }//GEN-LAST:event_jMenuItemHNeitActionPerformed
+
     private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
         scene.applyTreeLayout();
     }//GEN-LAST:event_jMenuItem12ActionPerformed
+
 
     public static void setSkin(String str)
     {
@@ -840,6 +873,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemHClear;
     private javax.swing.JMenuItem jMenuItemHClusters;
     private javax.swing.JMenuItem jMenuItemHCycles;
+    private javax.swing.JMenuItem jMenuItemHNeit;
     private javax.swing.JMenuItem jMenuItemHSelCluster;
     private javax.swing.JMenuItem jMenuItemHSelCycle;
     private javax.swing.JMenuItem jMenuItemMetalSkin;

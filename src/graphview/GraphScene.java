@@ -18,6 +18,7 @@ import geometry.Vec2;
 import graphevents.ShapeMouseEvent;
 import graphview.layouts.BaseLayout;
 import graphview.layouts.HierarchicalLayout;
+import graphview.layouts.HierarchicalLayoutK;
 import graphview.layouts.TreeLayoutSimple;
 import graphview.shapes.*;
 import graphview.shapes.EdgeAspect.eEdgeAspectType;
@@ -518,6 +519,8 @@ public class GraphScene extends javax.swing.JPanel{
         
         g2d.setRenderingHint ( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 
+        
+        drawGrid(g2d,new Vec2(100,100));
         draw(g2d);
         drawInfo(g2d);
         g2d.dispose();
@@ -530,7 +533,7 @@ public class GraphScene extends javax.swing.JPanel{
         //g.setClip(0,0,(int)frameSize.x,(int)frameSize.y);
         g.setFont(sceneFont);
 
-        drawGrid(g,new Vec2(100,100));
+        
         root.draw(g);
         
         //Rect chRect=root.getChildsRect().getIncreased(10);
@@ -578,6 +581,7 @@ public class GraphScene extends javax.swing.JPanel{
     
     public void drawGrid(Graphics2D g, Vec2 gridSize)
     {
+        setSceneDrawMode(g);
         Rect frameRect=null;
         
         if(gridFrameSizeHack==null) frameRect=fromScreen(new Rect(0,0,frameSize.x,frameSize.y));
@@ -1095,7 +1099,7 @@ public class GraphScene extends javax.swing.JPanel{
         DotParser parser=new DotParser(stream,this);
         boolean b=parser.parse();
         updateScene();
-        applySimpleLayout();
+        applyLayout(new HierarchicalLayoutK());
         fitScene();
         //applyTestLayout();
         //applyRadialLayout();
