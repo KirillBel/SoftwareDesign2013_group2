@@ -18,6 +18,7 @@ import geometry.Vec2;
 import graphevents.ShapeMouseEvent;
 import graphview.layouts.BaseLayout;
 import graphview.layouts.HierarchicalLayout;
+import graphview.layouts.TreeLayoutSimple;
 import graphview.shapes.*;
 import graphview.shapes.EdgeAspect.eEdgeAspectType;
 import graphview.shapes.NodeAspect.eNodeAspectType;
@@ -1187,6 +1188,14 @@ public class GraphScene extends javax.swing.JPanel{
         layout.applyLayout(this);
         updateScene();
     };
+    
+    public void applyTreeLayout()
+    {
+
+        TreeLayoutSimple layout=new TreeLayoutSimple();
+        layout.applyLayout(this);
+        updateScene();
+    }
     
     public void applyLayout(BaseLayout layout)
     {
