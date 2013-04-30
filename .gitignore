@@ -6,12 +6,14 @@ nbproject/
 dist/
 nbdist/
 target/
-res/properties/
+res/properties/openedFiles.xml
+openedFiles.xml
 nbactions.xml
 nb-configuration.xml
 manifest.mf
 build.xml
 openedFiles.xml
+
 
 
 # Class Files #

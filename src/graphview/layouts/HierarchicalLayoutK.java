@@ -147,8 +147,8 @@ public class HierarchicalLayoutK extends BaseLayout{
                 childs.get(i).calculateOptimalPlacement();
             };
             
-            for(int i=0;i<childs.size();i++)
-                    childs.get(i).calculateOptimalPlacement();
+            //for(int i=0;i<childs.size();i++)
+            //        childs.get(i).calculateOptimalPlacement();
         };
         
         int getAllChildsSumLinksDist()
@@ -362,7 +362,7 @@ public class HierarchicalLayoutK extends BaseLayout{
             rowSizes[i]=0;
         root.calcRowSizes(rowSizes);
         for(int i=0;i<rowSizes.length;i++)
-            rowSizes[i]*=3;
+            rowSizes[i]*=2;
         
         root.calcColSize();
         root.placeNodes(rowSizes, cluster);

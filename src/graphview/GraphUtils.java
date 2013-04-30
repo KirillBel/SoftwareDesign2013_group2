@@ -24,7 +24,7 @@ public class GraphUtils {
         else if(c.equals(c.magenta)) return Color.yellow;
         else if(c.equals(c.yellow)) return Color.PINK;
         
-        return new Color((float)Math.random()*255.f,(float)Math.random()*255.f,(float)Math.random()*255.f);
+        return new Color((float)Math.random(),(float)Math.random(),(float)Math.random());
     };
     
     public static ArrayList<ArrayList<GraphNode>> findClusters(GraphScene scene,ArrayList<GraphNode> from)
@@ -213,5 +213,21 @@ public class GraphUtils {
             };
         };
         return edges;
+    };
+    
+    public static ArrayList<GraphNode> getNeighbours(GraphScene scene,ArrayList<GraphNode> cluster)
+    {
+        ArrayList<GraphNode> neit=new ArrayList<GraphNode>();
+        for(int i=0;i<cluster.size();i++)
+        {
+            for(int j=0;j<cluster.get(i).getSizeOfNodeEdgesIDArray();j++)
+            {
+                if(!cluster.contains(cluster.get(i).getLinkedItem(scene, j)))
+                {
+                    neit.add(cluster.get(i).getLinkedItem(scene, j));
+                };
+            };
+        };
+        return neit;
     };
 }
