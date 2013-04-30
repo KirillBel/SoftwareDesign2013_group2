@@ -1191,6 +1191,7 @@ public class GraphScene extends javax.swing.JPanel{
     public void applyLayout(BaseLayout layout)
     {
         layout.applyLayout(this);
+        fitScene();
         updateScene();
     };
     

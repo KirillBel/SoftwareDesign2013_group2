@@ -24,10 +24,28 @@ public class HierarchicalLayoutK extends BaseLayout{
     public void onApplyLayout() {
         ArrayList<ArrayList<GraphNode>> clusters=GraphUtils.findClusters(scene,null);
         
+        Rect offset=new Rect();
         for(int i=0;i<clusters.size();i++)
         {
             System.out.println(String.format("\nCluster %d:",i));
             calculateCluster(clusters.get(i));
+            
+            Rect currRect=new Rect(clusters.get(i).get(0).getAspect().getGlobalRectangle());
+            for(int j=0;j<clusters.get(i).size();j++)
+            {
+                currRect.add(clusters.get(i).get(j).getAspect().getGlobalRectangle());
+            };
+            currRect.increase(30);
+            
+            System.out.println(String.format("[%.2f, %.2f, %.2f, %.2f]\tx=%.2f, y=%.2f",currRect.left,currRect.right,currRect.top,currRect.bottom,currRect.getSize().x,currRect.getSize().y));
+            Vec2 mov=new Vec2(-(currRect.left-offset.right),-(currRect.top));
+            for(int j=0;j<clusters.get(i).size();j++)
+            {
+                clusters.get(i).get(j).getAspect().move(mov);
+            };
+            currRect.move(mov);
+            System.out.println(String.format("mov: %.2f, %.2f",mov.x,mov.y));
+            offset=currRect;
         }   
         
     };
@@ -180,25 +198,19 @@ public class HierarchicalLayoutK extends BaseLayout{
         {
             if(childs.size()==0) return;
             Rect currRect=cluster.get(index).getAspect().getGlobalRectangle();
+            
             float topStart=currRect.top+rowSizes[currentRow];
             float leftStart=currRect.getCenter().x+colSize.x;
-            float firstStart=leftStart;
-            float placeSumm=0;
-            float needSumm=colSize.y-colSize.x;
             Vec2 childPos=new Vec2();
             
-            System.out.println(String.format("Need summ: %.2f",needSumm));
             for(int i=0;i<childs.size();i++)
             {
-                placeSumm+=childs.get(i).colSize.y-childs.get(i).colSize.x;
                 childPos.set(leftStart+Math.abs(childs.get(i).colSize.x),topStart);
                 childPos.x-=childs.get(i).size.x/2;
                 childPos.x+=ELEM_OFFSET/2;
-                System.out.println(String.format("Node %d: placed ad %.2f [%.2f]", i,childPos.x-firstStart,placeSumm));
                 cluster.get(childs.get(i).index).getAspect().setPosition(childPos);
                 leftStart+=childs.get(i).colSize.y-childs.get(i).colSize.x;
             };
-            
             for(int i=0;i<childs.size();i++)
             {
                 childs.get(i).placeNodes(rowSizes,cluster);
@@ -272,7 +284,18 @@ public class HierarchicalLayoutK extends BaseLayout{
             System.out.println("]");
         };
         
-        ArrayList<Integer> ranks=calculateRanks(cluster,edges,0);
+        int mostEdgedIndex=0;
+        int maxEdges=0;
+        for(int i=0;i<edges.size();i++)
+        {
+            if(maxEdges<edges.get(i).size())
+            {
+                maxEdges=edges.get(i).size();
+                mostEdgedIndex=i;
+            };
+        } 
+        
+        ArrayList<Integer> ranks=calculateRanks(cluster,edges,mostEdgedIndex);
         
         System.out.println("\nRanks:");
         for(int i=0;i<cluster.size();i++)
