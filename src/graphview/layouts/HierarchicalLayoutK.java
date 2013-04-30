@@ -117,12 +117,6 @@ public class HierarchicalLayoutK extends BaseLayout{
         
         public void calculateOptimalPlacement()
         {
-//            if(links.size()==0) 
-//            {
-//                for(int i=0;i<childs.size();i++)
-//                    childs.get(i).calculate();
-//                return;
-//            }
             
             for(int i=0;i<childs.size();i++)
             {
@@ -133,15 +127,15 @@ public class HierarchicalLayoutK extends BaseLayout{
                     continue;
                 };
                 
-                int maxDiff=childs.get(i).getAllChildsSumLinksDist();
-                //int maxDiff=getAllChildsSumLinksDist();
+                //int maxDiff=childs.get(i).getSumLinksDist();
+                int maxDiff=getAllChildsSumLinksDist();
                 int maxI=i;
                 for(int j=0;j<childs.size();j++)
                 {
                     if(i==j) continue;
                     swapChilds(i, j);
-                    int diff=childs.get(j).getAllChildsSumLinksDist();
-                    //int diff=getAllChildsSumLinksDist();
+                    //int diff=childs.get(j).getSumLinksDist();
+                    int diff=getAllChildsSumLinksDist();
                     if(diff<maxDiff)
                     {
                         maxI=j;
@@ -153,8 +147,8 @@ public class HierarchicalLayoutK extends BaseLayout{
                 childs.get(i).calculateOptimalPlacement();
             };
             
-//            for(int i=0;i<childs.size();i++)
-//                    childs.get(i).calculateOptimalPlacement();
+            for(int i=0;i<childs.size();i++)
+                    childs.get(i).calculateOptimalPlacement();
         };
         
         int getAllChildsSumLinksDist()
@@ -179,6 +173,11 @@ public class HierarchicalLayoutK extends BaseLayout{
         
         int getColDistance(TreeElem el)
         {
+            if(el.currentRow==currentRow)
+            {
+                return Math.abs(currentCol-el.getCurrColArray().get(currentRow));
+            };
+            
             int d=0;
             int colStart=(currentCol>el.getCurrColArray().get(currentRow)) ? 
                     currentCol-1 : currentCol+1;
@@ -197,7 +196,7 @@ public class HierarchicalLayoutK extends BaseLayout{
             int dist=Math.abs(currentCol-el.getCurrColArray().get(currentRow));
 
             
-            return dist;
+            return d;
         };
         
         public TreeElem findIndex(int ind)

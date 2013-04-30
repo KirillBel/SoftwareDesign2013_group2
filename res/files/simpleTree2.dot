@@ -1,0 +1,12 @@
+digraph graphname {
+     a -> b -> c;
+     b -> d;
+	 d -> e;
+	 z -> e -> x;
+	 d -> f -> g;
+	 f -> h;
+	 g -> q;
+	 h -> w;
+	 r -> q -> y;
+	 t -> w -> u;
+ }
