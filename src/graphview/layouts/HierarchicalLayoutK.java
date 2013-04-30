@@ -60,6 +60,7 @@ public class HierarchicalLayoutK extends BaseLayout{
             currentCol=nCol;
             index=index_;
             colomnInRow.addAll(prevColInRow);
+            parUpdMaxColDepth(currentRow);
         };
         
         ArrayList<Integer> getCurrColArray()
@@ -114,7 +115,7 @@ public class HierarchicalLayoutK extends BaseLayout{
             childs.get(i2).setCol(i2);
         };
         
-        public void calculate()
+        public void calculateOptimalPlacement()
         {
 //            if(links.size()==0) 
 //            {
@@ -127,17 +128,20 @@ public class HierarchicalLayoutK extends BaseLayout{
             {
                 if(childs.get(i).links.size()==0)
                 {
+                    childs.get(i).calculateOptimalPlacement();
                     //childs.get(i).calculate();
                     continue;
                 };
                 
-                int maxDiff=childs.get(i).getSumLinksDist();
+                int maxDiff=childs.get(i).getAllChildsSumLinksDist();
+                //int maxDiff=getAllChildsSumLinksDist();
                 int maxI=i;
                 for(int j=0;j<childs.size();j++)
                 {
                     if(i==j) continue;
                     swapChilds(i, j);
-                    int diff=childs.get(j).getSumLinksDist();
+                    int diff=childs.get(j).getAllChildsSumLinksDist();
+                    //int diff=getAllChildsSumLinksDist();
                     if(diff<maxDiff)
                     {
                         maxI=j;
@@ -146,11 +150,21 @@ public class HierarchicalLayoutK extends BaseLayout{
                     swapChilds(i, j);
                 };
                 swapChilds(i, maxI);
-                childs.get(i).calculate();
+                childs.get(i).calculateOptimalPlacement();
             };
             
+//            for(int i=0;i<childs.size();i++)
+//                    childs.get(i).calculateOptimalPlacement();
+        };
+        
+        int getAllChildsSumLinksDist()
+        {
+            int d=0;
             for(int i=0;i<childs.size();i++)
-                    childs.get(i).calculate();
+            {
+                d+=childs.get(i).getSumLinksDist();
+            };
+            return d;
         };
         
         int getSumLinksDist()
@@ -165,7 +179,25 @@ public class HierarchicalLayoutK extends BaseLayout{
         
         int getColDistance(TreeElem el)
         {
-            return Math.abs(currentCol-el.getCurrColArray().get(currentRow));
+            int d=0;
+            int colStart=(currentCol>el.getCurrColArray().get(currentRow)) ? 
+                    currentCol-1 : currentCol+1;
+            int colEnd=(el.getCurrColArray().get(currentRow)>currentCol) ? 
+                    el.getCurrColArray().get(currentRow)-1 : el.getCurrColArray().get(currentRow)+1;
+            
+            int minInd=Math.min(colStart, colEnd);
+            int maxInd=Math.max(colStart, colEnd);
+            
+            for(int i=minInd;i<=maxInd;i++)
+            {
+                if(parent.childs.get(i).maxRow>maxRow) d++;
+                //if(parent.childs.get(i).colomnInRow.size()>colomnInRow.size()) d++;
+            };
+            
+            int dist=Math.abs(currentCol-el.getCurrColArray().get(currentRow));
+
+            
+            return dist;
         };
         
         public TreeElem findIndex(int ind)
@@ -259,6 +291,15 @@ public class HierarchicalLayoutK extends BaseLayout{
             System.out.println(String.format("Col [%d,%d]: l = %.2f, r = %.2f  [%.2f]",currentRow,currentCol,colSize.x,colSize.y,colSize.y-colSize.x));
         };
         
+        void parUpdMaxColDepth(int childRow)
+        {
+            if(maxRow<childRow) maxRow=childRow;
+            if(parent!=null) 
+                    parent.parUpdMaxColDepth(maxRow);
+        };
+        
+        int maxRow=0;
+        
         public int currentRow=-1;
         public int currentCol=-1;
         public ArrayList<Integer> colomnInRow=new ArrayList<Integer>();
@@ -314,7 +355,7 @@ public class HierarchicalLayoutK extends BaseLayout{
         
         TreeElem root=new TreeElem(null,cluster.get(rootIndex).getAspect().getSize(),0,0,new ArrayList<Integer>(),rootIndex);
         reqCalcTree(root,root,cluster,edges,ranks);
-        root.calculate();
+        root.calculateOptimalPlacement();
         
         
         float[] rowSizes=new float[rowCount];
