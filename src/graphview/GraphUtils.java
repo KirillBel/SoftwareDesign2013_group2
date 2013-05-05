@@ -183,6 +183,17 @@ public class GraphUtils {
         };
     };
     
+    public static void removeEqualNodes(ArrayList<GraphNode> nodes)
+    {
+        for(int i=0;i<nodes.size();i++)
+        {
+            for(int j=i+1;j<nodes.size();j++)
+            {
+                if(nodes.get(j)==nodes.get(i)) nodes.remove(j);
+            };
+        };
+    };
+    
     public static boolean compareByData(ArrayList<GraphNode> c1,ArrayList<GraphNode> c2)
     {
         for(int i=0;i<c1.size();i++)
@@ -228,6 +239,7 @@ public class GraphUtils {
                 };
             };
         };
+        removeEqualNodes(neit);
         return neit;
     };
 }

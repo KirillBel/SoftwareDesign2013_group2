@@ -159,6 +159,11 @@ public class Rect {
         return new Rect((float)rect.getX(),(float)rect.getY(),(float)(rect.getX()+rect.getWidth()),(float)(rect.getY()+rect.getHeight()));
     };
     
+    public Rectangle2D toRectangle2D()
+    {
+        return new Rectangle2D.Float(left,top,getSize().x,getSize().y);
+    };
+    
     public void reduce(float val)
     {
         left+=val;

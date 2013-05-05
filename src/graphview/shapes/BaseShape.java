@@ -16,6 +16,7 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import property.PropertyObject;
 
@@ -42,7 +43,7 @@ public abstract class BaseShape extends PropertyObject{
     protected boolean bHaveGrip=true;
     
     protected ArrayList<Color> highlightColor=new ArrayList<Color>();
-    protected int highlightWidth=15;
+    protected int highlightWidth=5;
     
     public boolean bDebugDrawBBox = false;
     
@@ -791,22 +792,52 @@ public abstract class BaseShape extends PropertyObject{
     public void highlight(Color col)
     {
         highlightColor.clear();
-        if(col!=null) highlightColor.add(col);
+        if(col!=null) highlightColor.add(new Color(col.getRed(),col.getGreen(),col.getBlue(),200));
     };
     
     public void addHighlight(Color col)
     {
-        if(col!=null) highlightColor.add(col);
+        if(col!=null) highlightColor.add(new Color(col.getRed(),col.getGreen(),col.getBlue(),200));
     };
     
     protected void drawHighlight(Graphics2D g, Shape shape)
     {
         if(highlightColor.size()==0) return;
         
-        for(int i=highlightColor.size()-1;i>=0;i--)
+        
+        Rect r=new Rect(getGlobalRectangle());
+        r.increase(highlightWidth/2);
+        
+        for(int i=0;i<highlightColor.size();i++)
         {
-            drawShade(g,shape,highlightColor.get(i),(highlightWidth/2)*(i+1),10,0);
-        }
+            drawHighlightRect(g,highlightColor.get(i),r);
+            r.increase(highlightWidth);
+        };
+        //for(int i=highlightColor.size()-1;i>=0;i--)
+        //{
+            //drawShade(g,shape,highlightColor.get(i),(highlightWidth/2)*(i+1),10,0);
+        //}
+    };
+    
+    protected void drawHighlightRect( Graphics2D g2d, Color shadeColor, Rect r)
+    {
+        Rect rr=new Rect(r);
+        Stroke old = g2d.getStroke();
+        Color oldCol=g2d.getColor();
+        
+        g2d.setColor ( shadeColor );
+        g2d.setStroke ( new BasicStroke ( highlightWidth ) );
+        
+        g2d.draw ( rr.toRectangle2D());
+        
+        g2d.setStroke ( new BasicStroke () );
+        
+        g2d.setColor (Color.BLACK);
+        rr.increase(-highlightWidth/2);
+        g2d.draw ( rr.toRectangle2D() );
+        
+        g2d.setStroke ( old );
+        g2d.setColor ( oldCol );
     };
     
     protected void drawShade ( Graphics2D g2d, Shape rr, Color shadeColor,
